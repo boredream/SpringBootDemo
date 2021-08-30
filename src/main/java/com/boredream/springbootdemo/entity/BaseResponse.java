@@ -14,6 +14,7 @@ public class BaseResponse implements Serializable {
 
     private int code = -1;
     private String message = "待处理";
+    // TODO: chunyang 2021/9/2 map?
     private Map<String, Object> data = new HashMap<>();
 
     public BaseResponse() {

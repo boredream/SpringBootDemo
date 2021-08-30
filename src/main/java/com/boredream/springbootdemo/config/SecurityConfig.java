@@ -75,11 +75,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 // 设置权限
                 .authorizeRequests()
 
-                // 需要角色权限
-                .antMatchers("/hello").hasRole("ADMIN")
-
                 // 不用登陆
-                .antMatchers("/user/login").permitAll()
+                .antMatchers("/user/login", "/user/register").permitAll()
 
                 // 除上面外的所有请求都需要登录
                 .anyRequest().authenticated();

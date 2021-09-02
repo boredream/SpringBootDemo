@@ -21,40 +21,26 @@ public class UserController {
     @Autowired
     private AuthService authService;
 
-    /**
-     * login
-     *
-     * @param authRequest
-     * @param bindingResult
-     * @return ResponseEntity<Result>
-     */
     @RequestMapping(value = "/login", method = RequestMethod.POST, produces = "application/json")
     public ResponseEntity<BaseResponse> login(@Valid @RequestBody LoginRequest authRequest, BindingResult bindingResult) throws AuthenticationException {
 
+        BaseResponse res;
         if (bindingResult.hasErrors()) {
-            BaseResponse res = MiscUtil.getValidateError(bindingResult);
-            return new ResponseEntity<>(res, HttpStatus.UNPROCESSABLE_ENTITY);
+            res = MiscUtil.getValidateError(bindingResult);
+        } else {
+            // Return the token
+            final String token = authService.login(authRequest.getUsername(), authRequest.getPassword());
+            res = new BaseResponse(200, "ok");
+            res.putData("token", token);
         }
 
-        final String token = authService.login(authRequest.getUsername(), authRequest.getPassword());
-
-        // Return the token
-        BaseResponse res = new BaseResponse(200, "ok");
-        res.putData("token", token);
         return ResponseEntity.ok(res);
     }
 
-    /**
-     * refresh
-     *
-     * @param request
-     * @return ResponseEntity<Result>
-     */
     @RequestMapping(value = "/refresh", method = RequestMethod.GET, produces = "application/json")
     public ResponseEntity<BaseResponse> refresh(HttpServletRequest request, @RequestParam String token) throws AuthenticationException {
 
         BaseResponse res = new BaseResponse(200, "ok");
-
         String refreshedToken = authService.refresh(token);
 
         if (refreshedToken == null) {

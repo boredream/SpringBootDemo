@@ -6,18 +6,19 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 @Entity
-public class UserInfo {
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
     private String username;
     private String password;
+    private String role;
 
-    public UserInfo() {
+    public User() {
     }
 
-    public UserInfo(String username) {
+    public User(String username) {
         this.username = username;
     }
 
@@ -43,5 +44,13 @@ public class UserInfo {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 }

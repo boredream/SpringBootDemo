@@ -1,81 +1,101 @@
 package com.boredream.springbootdemo.config;
 
+import com.boredream.springbootdemo.auth.JwtAuthError;
+import com.boredream.springbootdemo.auth.JwtAuthFilter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
-@EnableWebSecurity
+@EnableWebSecurity // 添加security过滤器
+@EnableGlobalMethodSecurity(prePostEnabled = true) // 可以在controller方法上配置权限
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    /**
-     * 描述:
-     * http方式走 Spring Security 过滤器链，在过滤器链中，给请求放行，而web方式是不走 Spring Security 过滤器链。
-     * 通常http方式用于请求的放行和限制，web方式用于放行静态资源
-     **/
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests()
-                // 配置除了某些接口之外都需要认证
-                .antMatchers("/login").permitAll().anyRequest().authenticated()
-                // 基于token，不需要session
-                .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                // 禁用跨站伪造
-                .and().csrf().disable();
-    }
+    // 加载用户信息
+    @Autowired
+    private UserDetailsService myUserDetailsService;
 
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.inMemoryAuthentication()
-                .withUser("admin").password(passwordEncoder().encode("12345")).roles("ADMIN")
-                .and()
-                .withUser("user").password(passwordEncoder().encode("12345")).roles("USER");
+    // 权限不足错误信息处理，包含认证错误与鉴权错误处理
+    @Autowired
+    private JwtAuthError myAuthErrorHandler;
 
-    }
-
-    //    /**
-//     * 描述：设置授权处理相关的具体类以及加密方式
-//     */
-//    @Override
-//    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-//        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-//        // 设置不隐藏 未找到用户异常
-//        provider.setHideUserNotFoundExceptions(true);
-//        // 用户认证service - 查询数据库的逻辑
-//        provider.setUserDetailsService(userDetailsService());
-//        // 设置密码加密算法
-//        provider.setPasswordEncoder(passwordEncoder());
-//        auth.authenticationProvider(provider);
-//    }
-
-//    /**
-//     * 描述: 通过自定义的UserDetailsService 来实现查询数据库用户数据
-//     **/
-//    @Override
-//    @Bean
-//    protected UserDetailsService userDetailsService() {
-//        return new UserDetailsServiceImpl();
-//    }
-
-    /**
-     * 描述: 密码加密算法 BCrypt 推荐使用
-     **/
+    // 密码明文加密方式配置
     @Bean
-    public BCryptPasswordEncoder passwordEncoder() {
+    public PasswordEncoder myEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-//    /**
-//     * 描述: 注入AuthenticationManager管理器
-//     **/
-//    @Override
-//    @Bean
-//    public AuthenticationManager authenticationManager() throws Exception {
-//        return super.authenticationManager();
-//    }
+    // jwt校验过滤器，从http头部Authorization字段读取token并校验
+    @Bean
+    public JwtAuthFilter myAuthFilter() throws Exception {
+        return new JwtAuthFilter();
+    }
+
+    // 获取AuthenticationManager（认证管理器），可以在其他地方使用
+    @Bean(name = "authenticationManagerBean")
+    @Override
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
+    }
+
+    // 认证用户时用户信息加载配置，注入myUserDetailsService
+    @Override
+    public void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(myUserDetailsService);
+    }
+
+    // 配置http，包含权限配置
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http
+
+                // 由于使用的是JWT，我们这里不需要csrf
+                .csrf().disable()
+
+                // 基于token，所以不需要session
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
+
+                // 设置myUnauthorizedHandler处理认证失败、鉴权失败
+                .exceptionHandling().authenticationEntryPoint(myAuthErrorHandler).accessDeniedHandler(myAuthErrorHandler).and()
+
+                // 设置权限
+                .authorizeRequests()
+
+                // 需要角色权限
+                .antMatchers("/hello").hasRole("ADMIN")
+
+                // 不用登陆
+                .antMatchers("/user/login").permitAll()
+
+                // 除上面外的所有请求都需要登录
+                .anyRequest().authenticated();
+
+        // 添加JWT过滤器，JWT过滤器在用户名密码认证过滤器之前
+        http.addFilterBefore(myAuthFilter(), UsernamePasswordAuthenticationFilter.class);
+
+        // 禁用缓存
+//      http.headers().cacheControl();
+    }
+
+    // 配置跨源访问(CORS)
+    @Bean
+    CorsConfigurationSource corsConfigurationSource() {
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", new CorsConfiguration().applyPermitDefaultValues());
+        return source;
+    }
 }

@@ -76,7 +76,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
 
                 // 不用登陆
-                .antMatchers("/user/login", "/user/register").permitAll()
+                .antMatchers("/user/login", "/user/register", "/code/*").permitAll()
 
                 // 除上面外的所有请求都需要登录
                 .anyRequest().authenticated();

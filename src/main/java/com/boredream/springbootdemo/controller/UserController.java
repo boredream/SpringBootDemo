@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/user")
@@ -41,19 +43,21 @@ public class UserController {
     }
 
     @RequestMapping(value = "/login", method = RequestMethod.POST, produces = "application/json")
-    public ResponseEntity<BaseResponse> login(@Valid @RequestBody LoginRequest authRequest, BindingResult bindingResult) throws AuthenticationException {
+    public ResponseEntity<BaseResponse<?>> login(@Valid @RequestBody LoginRequest authRequest, BindingResult bindingResult) throws AuthenticationException {
 
-        BaseResponse res;
+        BaseResponse<Map<String, String>> res;
         if (bindingResult.hasErrors()) {
             res = MiscUtil.getValidateError(bindingResult);
         } else {
             try {
                 // Return the token
                 final String token = authService.login(authRequest);
-                res = new BaseResponse(200, "ok");
-                res.putData("token", token);
+                res = new BaseResponse<>(200, "ok");
+                Map<String, String> data = new HashMap<>();
+                data.put("token", token);
+                res.setData(data);
             } catch (ApiException e) {
-                res = e.getBaseResponse();
+                return ResponseEntity.ok(e.getBaseResponse());
             }
         }
         return ResponseEntity.ok(res);

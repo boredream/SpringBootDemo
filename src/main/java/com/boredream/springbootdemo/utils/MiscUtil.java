@@ -16,7 +16,7 @@ public class MiscUtil {
     @SuppressWarnings("unused")
     private static final Logger log = LoggerFactory.getLogger(MiscUtil.class);
 
-    static public BaseResponse getValidateError(BindingResult bindingResult) {
+    static public BaseResponse<Map<String, String>> getValidateError(BindingResult bindingResult) {
         if (!bindingResult.hasErrors()) return null;
 
         Map<String, String> fieldErrors = new HashMap<>();
@@ -24,8 +24,8 @@ public class MiscUtil {
             fieldErrors.put(error.getField(), error.getCode() + "|" + error.getDefaultMessage());
         }
 
-        BaseResponse ret = new BaseResponse(422, "输入错误"); //rfc4918 - 11.2. 422: Unprocessable Entity
-        ret.putData("fieldErrors", fieldErrors);
+        BaseResponse<Map<String, String>> ret = new BaseResponse<>(422, "输入错误"); //rfc4918 - 11.2. 422: Unprocessable Entity
+        ret.setData(fieldErrors);
 
         return ret;
     }

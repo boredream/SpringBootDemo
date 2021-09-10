@@ -40,7 +40,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             role = jwtUtil.getClaimFromToken(token, "role", String.class);
         } catch (Exception e) {
             log.debug("异常详情", e);
-            log.info("无效token");
         }
 
         // 如果jwt正确解出账号信息，说明是合法用户，设置认证信息，认证通过

@@ -4,18 +4,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
 
-public class BaseResponse implements Serializable {
+public class BaseResponse<T> implements Serializable {
 
     @SuppressWarnings("unused")
     private static final Logger log = LoggerFactory.getLogger(BaseResponse.class);
 
     private int code = -1;
     private String message = "待处理";
-    // TODO: chunyang 2021/9/2 map?
-    private Map<String, Object> data = new HashMap<>();
+    private T data;
 
     public BaseResponse() {
     }
@@ -41,20 +38,12 @@ public class BaseResponse implements Serializable {
         this.message = message;
     }
 
-    public Map<String, Object> getData() {
+    public T getData() {
         return data;
     }
 
-    public void setData(Map<String, Object> data) {
+    public void setData(T data) {
         this.data = data;
-    }
-
-    public void putData(String key, Object value) {
-        data.put(key, value);
-    }
-
-    public void removeData(String key) {
-        data.remove(key);
     }
 
     @Override

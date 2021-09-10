@@ -18,7 +18,7 @@ public class CodeController {
     CodeService service;
 
     @CrossOrigin
-    @RequestMapping(value = "/docApi", method = RequestMethod.POST, produces = "application/json")
+    @RequestMapping(value = "/docApi", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public ResponseEntity<BaseResponse<?>> register(@RequestBody Map<String, String> params) throws AuthenticationException {
         // TODO: chunyang 2021/9/7 参数统一校验？
         try {

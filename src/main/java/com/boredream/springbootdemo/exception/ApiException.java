@@ -1,10 +1,10 @@
 package com.boredream.springbootdemo.exception;
 
-import com.boredream.springbootdemo.entity.BaseResponse;
+import com.boredream.springbootdemo.entity.ResponseDTO;
 
 public class ApiException extends RuntimeException {
 
-    private BaseResponse baseResponse;
+    private ResponseDTO baseResponse;
 
     public ApiException(String message) {
         this(100, message);
@@ -12,14 +12,16 @@ public class ApiException extends RuntimeException {
 
     public ApiException(int code, String message) {
         super(message);
-        this.baseResponse = new BaseResponse(code, message);
+        this.baseResponse = new ResponseDTO();
+        this.baseResponse.setCode(code);
+        this.baseResponse.setMsg(message);
     }
 
-    public BaseResponse getBaseResponse() {
+    public ResponseDTO getResponseDTO() {
         return baseResponse;
     }
 
-    public void setBaseResponse(BaseResponse baseResponse) {
+    public void setResponseDTO(ResponseDTO baseResponse) {
         this.baseResponse = baseResponse;
     }
 }

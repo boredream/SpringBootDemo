@@ -46,7 +46,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     // 获取AuthenticationManager（认证管理器），可以在其他地方使用
-    @Bean(name = "authenticationManagerBean")
+    @Bean(name = "authenticationManagerBean" )
     @Override
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
@@ -64,22 +64,30 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http
 
                 // 由于使用的是JWT，我们这里不需要csrf
-                .csrf().disable()
+                .csrf()
+                .disable()
 
                 // 基于token，所以不需要session
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
+                .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
 
                 // 设置myUnauthorizedHandler处理认证失败、鉴权失败
-                .exceptionHandling().authenticationEntryPoint(myAuthErrorHandler).accessDeniedHandler(myAuthErrorHandler).and()
+                .exceptionHandling()
+                .authenticationEntryPoint(myAuthErrorHandler)
+                .accessDeniedHandler(myAuthErrorHandler)
+                .and()
 
                 // 设置权限
                 .authorizeRequests()
 
                 // 不用登陆
-                .antMatchers("/user/login", "/user/register").permitAll()
+                .antMatchers("/user/login" , "/user/register" , "/todo", "/todo/*" )
+                .permitAll()
 
                 // 除上面外的所有请求都需要登录
-                .anyRequest().authenticated();
+                .anyRequest()
+                .authenticated();
 
         // 添加JWT过滤器，JWT过滤器在用户名密码认证过滤器之前
         http.addFilterBefore(myAuthFilter(), UsernamePasswordAuthenticationFilter.class);
@@ -92,7 +100,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", new CorsConfiguration().applyPermitDefaultValues());
+        source.registerCorsConfiguration("/**" , new CorsConfiguration().applyPermitDefaultValues());
         return source;
     }
 }

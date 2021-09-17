@@ -1,7 +1,5 @@
-package com.boredream.springbootdemo.service;
+package com.boredream.springbootdemo.auth;
 
-import com.boredream.springbootdemo.auth.AuthUser;
-import com.boredream.springbootdemo.auth.JwtUtil;
 import com.boredream.springbootdemo.entity.LoginRequest;
 import com.boredream.springbootdemo.entity.User;
 import com.boredream.springbootdemo.exception.ApiException;

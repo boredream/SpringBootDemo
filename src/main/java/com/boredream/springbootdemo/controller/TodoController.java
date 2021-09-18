@@ -15,21 +15,21 @@ import org.springframework.web.bind.annotation.*;
 
 /**
  * <p>
- *  Controller 333
+ * 待办事项 前端控制器
  * </p>
  *
  * @author boredream
- * @since 2021-09-17
+ * @since 2021-09-18
  */
 @RestController
 @RequestMapping("/todo")
-@Api(tags = {"" })
+@Api(tags = {"待办事项" })
 public class TodoController {
 
     @Autowired
     private ITodoService service;
 
-    @ApiOperation(value = "分页查询" )
+    @ApiOperation(value = "分页查询待办事项" )
     @GetMapping("/page" )
     public ResponseDTO<PageResultDTO<Todo>> queryByPage(Page<Todo> params) {
         //根据条件分页查询
@@ -38,19 +38,19 @@ public class TodoController {
         return ResponseDTO.succData(PageUtil.convert2PageResult(resultDto));
     }
 
-    @ApiOperation(value = "添加" )
+    @ApiOperation(value = "添加待办事项" )
     @PostMapping
     public ResponseDTO<Boolean> add(@RequestBody @Validated Todo params) {
         return ResponseDTO.succData(service.save(params));
     }
 
-    @ApiOperation(value = "修改" )
+    @ApiOperation(value = "修改待办事项" )
     @PutMapping
     public ResponseDTO<Boolean> update(@RequestBody @Validated Todo params) {
         return ResponseDTO.succData(service.updateById(params));
     }
 
-    @ApiOperation(value = "删除" )
+    @ApiOperation(value = "删除待办事项" )
     @DeleteMapping
     public ResponseDTO<Boolean> delete(@RequestParam Integer id) {
         return ResponseDTO.succData(service.removeById(id));

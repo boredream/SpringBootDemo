@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.generator.config.builder.ConfigBuilder;
 import com.baomidou.mybatisplus.generator.config.po.TableInfo;
 import com.baomidou.mybatisplus.generator.config.rules.FileType;
 import com.baomidou.mybatisplus.generator.config.rules.NamingStrategy;
+import com.boredream.springbootdemo.entity.BaseEntity;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -97,7 +98,7 @@ public class CodeGenerator {
         StrategyConfig strategy = new StrategyConfig();
         strategy.setNaming(NamingStrategy.underline_to_camel);
         strategy.setColumnNaming(NamingStrategy.underline_to_camel);
-//      strategy.setSuperEntityClass("你自己的父类实体,没有就不用设置!");
+        strategy.setSuperEntityClass(BaseEntity.class);
         strategy.setEntityLombokModel(true);
         strategy.setRestControllerStyle(true);
         // 公共父类

@@ -11,6 +11,8 @@ CREATE TABLE IF NOT EXISTS `todo` (
   `todo_date` varchar(50) DEFAULT NULL COMMENT '代办日期',
   `notify_date` varchar(50) DEFAULT NULL COMMENT '提醒日期',
   `detail` varchar(200) DEFAULT NULL COMMENT '详情',
+  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='待办事项';
 

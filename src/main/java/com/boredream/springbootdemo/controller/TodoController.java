@@ -23,14 +23,16 @@ import org.springframework.web.bind.annotation.*;
  */
 @RestController
 @RequestMapping("/todo")
-@Api(tags = {"待办事项" })
+@Api(tags = {"待办事项"})
 public class TodoController {
+
+    // TODO: chunyang 2021/9/18 controller 不应该携带具体的mybatis引用类如page
 
     @Autowired
     private ITodoService service;
 
-    @ApiOperation(value = "分页查询待办事项" )
-    @GetMapping("/page" )
+    @ApiOperation(value = "分页查询待办事项")
+    @GetMapping("/page")
     public ResponseDTO<PageResultDTO<Todo>> queryByPage(Page<Todo> params) {
         //根据条件分页查询
         Page<Todo> resultDto = service.page(params);
@@ -38,19 +40,19 @@ public class TodoController {
         return ResponseDTO.succData(PageUtil.convert2PageResult(resultDto));
     }
 
-    @ApiOperation(value = "添加待办事项" )
+    @ApiOperation(value = "添加待办事项")
     @PostMapping
     public ResponseDTO<Boolean> add(@RequestBody @Validated Todo params) {
         return ResponseDTO.succData(service.save(params));
     }
 
-    @ApiOperation(value = "修改待办事项" )
+    @ApiOperation(value = "修改待办事项")
     @PutMapping
     public ResponseDTO<Boolean> update(@RequestBody @Validated Todo params) {
         return ResponseDTO.succData(service.updateById(params));
     }
 
-    @ApiOperation(value = "删除待办事项" )
+    @ApiOperation(value = "删除待办事项")
     @DeleteMapping
     public ResponseDTO<Boolean> delete(@RequestParam Integer id) {
         return ResponseDTO.succData(service.removeById(id));

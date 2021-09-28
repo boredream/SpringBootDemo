@@ -1,10 +1,12 @@
 package ${package.Controller};
 
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.boredream.springbootdemo.entity.${entity};
 import com.boredream.springbootdemo.entity.dto.PageResultDTO;
 import com.boredream.springbootdemo.entity.dto.ResponseDTO;
-import com.boredream.springbootdemo.entity.${entity};
+import com.boredream.springbootdemo.entity.${entity}QueryDto;
 import com.boredream.springbootdemo.service.${table.serviceName};
 import com.boredream.springbootdemo.utils.PageUtil;
 import io.swagger.annotations.Api;
@@ -22,7 +24,7 @@ import org.springframework.web.bind.annotation.*;
  * @since ${date}
  */
 @RestController
-@RequestMapping("/${table.name}")
+@RequestMapping("/${entity}")
 @Api(tags = {"$!{table.comment}"})
 public class ${table.controllerName} {
 
@@ -31,10 +33,10 @@ public class ${table.controllerName} {
 
     @ApiOperation(value = "分页查询${table.comment}")
     @GetMapping("/page")
-    public ResponseDTO<PageResultDTO<${entity}>> queryByPage(Page<${entity}> params) {
-        //根据条件分页查询
-        Page<${entity}> resultDto = service.page(params);
-        //封装分页返回对象
+    public ResponseDTO<PageResultDTO<${entity}>> queryByPage(${entity}QueryDto dto) {
+        QueryWrapper<${entity}> wrapper = new QueryWrapper<${entity}>().eq("type", dto.getType());
+        Page<${entity}> page = PageUtil.convert2QueryPage(dto);
+        Page<${entity}> resultDto = service.page(page, wrapper);
         return ResponseDTO.succData(PageUtil.convert2PageResult(resultDto));
     }
 

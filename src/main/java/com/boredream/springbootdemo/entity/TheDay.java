@@ -1,6 +1,7 @@
 package com.boredream.springbootdemo.entity;
 
 import com.boredream.springbootdemo.entity.BaseEntity;
+import java.time.LocalDateTime;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -8,27 +9,24 @@ import lombok.EqualsAndHashCode;
 
 /**
  * <p>
- * 待办事项
+ * 纪念日
  * </p>
  *
  * @author boredream
- * @since 2021-09-18
+ * @since 2021-09-28
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-@ApiModel(value="Todo对象", description="待办事项")
-public class Todo extends BaseEntity {
+@ApiModel(value="TheDay对象", description="纪念日")
+public class TheDay extends BaseEntity {
 
     private static final long serialVersionUID = 1L;
 
     @ApiModelProperty(value = "名称")
     private String name;
 
-    @ApiModelProperty(value = "类型")
-    private String type;
-
-    @ApiModelProperty(value = "待办日期")
-    private String todoDate;
+    @ApiModelProperty(value = "纪念日期")
+    private String theDayDate;
 
     @ApiModelProperty(value = "提醒日期")
     private String notifyDate;
@@ -36,5 +34,7 @@ public class Todo extends BaseEntity {
     @ApiModelProperty(value = "详情")
     private String detail;
 
+    @ApiModelProperty(value = "图片")
+    private String images;
 
 }

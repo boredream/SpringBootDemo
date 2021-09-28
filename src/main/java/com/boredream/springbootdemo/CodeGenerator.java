@@ -22,26 +22,26 @@ public class CodeGenerator {
 
         // 全局配置
         GlobalConfig gc = new GlobalConfig();
-        String projectPath = System.getProperty("user.dir" );
-        gc.setOutputDir(projectPath + "/src/main/java" );
-        gc.setAuthor("boredream" );
+        String projectPath = System.getProperty("user.dir");
+        gc.setOutputDir(projectPath + "/src/main/java");
+        gc.setAuthor("boredream");
         gc.setOpen(false);
         gc.setSwagger2(true);
         mpg.setGlobalConfig(gc);
 
         // 数据源配置
         DataSourceConfig dsc = new DataSourceConfig();
-        dsc.setUrl("jdbc:mysql://localhost:3306/spring_boot_demo" );
+        dsc.setUrl("jdbc:mysql://localhost:3306/spring_boot_demo");
         // dsc.setSchemaName("public");
-        dsc.setDriverName("com.mysql.jdbc.Driver" );
-        dsc.setUsername("root" );
-        dsc.setPassword("rootroot" );
+        dsc.setDriverName("com.mysql.jdbc.Driver");
+        dsc.setUsername("root");
+        dsc.setPassword("rootroot");
         mpg.setDataSource(dsc);
 
         // 包配置
         PackageConfig pc = new PackageConfig();
 //      pc.setModuleName("module");
-        pc.setParent("com.boredream.springbootdemo" );
+        pc.setParent("com.boredream.springbootdemo");
         mpg.setPackageInfo(pc);
 
         // 自定义配置
@@ -105,9 +105,9 @@ public class CodeGenerator {
 //      strategy.setSuperControllerClass("你自己的父类控制器,没有就不用设置!");
         // 写于父类中的公共字段
         strategy.setSuperEntityColumns("id");
-        strategy.setInclude("todo" );
+        strategy.setInclude("the_day");
         strategy.setControllerMappingHyphenStyle(true);
-        strategy.setTablePrefix(pc.getModuleName() + "_" );
+        strategy.setTablePrefix(pc.getModuleName() + "_");
         mpg.setStrategy(strategy);
 //      mpg.setTemplateEngine(new FreemarkerTemplateEngine());
         mpg.execute();

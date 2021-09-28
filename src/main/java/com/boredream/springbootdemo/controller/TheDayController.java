@@ -3,11 +3,11 @@ package com.boredream.springbootdemo.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.boredream.springbootdemo.entity.TheDay;
 import com.boredream.springbootdemo.entity.dto.PageResultDTO;
 import com.boredream.springbootdemo.entity.dto.ResponseDTO;
-import com.boredream.springbootdemo.entity.Todo;
-import com.boredream.springbootdemo.entity.dto.TodoQueryDto;
-import com.boredream.springbootdemo.service.ITodoService;
+import com.boredream.springbootdemo.entity.dto.TheDayQueryDto;
+import com.boredream.springbootdemo.service.ITheDayService;
 import com.boredream.springbootdemo.utils.PageUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -17,46 +17,43 @@ import org.springframework.web.bind.annotation.*;
 
 /**
  * <p>
- * 待办事项 前端控制器
+ * 纪念日 前端控制器
  * </p>
  *
  * @author boredream
- * @since 2021-09-18
+ * @since 2021-09-28
  */
 @RestController
-@RequestMapping("/todo")
-@Api(tags = {"待办事项" })
-public class TodoController {
-
-    // TODO: chunyang 2021/9/18 controller 不应该携带具体的mybatis引用类如page
+@RequestMapping("/theDay")
+@Api(tags = {"纪念日" })
+public class TheDayController {
 
     @Autowired
-    private ITodoService service;
+    private ITheDayService service;
 
-    @ApiOperation(value = "分页查询待办事项")
+    @ApiOperation(value = "分页查询纪念日")
     @GetMapping("/page")
-    public ResponseDTO<PageResultDTO<Todo>> queryByPage(TodoQueryDto dto) {
-        // TODO: chunyang 2021/9/28 条件自动化添加
-        QueryWrapper<Todo> wrapper = new QueryWrapper<Todo>().eq("type", dto.getType());
-        Page<Todo> page = PageUtil.convert2QueryPage(dto);
-        Page<Todo> resultDto = service.page(page, wrapper);
+    public ResponseDTO<PageResultDTO<TheDay>> queryByPage(TheDayQueryDto dto) {
+        QueryWrapper<TheDay> wrapper = new QueryWrapper<TheDay>().likeRight("the_day_date", dto.getQueryDate());
+        Page<TheDay> page = PageUtil.convert2QueryPage(dto);
+        Page<TheDay> resultDto = service.page(page, wrapper);
         return ResponseDTO.succData(PageUtil.convert2PageResult(resultDto));
     }
 
-    @ApiOperation(value = "添加待办事项")
+    @ApiOperation(value = "添加纪念日")
     @PostMapping
-    public ResponseDTO<Boolean> add(@RequestBody @Validated Todo params) {
+    public ResponseDTO<Boolean> add(@RequestBody @Validated TheDay params) {
         return ResponseDTO.succData(service.save(params));
     }
 
-    @ApiOperation(value = "修改待办事项")
+    @ApiOperation(value = "修改纪念日")
     @PutMapping("/{id}")
-    public ResponseDTO<Boolean> update(@PathVariable("id") Long id, @RequestBody @Validated Todo params) {
+    public ResponseDTO<Boolean> update(@PathVariable("id") Long id, @RequestBody @Validated TheDay params) {
         params.setId(id);
         return ResponseDTO.succData(service.updateById(params));
     }
 
-    @ApiOperation(value = "删除待办事项")
+    @ApiOperation(value = "删除纪念日")
     @DeleteMapping("/{id}")
     public ResponseDTO<Boolean> delete(@PathVariable("id") Long id) {
         return ResponseDTO.succData(service.removeById(id));

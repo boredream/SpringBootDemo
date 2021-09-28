@@ -24,8 +24,8 @@ import org.springframework.web.bind.annotation.*;
  * @since 2021-09-28
  */
 @RestController
-@RequestMapping("/theDay")
-@Api(tags = {"纪念日" })
+@RequestMapping("/the_day")
+@Api(tags = {"纪念日"})
 public class TheDayController {
 
     @Autowired

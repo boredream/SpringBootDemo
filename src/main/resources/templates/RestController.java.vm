@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.boredream.springbootdemo.entity.${entity};
 import com.boredream.springbootdemo.entity.dto.PageResultDTO;
 import com.boredream.springbootdemo.entity.dto.ResponseDTO;
-import com.boredream.springbootdemo.entity.${entity}QueryDto;
+import com.boredream.springbootdemo.entity.dto.${entity}QueryDto;
 import com.boredream.springbootdemo.service.${table.serviceName};
 import com.boredream.springbootdemo.utils.PageUtil;
 import io.swagger.annotations.Api;
@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.*;
  * @since ${date}
  */
 @RestController
-@RequestMapping("/${entity}")
+@RequestMapping("/${table.name}")
 @Api(tags = {"$!{table.comment}"})
 public class ${table.controllerName} {
 

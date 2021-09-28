@@ -1,7 +1,7 @@
 package com.boredream.springbootdemo.handler;
 
 import com.boredream.springbootdemo.comstant.ResponseCodeConst;
-import com.boredream.springbootdemo.entity.ResponseDTO;
+import com.boredream.springbootdemo.entity.dto.ResponseDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.http.converter.HttpMessageNotReadableException;

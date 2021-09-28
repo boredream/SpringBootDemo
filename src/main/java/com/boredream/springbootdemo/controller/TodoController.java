@@ -1,10 +1,12 @@
 package com.boredream.springbootdemo.controller;
 
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.boredream.springbootdemo.entity.PageResultDTO;
-import com.boredream.springbootdemo.entity.ResponseDTO;
+import com.boredream.springbootdemo.entity.dto.PageResultDTO;
+import com.boredream.springbootdemo.entity.dto.ResponseDTO;
 import com.boredream.springbootdemo.entity.Todo;
+import com.boredream.springbootdemo.entity.dto.TodoQueryDto;
 import com.boredream.springbootdemo.service.ITodoService;
 import com.boredream.springbootdemo.utils.PageUtil;
 import io.swagger.annotations.Api;
@@ -23,7 +25,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @RestController
 @RequestMapping("/todo")
-@Api(tags = {"待办事项"})
+@Api(tags = {"待办事项" })
 public class TodoController {
 
     // TODO: chunyang 2021/9/18 controller 不应该携带具体的mybatis引用类如page
@@ -33,10 +35,10 @@ public class TodoController {
 
     @ApiOperation(value = "分页查询待办事项")
     @GetMapping("/page")
-    public ResponseDTO<PageResultDTO<Todo>> queryByPage(Page<Todo> params) {
-        //根据条件分页查询
-        Page<Todo> resultDto = service.page(params);
-        //封装分页返回对象
+    public ResponseDTO<PageResultDTO<Todo>> queryByPage(TodoQueryDto dto) {
+        QueryWrapper<Todo> wrapper = new QueryWrapper<Todo>().eq("type", dto.getType());
+        Page<Todo> page = PageUtil.convert2QueryPage(dto);
+        Page<Todo> resultDto = service.page(page, wrapper);
         return ResponseDTO.succData(PageUtil.convert2PageResult(resultDto));
     }
 
@@ -47,14 +49,15 @@ public class TodoController {
     }
 
     @ApiOperation(value = "修改待办事项")
-    @PutMapping
-    public ResponseDTO<Boolean> update(@RequestBody @Validated Todo params) {
+    @PutMapping("/{id}")
+    public ResponseDTO<Boolean> update(@PathVariable("id") Long id, @RequestBody @Validated Todo params) {
+        params.setId(id);
         return ResponseDTO.succData(service.updateById(params));
     }
 
     @ApiOperation(value = "删除待办事项")
-    @DeleteMapping
-    public ResponseDTO<Boolean> delete(@RequestParam Integer id) {
+    @DeleteMapping("/{id}")
+    public ResponseDTO<Boolean> delete(@PathVariable("id") Long id) {
         return ResponseDTO.succData(service.removeById(id));
     }
 

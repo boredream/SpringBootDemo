@@ -1,4 +1,4 @@
-package com.boredream.springbootdemo.entity;
+package com.boredream.springbootdemo.entity.dto;
 
 
 import com.boredream.springbootdemo.comstant.ResponseCodeConst;

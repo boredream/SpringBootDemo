@@ -2,8 +2,8 @@ package ${package.Controller};
 
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.boredream.springbootdemo.entity.PageResultDTO;
-import com.boredream.springbootdemo.entity.ResponseDTO;
+import com.boredream.springbootdemo.entity.dto.PageResultDTO;
+import com.boredream.springbootdemo.entity.dto.ResponseDTO;
 import com.boredream.springbootdemo.entity.${entity};
 import com.boredream.springbootdemo.service.${table.serviceName};
 import com.boredream.springbootdemo.utils.PageUtil;
@@ -23,14 +23,14 @@ import org.springframework.web.bind.annotation.*;
  */
 @RestController
 @RequestMapping("/${table.name}")
-@Api(tags = {"$!{table.comment}" })
+@Api(tags = {"$!{table.comment}"})
 public class ${table.controllerName} {
 
     @Autowired
     private ${table.serviceName} service;
 
-    @ApiOperation(value = "分页查询${table.comment}" )
-    @GetMapping("/page" )
+    @ApiOperation(value = "分页查询${table.comment}")
+    @GetMapping("/page")
     public ResponseDTO<PageResultDTO<${entity}>> queryByPage(Page<${entity}> params) {
         //根据条件分页查询
         Page<${entity}> resultDto = service.page(params);
@@ -38,21 +38,22 @@ public class ${table.controllerName} {
         return ResponseDTO.succData(PageUtil.convert2PageResult(resultDto));
     }
 
-    @ApiOperation(value = "添加$!{table.comment}" )
+    @ApiOperation(value = "添加$!{table.comment}")
     @PostMapping
     public ResponseDTO<Boolean> add(@RequestBody @Validated ${entity} params) {
         return ResponseDTO.succData(service.save(params));
     }
 
-    @ApiOperation(value = "修改$!{table.comment}" )
-    @PutMapping
-    public ResponseDTO<Boolean> update(@RequestBody @Validated ${entity} params) {
+    @ApiOperation(value = "修改$!{table.comment}")
+    @PutMapping("/{id}")
+    public ResponseDTO<Boolean> update(@PathVariable("id") Long id, @RequestBody @Validated ${entity} params) {
+        params.setId(id);
         return ResponseDTO.succData(service.updateById(params));
     }
 
-    @ApiOperation(value = "删除$!{table.comment}" )
-    @DeleteMapping
-    public ResponseDTO<Boolean> delete(@RequestParam Integer id) {
+    @ApiOperation(value = "删除$!{table.comment}")
+    @DeleteMapping("/{id}")
+    public ResponseDTO<Boolean> delete(@PathVariable("id") Long id) {
         return ResponseDTO.succData(service.removeById(id));
     }
 

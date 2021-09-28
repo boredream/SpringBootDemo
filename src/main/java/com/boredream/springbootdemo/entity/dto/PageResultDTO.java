@@ -1,4 +1,4 @@
-package com.boredream.springbootdemo.entity;
+package com.boredream.springbootdemo.entity.dto;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.ApiModelProperty;

@@ -1,6 +1,6 @@
 package com.boredream.springbootdemo.exception;
 
-import com.boredream.springbootdemo.entity.ResponseDTO;
+import com.boredream.springbootdemo.entity.dto.ResponseDTO;
 
 public class ApiException extends RuntimeException {
 

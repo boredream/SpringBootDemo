@@ -2,7 +2,7 @@ package com.boredream.springbootdemo.controller;
 
 import com.boredream.springbootdemo.auth.AuthService;
 import com.boredream.springbootdemo.entity.LoginRequest;
-import com.boredream.springbootdemo.entity.ResponseDTO;
+import com.boredream.springbootdemo.entity.dto.ResponseDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

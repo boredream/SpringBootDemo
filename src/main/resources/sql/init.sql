@@ -7,45 +7,45 @@ USE `spring_boot_demo`;
 DROP TABLE IF EXISTS `todo`;
 CREATE TABLE IF NOT EXISTS `todo`
 (
-    `id`          int unsigned NOT NULL AUTO_INCREMENT COMMENT '主键id',
-    `name`        varchar(50)  NOT NULL COMMENT '名称',
-    `type`        varchar(50)           DEFAULT NULL COMMENT '类型',
-    `todo_date`   varchar(50)           DEFAULT NULL COMMENT '待办日期',
-    `notify_date` varchar(50)           DEFAULT NULL COMMENT '提醒日期',
-    `detail`      varchar(200)          DEFAULT NULL COMMENT '详情',
-    `images`      varchar(200)          DEFAULT NULL COMMENT '图片',
-    `create_time` timestamp    NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    `update_time` timestamp    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    PRIMARY KEY (`id`)
+    id          int unsigned auto_increment comment '主键id'
+        primary key,
+    done        tinyint(1) default 0                   not null comment '已完成',
+    name        varchar(50)                            not null comment '名称',
+    type        varchar(50)                            null comment '类型',
+    done_date   varchar(50)                            null comment '完成日期',
+    detail      varchar(200)                           null comment '详情',
+    images      varchar(3000)                          null comment '图片',
+    create_time timestamp  default current_timestamp() not null,
+    update_time timestamp  default current_timestamp() not null on update current_timestamp()
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci COMMENT ='待办事项';
 
 DELETE
 FROM `todo`;
-INSERT INTO `todo` (`name`, `type`, `todo_date`, `notify_date`, `detail`, `images`)
-VALUES ('name1', '出游', '2021-04-03', '2021-04-03', 'detail1',
+INSERT INTO `todo` (`name`, `type`, `done_date`, `detail`, `images`)
+VALUES ('name1', '出游', '2021-04-03', 'detail1',
         'http://image11.m1905.cn/mdb/uploadfile/2017/0518/thumb_1_168_230_20170518040407120632.jpg'),
-       ('name2', '出游', '2021-05-03', '2021-05-03', 'detail2',
+       ('name2', '出游', '2021-05-03', 'detail2',
         'http://image11.m1905.cn/mdb/uploadfile/2017/0518/thumb_1_168_230_20170518040407120632.jpg'),
-       ('name3', '出游', '2021-04-04', '2021-04-05', 'detail3',
+       ('name3', '出游', '2021-04-04', 'detail3',
         'http://image11.m1905.cn/mdb/uploadfile/2017/0518/thumb_1_168_230_20170518040407120632.jpg'),
-       ('name4', '出游', '2021-02-02', '2021-02-03', 'detail4',
+       ('name4', '出游', '2021-02-02', 'detail4',
         'http://image11.m1905.cn/mdb/uploadfile/2017/0518/thumb_1_168_230_20170518040407120632.jpg');
 
 --
 DROP TABLE IF EXISTS `the_day`;
 CREATE TABLE IF NOT EXISTS `the_day`
 (
-    `id`           int unsigned NOT NULL AUTO_INCREMENT COMMENT '主键id',
-    `name`         varchar(50)  NOT NULL COMMENT '名称',
-    `the_day_date` varchar(50)           DEFAULT NULL COMMENT '纪念日期',
-    `notify_date`  varchar(50)           DEFAULT NULL COMMENT '提醒日期',
-    `detail`       varchar(200)          DEFAULT NULL COMMENT '详情',
-    `images`       varchar(200)          DEFAULT NULL COMMENT '图片',
-    `create_time`  timestamp    NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    `update_time`  timestamp    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    PRIMARY KEY (`id`)
+    id           int unsigned auto_increment comment '主键id'
+        primary key,
+    name         varchar(50)                           not null comment '名称',
+    the_day_date varchar(50)                           null comment '纪念日期',
+    notify_date  varchar(50)                           null comment '提醒日期',
+    detail       varchar(200)                          null comment '详情',
+    images       varchar(3000)                         null comment '图片',
+    create_time  timestamp default current_timestamp() not null,
+    update_time  timestamp default current_timestamp() not null on update current_timestamp()
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci COMMENT ='纪念日';

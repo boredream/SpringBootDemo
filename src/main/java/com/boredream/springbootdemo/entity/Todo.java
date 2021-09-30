@@ -21,6 +21,9 @@ public class Todo extends BaseEntity {
 
     private static final long serialVersionUID = 1L;
 
+    @ApiModelProperty(value = "已完成")
+    private boolean done;
+
     @ApiModelProperty(value = "名称")
     private String name;
 
@@ -28,13 +31,13 @@ public class Todo extends BaseEntity {
     private String type;
 
     @ApiModelProperty(value = "待办日期")
-    private String todoDate;
-
-    @ApiModelProperty(value = "提醒日期")
-    private String notifyDate;
+    private String doneDate;
 
     @ApiModelProperty(value = "详情")
     private String detail;
+
+    @ApiModelProperty(value = "图片")
+    private String images;
 
 
 }

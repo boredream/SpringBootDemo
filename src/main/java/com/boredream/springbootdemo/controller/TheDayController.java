@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.boredream.springbootdemo.entity.TheDay;
 import com.boredream.springbootdemo.entity.dto.PageResultDTO;
 import com.boredream.springbootdemo.entity.dto.ResponseDTO;
-import com.boredream.springbootdemo.entity.dto.TheDayQueryDto;
+import com.boredream.springbootdemo.entity.dto.TheDayQueryDTO;
 import com.boredream.springbootdemo.service.ITheDayService;
 import com.boredream.springbootdemo.utils.PageUtil;
 import io.swagger.annotations.Api;
@@ -33,7 +33,7 @@ public class TheDayController {
 
     @ApiOperation(value = "分页查询纪念日")
     @GetMapping("/page")
-    public ResponseDTO<PageResultDTO<TheDay>> queryByPage(TheDayQueryDto dto) {
+    public ResponseDTO<PageResultDTO<TheDay>> queryByPage(TheDayQueryDTO dto) {
         QueryWrapper<TheDay> wrapper = new QueryWrapper<TheDay>().likeRight("the_day_date", dto.getQueryDate());
         Page<TheDay> page = PageUtil.convert2QueryPage(dto);
         Page<TheDay> resultDto = service.page(page, wrapper);

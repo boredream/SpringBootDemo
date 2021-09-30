@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.boredream.springbootdemo.entity.dto.PageResultDTO;
 import com.boredream.springbootdemo.entity.dto.ResponseDTO;
 import com.boredream.springbootdemo.entity.Todo;
-import com.boredream.springbootdemo.entity.dto.TodoQueryDto;
+import com.boredream.springbootdemo.entity.dto.TodoQueryDTO;
 import com.boredream.springbootdemo.service.ITodoService;
 import com.boredream.springbootdemo.utils.PageUtil;
 import io.swagger.annotations.Api;
@@ -35,7 +35,7 @@ public class TodoController {
 
     @ApiOperation(value = "分页查询待办事项")
     @GetMapping("/page")
-    public ResponseDTO<PageResultDTO<Todo>> queryByPage(TodoQueryDto dto) {
+    public ResponseDTO<PageResultDTO<Todo>> queryByPage(TodoQueryDTO dto) {
         // TODO: chunyang 2021/9/28 条件自动化添加
         QueryWrapper<Todo> wrapper = new QueryWrapper<Todo>().eq("type", dto.getType());
         Page<Todo> page = PageUtil.convert2QueryPage(dto);

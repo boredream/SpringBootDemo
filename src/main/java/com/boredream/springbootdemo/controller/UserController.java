@@ -2,13 +2,12 @@ package com.boredream.springbootdemo.controller;
 
 import com.boredream.springbootdemo.auth.AuthService;
 import com.boredream.springbootdemo.entity.LoginRequest;
+import com.boredream.springbootdemo.entity.User;
 import com.boredream.springbootdemo.entity.dto.ResponseDTO;
 import com.boredream.springbootdemo.entity.dto.WxLoginDTO;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
@@ -32,6 +31,11 @@ public class UserController {
     @PostMapping(value = "/wxlogin", produces = "application/json")
     public ResponseDTO<String> wxLogin(@Valid @RequestBody WxLoginDTO dto) {
         return ResponseDTO.succData(authService.wxLogin(dto));
+    }
+
+    @GetMapping(value = "/info", produces = "application/json")
+    public ResponseDTO<User> getUserInfo(Authentication auth) {
+        return ResponseDTO.succData(authService.getUserInfo(auth));
     }
 
 }

@@ -81,15 +81,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 // 设置权限
                 .authorizeRequests()
 
-                // TODO: chunyang 2021/9/28 暂时屏蔽登录逻辑
                 // 不用登陆
-//                .antMatchers("/user/login" , "/user/register" , "/todo", "/todo/*" )
-                .anyRequest()
-                .permitAll();
+                .antMatchers("/user/register" , "/user/login", "/user/wxlogin")
+                .permitAll()
 
                 // 除上面外的所有请求都需要登录
-//                .anyRequest()
-//                .authenticated();
+                .anyRequest()
+                .authenticated();
 
         // 添加JWT过滤器，JWT过滤器在用户名密码认证过滤器之前
         http.addFilterBefore(myAuthFilter(), UsernamePasswordAuthenticationFilter.class);

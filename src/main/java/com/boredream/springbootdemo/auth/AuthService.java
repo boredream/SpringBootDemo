@@ -115,4 +115,11 @@ public class AuthService {
             throw new ApiException("微信登录失败 " + e.getMessage());
         }
     }
+
+    public User getUserInfo(Authentication auth) {
+        String username = auth.getName();
+        User user = mapper.findUser(username);
+        user.setPassword(null);
+        return user;
+    }
 }

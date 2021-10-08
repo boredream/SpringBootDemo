@@ -35,7 +35,7 @@ public class CodeGenerator {
         // dsc.setSchemaName("public");
         dsc.setDriverName("com.mysql.jdbc.Driver");
         dsc.setUsername("root");
-        dsc.setPassword("rootroot");
+        dsc.setPassword("root");
         mpg.setDataSource(dsc);
 
         // 包配置
@@ -105,7 +105,7 @@ public class CodeGenerator {
 //      strategy.setSuperControllerClass("你自己的父类控制器,没有就不用设置!");
         // 写于父类中的公共字段
         strategy.setSuperEntityColumns("id");
-        strategy.setInclude("the_day");
+        strategy.setInclude("user");
         strategy.setControllerMappingHyphenStyle(true);
         strategy.setTablePrefix(pc.getModuleName() + "_");
         mpg.setStrategy(strategy);

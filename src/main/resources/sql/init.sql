@@ -4,6 +4,22 @@ CREATE DATABASE IF NOT EXISTS `spring_boot_demo` /*!40100 DEFAULT CHARACTER SET 
 USE `spring_boot_demo`;
 
 --
+DROP TABLE IF EXISTS `user`;
+CREATE TABLE IF NOT EXISTS `user`
+(
+    id       int auto_increment
+        primary key,
+    username varchar(50) null comment '用户名',
+    password varchar(100) null comment '密码',
+    role     varchar(50) null comment '角色',
+    open_id  varchar(50) null comment '第三方id',
+    create_time timestamp  default current_timestamp() not null,
+    update_time timestamp  default current_timestamp() not null on update current_timestamp()
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_unicode_ci COMMENT ='用户';
+
+--
 DROP TABLE IF EXISTS `todo`;
 CREATE TABLE IF NOT EXISTS `todo`
 (

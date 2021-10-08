@@ -6,7 +6,6 @@ import com.boredream.springbootdemo.entity.dto.WxLoginDTO;
 import com.boredream.springbootdemo.entity.dto.WxSessionDTO;
 import com.boredream.springbootdemo.exception.ApiException;
 import com.boredream.springbootdemo.mapper.UserMapper;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,7 +50,7 @@ public class AuthService {
         this.jwtUtil = jwtUtil;
     }
 
-    public void register(LoginRequest request) {
+    public String register(LoginRequest request) {
         User oldUser = mapper.findUser(request.getUsername());
         if (oldUser != null) {
             // 会抛出401
@@ -63,6 +62,8 @@ public class AuthService {
         user.setUsername(request.getUsername());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         mapper.insert(user);
+
+        return genToken(request.getUsername(), request.getPassword());
     }
 
     public String login(LoginRequest request) {
@@ -75,17 +76,21 @@ public class AuthService {
             throw new ApiException("密码不正确");
         }
 
+        return genToken(request.getUsername(), request.getPassword());
+    }
+
+    private String genToken(String username, String password) {
         // 认证用户，认证失败抛出异常，由JwtAuthError的commence类返回401
-        UsernamePasswordAuthenticationToken upToken = new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword());
+        UsernamePasswordAuthenticationToken upToken = new UsernamePasswordAuthenticationToken(username, password);
         final Authentication authentication = authenticationManager.authenticate(upToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         // 如果认证通过，返回jwt
-        final AuthUser userDetails = (AuthUser) userDetailsService.loadUserByUsername(request.getUsername());
+        final AuthUser userDetails = (AuthUser) userDetailsService.loadUserByUsername(username);
         return jwtUtil.generateToken(userDetails.getUser());
     }
 
-    public WxSessionDTO wxLogin(WxLoginDTO dto) {
+    public String wxLogin(WxLoginDTO dto) {
         String url = "https://api.weixin.qq.com/sns/jscode2session?appid={appid}&secret={secret}&js_code={code}&grant_type=authorization_code";
         Map<String, String> requestMap = new HashMap<>();
         requestMap.put("appid", "wx0896ca1ddd64114e");
@@ -94,10 +99,20 @@ public class AuthService {
 
         String json = restTemplate.getForObject(url, String.class, requestMap);
         try {
-            return new ObjectMapper().readValue(json, WxSessionDTO.class);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            WxSessionDTO session = new ObjectMapper().readValue(json, WxSessionDTO.class);
+            User user = mapper.findUserByWxOpenId(session.getOpenid());
+            String password = "123456";
+            if (user == null) {
+                // 自动新建账号
+                user = new User();
+                user.setOpenId(session.getOpenid());
+                user.setUsername(session.getOpenid());
+                user.setPassword(passwordEncoder.encode(password));
+                mapper.insert(user);
+            }
+            return genToken(user.getUsername(), password);
+        } catch (Exception e) {
+            throw new ApiException("微信登录失败 " + e.getMessage());
         }
-        return null;
     }
 }

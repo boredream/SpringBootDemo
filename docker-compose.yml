@@ -1,0 +1,15 @@
+version: "3.9"
+services:
+  web:
+    build: .  # 使用Dockerfile新生成镜像
+    ports:
+      - "8080:8080"  # 宿主机端口:容器端口
+    depends_on:  # 依赖先执行的容器
+      - mysql
+  mysql:
+    image: mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: "root"  # 环境变量配置去 https://hub.docker.com/_/mysql 官方查看
+    ports:
+      - "3306:3306"

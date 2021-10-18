@@ -1,7 +1,5 @@
 package com.boredream.springbootdemo.entity;
 
-import com.boredream.springbootdemo.entity.BaseEntity;
-import java.time.LocalDateTime;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -18,7 +16,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ApiModel(value="TheDay对象", description="纪念日")
-public class TheDay extends BaseEntity {
+public class TheDay extends Belong2UserEntity {
 
     private static final long serialVersionUID = 1L;
 

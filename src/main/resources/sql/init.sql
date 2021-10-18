@@ -25,6 +25,7 @@ CREATE TABLE IF NOT EXISTS `todo`
 (
     id          int unsigned auto_increment comment '主键id'
         primary key,
+    user_id     int                                    not null comment '所属用户id',
     done        tinyint(1) default 0                   not null comment '已完成',
     name        varchar(50)                            not null comment '名称',
     type        varchar(50)                            null comment '类型',
@@ -37,24 +38,13 @@ CREATE TABLE IF NOT EXISTS `todo`
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci COMMENT ='待办事项';
 
-DELETE
-FROM `todo`;
-INSERT INTO `todo` (`name`, `type`, `done_date`, `detail`, `images`)
-VALUES ('name1', '出游', '2021-04-03', 'detail1',
-        'http://image11.m1905.cn/mdb/uploadfile/2017/0518/thumb_1_168_230_20170518040407120632.jpg'),
-       ('name2', '出游', '2021-05-03', 'detail2',
-        'http://image11.m1905.cn/mdb/uploadfile/2017/0518/thumb_1_168_230_20170518040407120632.jpg'),
-       ('name3', '出游', '2021-04-04', 'detail3',
-        'http://image11.m1905.cn/mdb/uploadfile/2017/0518/thumb_1_168_230_20170518040407120632.jpg'),
-       ('name4', '出游', '2021-02-02', 'detail4',
-        'http://image11.m1905.cn/mdb/uploadfile/2017/0518/thumb_1_168_230_20170518040407120632.jpg');
-
 --
 DROP TABLE IF EXISTS `the_day`;
 CREATE TABLE IF NOT EXISTS `the_day`
 (
     id           int unsigned auto_increment comment '主键id'
         primary key,
+    user_id     int                                    not null comment '所属用户id',
     name         varchar(50)                           not null comment '名称',
     the_day_date varchar(50)                           null comment '纪念日期',
     notify_date  varchar(50)                           null comment '提醒日期',
@@ -65,16 +55,3 @@ CREATE TABLE IF NOT EXISTS `the_day`
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci COMMENT ='纪念日';
-
-DELETE
-FROM `the_day`;
-INSERT INTO `the_day` (`name`, `the_day_date`, `notify_date`, `detail`, `images`)
-VALUES ('name1', '2021-09-28', '2021-04-03', 'detail1',
-        'http://image11.m1905.cn/mdb/uploadfile/2017/0518/thumb_1_168_230_20170518040407120632.jpg'),
-       ('name2', '2021-09-22', '2021-05-03', 'detail2',
-        'http://image11.m1905.cn/mdb/uploadfile/2017/0518/thumb_1_168_230_20170518040407120632.jpg'),
-       ('name3', '2021-07-04', '2021-04-05', 'detail3',
-        'http://image11.m1905.cn/mdb/uploadfile/2017/0518/thumb_1_168_230_20170518040407120632.jpg'),
-       ('name4', '2020-02-02', '2021-02-03', 'detail4',
-        'http://image11.m1905.cn/mdb/uploadfile/2017/0518/thumb_1_168_230_20170518040407120632.jpg');
-

@@ -1,6 +1,5 @@
 package com.boredream.springbootdemo.entity;
 
-import com.boredream.springbootdemo.entity.BaseEntity;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -17,7 +16,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ApiModel(value="Todo对象", description="待办事项")
-public class Todo extends BaseEntity {
+public class Todo extends Belong2UserEntity {
 
     private static final long serialVersionUID = 1L;
 

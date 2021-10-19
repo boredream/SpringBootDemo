@@ -20,22 +20,22 @@ public class UserController {
 
     @PostMapping(value = "/register", produces = "application/json")
     public ResponseDTO<String> register(@Valid @RequestBody LoginRequest authRequest) {
-        return ResponseDTO.succData(authService.register(authRequest));
+        return ResponseDTO.success(authService.register(authRequest));
     }
 
     @PostMapping(value = "/login", produces = "application/json")
     public ResponseDTO<String> login(@Valid @RequestBody LoginRequest authRequest) {
-        return ResponseDTO.succData(authService.login(authRequest));
+        return ResponseDTO.success(authService.login(authRequest));
     }
 
     @PostMapping(value = "/wxlogin", produces = "application/json")
     public ResponseDTO<String> wxLogin(@Valid @RequestBody WxLoginDTO dto) {
-        return ResponseDTO.succData(authService.wxLogin(dto));
+        return ResponseDTO.success(authService.wxLogin(dto));
     }
 
     @GetMapping(value = "/info", produces = "application/json")
     public ResponseDTO<User> getUserInfo(Authentication auth) {
-        return ResponseDTO.succData(authService.getUserInfo(auth));
+        return ResponseDTO.success(authService.getUserInfo(auth));
     }
 
 }

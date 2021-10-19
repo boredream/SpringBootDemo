@@ -37,26 +37,26 @@ public class TheDayController {
         QueryWrapper<TheDay> wrapper = new QueryWrapper<TheDay>().likeRight("the_day_date", dto.getQueryDate());
         Page<TheDay> page = PageUtil.convert2QueryPage(dto);
         Page<TheDay> resultDto = service.page(page, wrapper);
-        return ResponseDTO.succData(PageUtil.convert2PageResult(resultDto));
+        return ResponseDTO.success(PageUtil.convert2PageResult(resultDto));
     }
 
     @ApiOperation(value = "添加纪念日")
     @PostMapping
     public ResponseDTO<Boolean> add(@RequestBody @Validated TheDay params) {
-        return ResponseDTO.succData(service.save(params));
+        return ResponseDTO.success(service.save(params));
     }
 
     @ApiOperation(value = "修改纪念日")
     @PutMapping("/{id}")
     public ResponseDTO<Boolean> update(@PathVariable("id") Long id, @RequestBody @Validated TheDay params) {
         params.setId(id);
-        return ResponseDTO.succData(service.updateById(params));
+        return ResponseDTO.success(service.updateById(params));
     }
 
     @ApiOperation(value = "删除纪念日")
     @DeleteMapping("/{id}")
     public ResponseDTO<Boolean> delete(@PathVariable("id") Long id) {
-        return ResponseDTO.succData(service.removeById(id));
+        return ResponseDTO.success(service.removeById(id));
     }
 
 }

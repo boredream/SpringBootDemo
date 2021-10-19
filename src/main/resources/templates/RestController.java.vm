@@ -37,26 +37,26 @@ public class ${table.controllerName} {
         QueryWrapper<${entity}> wrapper = new QueryWrapper<${entity}>().eq("type", dto.getType());
         Page<${entity}> page = PageUtil.convert2QueryPage(dto);
         Page<${entity}> resultDto = service.page(page, wrapper);
-        return ResponseDTO.succData(PageUtil.convert2PageResult(resultDto));
+        return ResponseDTO.success(PageUtil.convert2PageResult(resultDto));
     }
 
     @ApiOperation(value = "添加$!{table.comment}")
     @PostMapping
     public ResponseDTO<Boolean> add(@RequestBody @Validated ${entity} params) {
-        return ResponseDTO.succData(service.save(params));
+        return ResponseDTO.success(service.save(params));
     }
 
     @ApiOperation(value = "修改$!{table.comment}")
     @PutMapping("/{id}")
     public ResponseDTO<Boolean> update(@PathVariable("id") Long id, @RequestBody @Validated ${entity} params) {
         params.setId(id);
-        return ResponseDTO.succData(service.updateById(params));
+        return ResponseDTO.success(service.updateById(params));
     }
 
     @ApiOperation(value = "删除$!{table.comment}")
     @DeleteMapping("/{id}")
     public ResponseDTO<Boolean> delete(@PathVariable("id") Long id) {
-        return ResponseDTO.succData(service.removeById(id));
+        return ResponseDTO.success(service.removeById(id));
     }
 
 }

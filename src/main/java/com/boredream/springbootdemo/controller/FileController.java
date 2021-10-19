@@ -17,7 +17,7 @@ public class FileController {
 
     @GetMapping(value = "/getUploadPolicy", produces = "application/json")
     public ResponseDTO<FileUploadPolicyDTO> getUploadPolicy() {
-        return ResponseDTO.succData(service.getUploadPolicy());
+        return ResponseDTO.success(service.getUploadPolicy());
     }
 
 }

@@ -40,26 +40,26 @@ public class TodoController {
         QueryWrapper<Todo> wrapper = new QueryWrapper<Todo>().eq("type", dto.getType());
         Page<Todo> page = PageUtil.convert2QueryPage(dto);
         Page<Todo> resultDto = service.page(page, wrapper);
-        return ResponseDTO.succData(PageUtil.convert2PageResult(resultDto));
+        return ResponseDTO.success(PageUtil.convert2PageResult(resultDto));
     }
 
     @ApiOperation(value = "添加待办事项")
     @PostMapping
     public ResponseDTO<Boolean> add(@RequestBody @Validated Todo params) {
-        return ResponseDTO.succData(service.save(params));
+        return ResponseDTO.success(service.save(params));
     }
 
     @ApiOperation(value = "修改待办事项")
     @PutMapping("/{id}")
     public ResponseDTO<Boolean> update(@PathVariable("id") Long id, @RequestBody @Validated Todo params) {
         params.setId(id);
-        return ResponseDTO.succData(service.updateById(params));
+        return ResponseDTO.success(service.updateById(params));
     }
 
     @ApiOperation(value = "删除待办事项")
     @DeleteMapping("/{id}")
     public ResponseDTO<Boolean> delete(@PathVariable("id") Long id) {
-        return ResponseDTO.succData(service.removeById(id));
+        return ResponseDTO.success(service.removeById(id));
     }
 
 }

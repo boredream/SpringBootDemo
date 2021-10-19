@@ -1,6 +1,5 @@
 package com.boredream.springbootdemo.handler;
 
-import com.boredream.springbootdemo.comstant.ResponseCodeConst;
 import com.boredream.springbootdemo.entity.dto.ResponseDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.TypeMismatchException;
@@ -12,6 +11,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.sql.SQLSyntaxErrorException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,42 +31,42 @@ public class SmartGlobalExceptionHandler {
 
     /**
      * 添加全局异常处理流程
-     *
-     * @param e
-     * @return
-     * @throws Exception
      */
     @ResponseBody
     @ExceptionHandler(Exception.class)
-    public ResponseDTO exceptionHandler(Exception e) {
+    public ResponseDTO<?> exceptionHandler(Exception e) {
         log.error("error:", e);
 
         // http 请求方式错误
         if (e instanceof HttpRequestMethodNotSupportedException) {
-            return ResponseDTO.wrap(ResponseCodeConst.REQUEST_METHOD_ERROR);
+            return ResponseDTO.error("请求方式错误");
         }
 
         // 参数类型错误
         if (e instanceof TypeMismatchException) {
-            return ResponseDTO.wrap(ResponseCodeConst.ERROR_PARAM);
+            String errorInfo = ((TypeMismatchException) e).getPropertyName();
+            return ResponseDTO.error("参数异常 " + errorInfo);
         }
 
         // json 格式错误
         if (e instanceof HttpMessageNotReadableException) {
-            return ResponseDTO.wrap(ResponseCodeConst.JSON_FORMAT_ERROR);
+            String errorInfo = e.getMessage();
+            return ResponseDTO.error("Json格式错误 " + errorInfo);
+        }
+
+        // Sql 错误
+        if (e instanceof SQLSyntaxErrorException) {
+            String errorInfo = e.getMessage();
+            return ResponseDTO.error("SQL错误 " + errorInfo);
         }
 
         // 参数校验未通过
         if (e instanceof MethodArgumentNotValidException) {
             List<FieldError> fieldErrors = ((MethodArgumentNotValidException) e).getBindingResult().getFieldErrors();
-            List<String> msgList = fieldErrors.stream().map(FieldError :: getDefaultMessage).collect(Collectors.toList());
-            return ResponseDTO.wrap(ResponseCodeConst.ERROR_PARAM, String.join(",", msgList));
+            List<String> msgList = fieldErrors.stream().map(FieldError::getDefaultMessage).collect(Collectors.toList());
+            return ResponseDTO.error("参数格式错误 " + String.join(",", msgList));
         }
 
-//        if (e instanceof SmartBusinessException) {
-//            return ResponseDTO.wrap(ResponseCodeConst.SYSTEM_ERROR);
-//        }
-
-        return ResponseDTO.wrap(ResponseCodeConst.SYSTEM_ERROR);
+        return ResponseDTO.error("系统错误 " + e.getMessage());
     }
 }

@@ -7,7 +7,7 @@ services:
     depends_on:  # 依赖先执行的容器
       - mysql
   mysql:
-    image: mysql
+    image: mysql:8.0.26
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: "root"  # 环境变量配置去 https://hub.docker.com/_/mysql 官方查看

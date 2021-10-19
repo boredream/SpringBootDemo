@@ -1,6 +1,6 @@
 FROM openjdk:8-jdk-alpine
 COPY target/*.jar app.jar
-EXPOSE 8080 443
+EXPOSE 443
 ENTRYPOINT ["java","-jar","/app.jar"]
 
 

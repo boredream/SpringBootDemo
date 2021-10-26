@@ -3,7 +3,7 @@ services:
   web:
     build: .  # 使用Dockerfile新生成镜像
     ports: # 宿主机端口:容器端口
-      - "443:443"
+      - "8080:8080"
     depends_on: # 依赖先执行的容器
       - nginx
       - mysql
@@ -13,10 +13,12 @@ services:
     restart: always
     ports:
       - "80:80"
+      - "443:443"
     volumes: # 宿主机目录:容器目录
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf  # 配置
       - ./nginx/log:/var/log/nginx  # 日志
       - ./nginx/html:/usr/share/nginx/html  # 网页
+      - ./nginx/cert:/etc/nginx/cert  # ssl
 
   mysql:
     image: mysql:8.0.26

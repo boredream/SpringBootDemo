@@ -1,9 +1,5 @@
 server:
-  port: 443
-  ssl:
-    key-store: classpath:server.jks
-    key-store-password: tPrBlON7
-    key-store-type: JKS
+  port: 8080
 
 spring:
   datasource:
@@ -21,5 +17,5 @@ qiniu:
   secretKey: Jmool8zj8njyMlVOX_zduoZgb_2ssqBO9V3sy-XH
   bucket: boredream-files
   uploadHost: http://up.qiniu.com/
-  downloadHost: http://r0p1o4yza.hd-bkt.clouddn.com/
+  downloadHost: http://file.papikoala.cn/
 

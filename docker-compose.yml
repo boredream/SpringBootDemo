@@ -2,6 +2,7 @@ version: "3.9"
 services:
   web:
     build: .  # 使用Dockerfile新生成镜像
+    image: boredream/springbootdemo_web
     ports: # 宿主机端口:容器端口
       - "8080:8080"
     depends_on: # 依赖先执行的容器

@@ -35,9 +35,11 @@ public class TodoController {
 
     @ApiOperation(value = "分页查询待办事项")
     @GetMapping("/page")
-    public ResponseDTO<PageResultDTO<Todo>> queryByPage(TodoQueryDTO dto) {
+    public ResponseDTO<PageResultDTO<Todo>> queryByPage(TodoQueryDTO dto, Long curUserId) {
         // TODO: chunyang 2021/9/28 条件自动化添加
-        QueryWrapper<Todo> wrapper = new QueryWrapper<Todo>().eq("type", dto.getType());
+        QueryWrapper<Todo> wrapper = new QueryWrapper<Todo>()
+                .eq("type", dto.getType())
+                .eq("user_id", curUserId);
         Page<Todo> page = PageUtil.convert2QueryPage(dto);
         Page<Todo> resultDto = service.page(page, wrapper);
         return ResponseDTO.success(PageUtil.convert2PageResult(resultDto));
@@ -45,7 +47,8 @@ public class TodoController {
 
     @ApiOperation(value = "添加待办事项")
     @PostMapping
-    public ResponseDTO<Boolean> add(@RequestBody @Validated Todo params) {
+    public ResponseDTO<Boolean> add(@RequestBody @Validated Todo params, Long curUserId) {
+        params.setUserId(curUserId);
         return ResponseDTO.success(service.save(params));
     }
 

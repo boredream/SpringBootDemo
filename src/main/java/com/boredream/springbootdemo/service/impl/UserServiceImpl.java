@@ -60,8 +60,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         save(user);
 
-        // TODO: chunyang 2021/10/28 save会自动setid吗？
-
         return jwtUtil.generateToken(user);
     }
 

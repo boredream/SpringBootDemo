@@ -33,8 +33,8 @@ public class ${table.controllerName} {
 
     @ApiOperation(value = "分页查询${table.comment}")
     @GetMapping("/page")
-    public ResponseDTO<PageResultDTO<${entity}>> queryByPage(${entity}QueryDTO dto) {
-        QueryWrapper<${entity}> wrapper = new QueryWrapper<${entity}>().eq("type", dto.getType());
+    public ResponseDTO<PageResultDTO<${entity}>> queryByPage(${entity}QueryDTO dto, Long curUserId) {
+        QueryWrapper<${entity}> wrapper = new QueryWrapper<${entity}>().eq("userId", curUserId);
         Page<${entity}> page = PageUtil.convert2QueryPage(dto);
         Page<${entity}> resultDto = service.page(page, wrapper);
         return ResponseDTO.success(PageUtil.convert2PageResult(resultDto));
@@ -42,15 +42,16 @@ public class ${table.controllerName} {
 
     @ApiOperation(value = "添加$!{table.comment}")
     @PostMapping
-    public ResponseDTO<Boolean> add(@RequestBody @Validated ${entity} params) {
-        return ResponseDTO.success(service.save(params));
+    public ResponseDTO<Boolean> add(@RequestBody @Validated ${entity} body, Long curUserId) {
+        body.setUserId(curUserId);
+        return ResponseDTO.success(service.save(body));
     }
 
     @ApiOperation(value = "修改$!{table.comment}")
     @PutMapping("/{id}")
-    public ResponseDTO<Boolean> update(@PathVariable("id") Long id, @RequestBody @Validated ${entity} params) {
-        params.setId(id);
-        return ResponseDTO.success(service.updateById(params));
+    public ResponseDTO<Boolean> update(@PathVariable("id") Long id, @RequestBody @Validated ${entity} body) {
+        body.setId(id);
+        return ResponseDTO.success(service.updateById(body));
     }
 
     @ApiOperation(value = "删除$!{table.comment}")

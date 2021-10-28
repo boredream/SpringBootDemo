@@ -33,8 +33,10 @@ public class TheDayController {
 
     @ApiOperation(value = "分页查询纪念日")
     @GetMapping("/page")
-    public ResponseDTO<PageResultDTO<TheDay>> queryByPage(TheDayQueryDTO dto) {
-        QueryWrapper<TheDay> wrapper = new QueryWrapper<TheDay>().likeRight("the_day_date", dto.getQueryDate());
+    public ResponseDTO<PageResultDTO<TheDay>> queryByPage(TheDayQueryDTO dto, Long curUserId) {
+        QueryWrapper<TheDay> wrapper = new QueryWrapper<TheDay>()
+                .likeRight("the_day_date", dto.getQueryDate())
+                .eq("user_id", curUserId);
         Page<TheDay> page = PageUtil.convert2QueryPage(dto);
         Page<TheDay> resultDto = service.page(page, wrapper);
         return ResponseDTO.success(PageUtil.convert2PageResult(resultDto));
@@ -42,7 +44,8 @@ public class TheDayController {
 
     @ApiOperation(value = "添加纪念日")
     @PostMapping
-    public ResponseDTO<Boolean> add(@RequestBody @Validated TheDay params) {
+    public ResponseDTO<Boolean> add(@RequestBody @Validated TheDay params, Long curUserId) {
+        params.setUserId(curUserId);
         return ResponseDTO.success(service.save(params));
     }
 

@@ -13,7 +13,7 @@ public class LoginRequest {
     private static final Logger log = LoggerFactory.getLogger(LoginRequest.class);
 
     @NotNull(message = "账号必须填")
-    @Pattern(regexp = "^[1]([3][0-9]{1}|59|58|88|89)[0-9]{8}$", message = "账号请输入11位手机号") // 手机号
+    @Pattern(regexp = "^[1][0-9]{10}$", message = "账号请输入11位手机号") // 手机号
     private String username;
 
     @NotNull(message = "密码必须填")

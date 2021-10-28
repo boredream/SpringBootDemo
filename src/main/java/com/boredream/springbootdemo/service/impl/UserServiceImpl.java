@@ -87,7 +87,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         String json = restTemplate.getForObject(url, String.class, requestMap);
         try {
             WxSessionDTO session = new ObjectMapper().readValue(json, WxSessionDTO.class);
-            QueryWrapper<User> wrapper = new QueryWrapper<User>().eq("openId", session.getOpenid());
+            QueryWrapper<User> wrapper = new QueryWrapper<User>().eq("open_id", session.getOpenid());
             User user = getOne(wrapper);
 
             if (user == null) {
@@ -105,7 +105,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
 
     @Override
     public User getUserInfo(Authentication auth) {
-        User user = getUserByUsername(auth.getName());
+        User user = getById(auth.getName());
         user.setPassword(null);
         return user;
     }

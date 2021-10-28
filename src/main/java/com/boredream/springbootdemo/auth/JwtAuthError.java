@@ -27,7 +27,6 @@ public class JwtAuthError implements AuthenticationEntryPoint, AccessDeniedHandl
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType("application/json;charset=utf-8");
         response.getWriter().write("{\"status\":401,\"message\":\"Unauthorized or invalid token\"}");
-
     }
 
     // 鉴权失败处理，返回403 json数据

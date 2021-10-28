@@ -12,12 +12,12 @@ spring:
 
 jwt:
   secret: springbootdemo_jwt_secret
-  expiration: 3600
+  expiration: 30 # day
 
 qiniu:
   accessKey: wdoVNp9qXmswTakEjVcfFEqdi0JebQi8tNLDxMJg
   secretKey: Jmool8zj8njyMlVOX_zduoZgb_2ssqBO9V3sy-XH
   bucket: boredream-files
-  uploadHost: http://up.qiniu.com/
-  downloadHost: http://file.papikoala.cn/
+  uploadHost: https://upload.qiniup.com/
+  downloadHost: https://file.papikoala.cn/
 

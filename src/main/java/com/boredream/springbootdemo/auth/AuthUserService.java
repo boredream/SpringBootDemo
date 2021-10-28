@@ -1,5 +1,6 @@
 package com.boredream.springbootdemo.auth;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.boredream.springbootdemo.entity.User;
 import com.boredream.springbootdemo.mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +17,8 @@ public class AuthUserService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = mapper.findUser(username);
+        QueryWrapper<User> wrapper = new QueryWrapper<User>().eq("username", username);
+        User user = mapper.selectOne(wrapper);
         if(user == null) throw new UsernameNotFoundException("User Not Found Exception");
         return new AuthUser(user);
     }

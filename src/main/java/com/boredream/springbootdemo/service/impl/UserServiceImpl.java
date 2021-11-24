@@ -1,6 +1,7 @@
 package com.boredream.springbootdemo.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.boredream.springbootdemo.auth.JwtUtil;
 import com.boredream.springbootdemo.entity.LoginRequest;
@@ -12,9 +13,10 @@ import com.boredream.springbootdemo.mapper.UserMapper;
 import com.boredream.springbootdemo.service.IUserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.HashMap;
@@ -29,6 +31,7 @@ import java.util.Map;
  * @since 2021-09-18
  */
 @Service
+@EnableTransactionManagement
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IUserService {
 
     private JwtUtil jwtUtil;
@@ -105,9 +108,61 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     }
 
     @Override
-    public User getUserInfo(Authentication auth) {
-        User user = getById(auth.getName());
+    public User getUserInfo(Long curUserId) {
+        User user = getById(curUserId);
         user.setPassword(null);
         return user;
+    }
+
+    @Transactional
+    @Override
+    public boolean bindCp(Long curUserId, Long cpUserId) {
+        User curUser = getBaseMapper().selectById(curUserId);
+        User cpUser = getBaseMapper().selectById(cpUserId);
+
+        if (cpUser == null) {
+            throw new ApiException("目标绑定用户不存在");
+        }
+
+        // 先判断是否已经各自有cp
+        if (curUser.getCpUserId() != null) {
+            throw new ApiException("无法绑定。您已经绑定过伴侣了，请先解绑后再重新尝试");
+        }
+        if (cpUser.getCpUserId() != null) {
+            throw new ApiException("无法绑定。对方已经绑定过伴侣了");
+        }
+
+        // 自己绑cp
+        curUser.setCpUserId(cpUserId);
+        boolean curBindSuccess = updateById(curUser);
+
+        // cp绑自己
+        cpUser.setCpUserId(curUserId);
+        boolean cpBindSuccess = updateById(cpUser);
+
+        return curBindSuccess && cpBindSuccess;
+    }
+
+    @Override
+    public boolean unbindCp(Long curUserId, Long cpUserId) {
+        User curUser = getBaseMapper().selectById(curUserId);
+        User cpUser = getBaseMapper().selectById(cpUserId);
+
+        if (cpUser == null) {
+            throw new ApiException("目标绑定用户不存在");
+        }
+
+        LambdaUpdateWrapper<User> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper.set(User::getCpUserId, null);
+
+        // 自己解绑
+        curUser.setCpUserId(null);
+        boolean curBindSuccess = update(curUser, updateWrapper);
+
+        // cp解绑
+        cpUser.setCpUserId(null);
+        boolean cpBindSuccess = update(cpUser, updateWrapper);
+
+        return curBindSuccess && cpBindSuccess;
     }
 }

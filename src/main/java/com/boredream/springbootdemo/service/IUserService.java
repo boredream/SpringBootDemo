@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.boredream.springbootdemo.entity.LoginRequest;
 import com.boredream.springbootdemo.entity.User;
 import com.boredream.springbootdemo.entity.dto.WxLoginDTO;
-import org.springframework.security.core.Authentication;
 
 /**
  * <p>
@@ -22,5 +21,9 @@ public interface IUserService extends IService<User> {
 
     String wxLogin(WxLoginDTO dto);
 
-    User getUserInfo(Authentication auth);
+    User getUserInfo(Long curUserId);
+
+    boolean bindCp(Long curUserId, Long cpUserId);
+
+    boolean unbindCp(Long curUserId, Long cpUserId);
 }

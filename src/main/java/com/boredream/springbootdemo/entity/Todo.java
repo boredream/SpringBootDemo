@@ -7,7 +7,7 @@ import lombok.EqualsAndHashCode;
 
 /**
  * <p>
- * 待办事项
+ * 清单
  * </p>
  *
  * @author boredream
@@ -15,10 +15,16 @@ import lombok.EqualsAndHashCode;
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-@ApiModel(value="Todo对象", description="待办事项")
+@ApiModel(value="Todo对象", description="清单")
 public class Todo extends Belong2UserEntity {
 
     private static final long serialVersionUID = 1L;
+
+    @ApiModelProperty(value = "所属清单组id")
+    private Long todoGroupId;
+
+    @ApiModelProperty(value = "所属清单组名称")
+    private String todoGroupName;
 
     @ApiModelProperty(value = "已完成")
     private boolean done;
@@ -26,13 +32,10 @@ public class Todo extends Belong2UserEntity {
     @ApiModelProperty(value = "名称")
     private String name;
 
-    @ApiModelProperty(value = "类型")
-    private String type;
-
-    @ApiModelProperty(value = "待办日期")
+    @ApiModelProperty(value = "完成日期")
     private String doneDate;
 
-    @ApiModelProperty(value = "详情")
+    @ApiModelProperty(value = "描述")
     private String detail;
 
     @ApiModelProperty(value = "图片")

@@ -7,8 +7,10 @@ import com.boredream.springbootdemo.entity.dto.DiaryQueryDTO;
 import com.boredream.springbootdemo.entity.dto.PageResultDTO;
 import com.boredream.springbootdemo.entity.dto.ResponseDTO;
 import com.boredream.springbootdemo.mapper.DiaryMapper;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,13 +20,13 @@ import java.util.List;
 @SpringBootTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @MapperScan("com.boredream.springbootdemo.mapper")
-class SpringBootDemoApplicationTests {
+class DiaryTests {
 
 	@Autowired
-	DiaryController diaryController;
+	DiaryController controller;
 
 	@Autowired
-	DiaryMapper diaryMapper;
+	DiaryMapper mapper;
 
 	private Long curUserId = 1L;
 	private Long cpUserId = 2L;
@@ -32,48 +34,48 @@ class SpringBootDemoApplicationTests {
 	@BeforeAll
 	void before() {
 		// delete all
-		diaryMapper.delete(new QueryWrapper<>());
+		mapper.delete(new QueryWrapper<>());
 	}
 
 	@Test
-	void testDiary() {
+	void test() {
 		// add
 		Diary body = new Diary();
 		body.setContent("content " + System.currentTimeMillis());
 		body.setDiaryDate("2021-12-21");
-		ResponseDTO<Boolean> commitResponse = diaryController.add(body, curUserId);
+		ResponseDTO<Boolean> commitResponse = controller.add(body, curUserId);
 		Assertions.assertTrue(commitResponse.getSuccess());
 
 		body = new Diary();
 		body.setContent("content " + System.currentTimeMillis());
 		body.setDiaryDate("2021-02-05");
-		commitResponse = diaryController.add(body, curUserId);
+		commitResponse = controller.add(body, curUserId);
 		Assertions.assertTrue(commitResponse.getSuccess());
 
 		body = new Diary();
 		body.setContent("content " + System.currentTimeMillis());
 		body.setDiaryDate("2021-02-05");
-		commitResponse = diaryController.add(body, cpUserId);
+		commitResponse = controller.add(body, cpUserId);
 		Assertions.assertTrue(commitResponse.getSuccess());
 
 		body = new Diary();
 		body.setContent("content " + System.currentTimeMillis());
 		body.setDiaryDate("2021-02-14");
-		commitResponse = diaryController.add(body, cpUserId);
+		commitResponse = controller.add(body, cpUserId);
 		Assertions.assertTrue(commitResponse.getSuccess());
 
 		// query by pages
 		DiaryQueryDTO dto = new DiaryQueryDTO();
 		dto.setPage(1);
 		dto.setSize(20);
-		PageResultDTO<Diary> pageResponse = diaryController.queryByPage(dto, curUserId).getData();
+		PageResultDTO<Diary> pageResponse = controller.queryByPage(dto, curUserId).getData();
 		Assertions.assertEquals(4, pageResponse.getRecords().size());
 		Assertions.assertEquals("2021-02-14", pageResponse.getRecords().get(1).getDiaryDate());
 
 		// query by month
 		dto = new DiaryQueryDTO();
 		dto.setQueryDate("2021-12");
-		List<Diary> listResponse = diaryController.queryByMonth(dto, curUserId).getData();
+		List<Diary> listResponse = controller.queryByMonth(dto, curUserId).getData();
 		Assertions.assertEquals(1, listResponse.size());
 
 		// update
@@ -81,14 +83,14 @@ class SpringBootDemoApplicationTests {
 		String newContent = "new content " + System.currentTimeMillis();
 		body = new Diary();
 		body.setContent(newContent);
-		commitResponse = diaryController.update(updateId, body);
+		commitResponse = controller.update(updateId, body);
 		Assertions.assertTrue(commitResponse.getSuccess());
-		Assertions.assertEquals(newContent, diaryMapper.selectById(updateId).getContent());
+		Assertions.assertEquals(newContent, mapper.selectById(updateId).getContent());
 
 		// delete
-		commitResponse = diaryController.delete(pageResponse.getRecords().get(1).getId());
+		commitResponse = controller.delete(pageResponse.getRecords().get(1).getId());
 		Assertions.assertTrue(commitResponse.getSuccess());
-		Assertions.assertEquals(3, diaryMapper.selectList(new QueryWrapper<>()).size());
+		Assertions.assertEquals(3, mapper.selectList(new QueryWrapper<>()).size());
 	}
 
 }

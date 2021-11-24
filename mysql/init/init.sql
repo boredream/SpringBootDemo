@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS `todo`
     update_time timestamp  default current_timestamp() not null on update current_timestamp()
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
-  COLLATE = utf8mb4_unicode_ci COMMENT ='待办事项';
+  COLLATE = utf8mb4_unicode_ci COMMENT ='清单';
 
 --
 DROP TABLE IF EXISTS `the_day`;

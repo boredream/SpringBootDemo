@@ -20,19 +20,23 @@ public class TheDay extends Belong2UserEntity {
 
     private static final long serialVersionUID = 1L;
 
+    /**
+     * 提醒方式 累计天数
+     */
+    public static final int NOTIFY_TYPE_TOTAL_COUNT = 0;
+
+    /**
+     * 提醒方式 按年倒计天数
+     */
+    public static final int NOTIFY_TYPE_YEAR_COUNT_DOWN = 1;
+
     @ApiModelProperty(value = "名称")
     private String name;
 
     @ApiModelProperty(value = "纪念日期")
     private String theDayDate;
 
-    @ApiModelProperty(value = "提醒日期")
-    private String notifyDate;
-
-    @ApiModelProperty(value = "详情")
-    private String detail;
-
-    @ApiModelProperty(value = "图片")
-    private String images;
+    @ApiModelProperty(value = "提醒方式")
+    private int notifyType;
 
 }

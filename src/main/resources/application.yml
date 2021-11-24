@@ -14,6 +14,9 @@ jwt:
   secret: springbootdemo_jwt_secret
   expiration: 30 # day
 
+mybatis-plus:
+  mapper-locations: classpath:/mapper/*Mapper.xml  # 自定义xml文件路径
+
 qiniu:
   accessKey: wdoVNp9qXmswTakEjVcfFEqdi0JebQi8tNLDxMJg
   secretKey: Jmool8zj8njyMlVOX_zduoZgb_2ssqBO9V3sy-XH

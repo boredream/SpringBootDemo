@@ -1,12 +1,17 @@
 package com.boredream.springbootdemo.mapper;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.toolkit.Constants;
 import com.boredream.springbootdemo.entity.Todo;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * <p>
- * 待办事项 Mapper 接口
+ * 清单 Mapper 接口
  * </p>
  *
  * @author boredream
@@ -14,5 +19,7 @@ import org.apache.ibatis.annotations.Mapper;
  */
 @Mapper
 public interface TodoMapper extends BaseMapper<Todo> {
+
+    List<Todo> getTodoListWithGroup(@Param(Constants.WRAPPER) QueryWrapper wrapper);
 
 }

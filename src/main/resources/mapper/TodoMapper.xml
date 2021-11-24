@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace = 绑定一个对应的  Dao/Mapper接口-->
+<mapper namespace="com.boredream.springbootdemo.mapper.TodoMapper">
+    <!--    select 查询语句-->
+    <select id="getTodoListWithGroup" resultType="com.boredream.springbootdemo.entity.Todo">
+        SELECT todo_group.name as todo_group_name, todo.*
+        FROM todo INNER JOIN todo_group ON todo.todo_group_id = todo_group.id
+    </select>
+</mapper>

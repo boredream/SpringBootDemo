@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/the_day")
 @Api(tags = {"纪念日"})
-public class TheDayController {
+public class TheDayController extends BaseController {
 
     @Autowired
     private ITheDayService service;
@@ -34,9 +34,9 @@ public class TheDayController {
     @ApiOperation(value = "分页查询纪念日")
     @GetMapping("/page")
     public ResponseDTO<PageResultDTO<TheDay>> queryByPage(TheDayQueryDTO dto, Long curUserId) {
-        QueryWrapper<TheDay> wrapper = new QueryWrapper<TheDay>()
-                .likeRight("the_day_date", dto.getQueryDate())
-                .eq("user_id", curUserId);
+        QueryWrapper<TheDay> wrapper = genUserQuery(curUserId);
+        // TODO: chunyang 2021/11/24 排序规则？
+//        wrapper = wrapper.orderByDesc("the_day_date");
         Page<TheDay> page = PageUtil.convert2QueryPage(dto);
         Page<TheDay> resultDto = service.page(page, wrapper);
         return ResponseDTO.success(PageUtil.convert2PageResult(resultDto));

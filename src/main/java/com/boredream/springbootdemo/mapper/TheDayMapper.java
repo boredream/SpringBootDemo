@@ -1,7 +1,8 @@
 package com.boredream.springbootdemo.mapper;
 
-import com.boredream.springbootdemo.entity.TheDay;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.boredream.springbootdemo.entity.TheDay;
+import org.apache.ibatis.annotations.Mapper;
 
 /**
  * <p>
@@ -11,6 +12,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * @author boredream
  * @since 2021-09-28
  */
+@Mapper
 public interface TheDayMapper extends BaseMapper<TheDay> {
 
 }

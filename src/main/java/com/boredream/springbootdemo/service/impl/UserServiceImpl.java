@@ -56,6 +56,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         }
 
         User user = new User();
+        user.setNickname("小公主/骑士"); // TODO: chunyang 2021/11/24 默认昵称？
         user.setUsername(request.getUsername());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         save(user);

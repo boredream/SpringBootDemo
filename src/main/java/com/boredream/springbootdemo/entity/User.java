@@ -32,4 +32,19 @@ public class User extends BaseEntity {
     @ApiModelProperty(value = "第三方id")
     private String openId;
 
+    @ApiModelProperty(value = "伴侣用户id")
+    private Long cpUserId;
+
+    @ApiModelProperty(value = "昵称")
+    private String nickname;
+
+    @ApiModelProperty(value = "头像")
+    private String avatar;
+
+    @ApiModelProperty(value = "性别")
+    private String gender;
+
+    @ApiModelProperty(value = "生日")
+    private String birthday;
+
 }

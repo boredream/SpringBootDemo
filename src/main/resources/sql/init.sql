@@ -1,7 +1,7 @@
--- 导出 spring_boot_demo 的数据库结构
-DROP DATABASE IF EXISTS `spring_boot_demo`;
-CREATE DATABASE IF NOT EXISTS `spring_boot_demo` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
-USE `spring_boot_demo`;
+-- 导出 love_cookbook 的数据库结构
+DROP DATABASE IF EXISTS `love_cookbook`;
+CREATE DATABASE IF NOT EXISTS `love_cookbook` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
+USE `love_cookbook`;
 
 --
 DROP TABLE IF EXISTS `user`;
@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS `user`
     open_id     varchar(50)                           null comment '第三方id',
     cp_user_id  int                                   null comment '伴侣用户id',
 
-    nickname    varchar(50)                           not null comment '昵称',
+    nickname    varchar(50)                           null comment '昵称',
     avatar      varchar(200)                          null comment '头像',
     gender      varchar(50)                           null comment '性别',
     birthday    long                                  null comment '生日',

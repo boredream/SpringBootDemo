@@ -54,9 +54,38 @@ class TodoTests {
 		Assertions.assertTrue(commitResponse.getSuccess());
 
 		group = new TodoGroup();
-		group.setName("人生重大选择");
+		group.setName("到处旅游");
 		commitResponse = groupController.add(group, curUserId);
 		Assertions.assertTrue(commitResponse.getSuccess());
+
+		group = new TodoGroup();
+		group.setName("人生重大选择");
+		commitResponse = groupController.add(group, cpUserId);
+		Assertions.assertTrue(commitResponse.getSuccess());
+
+		group = new TodoGroup();
+		group.setName("待修改");
+		commitResponse = groupController.add(group, cpUserId);
+		Assertions.assertTrue(commitResponse.getSuccess());
+
+		List<TodoGroup> groupList = groupMapper.selectList(new QueryWrapper<>());
+		Assertions.assertEquals(4, groupList.size());
+
+		// update group
+		Long updateId = groupMapper.selectOne(new QueryWrapper<TodoGroup>().eq("name", "待修改")).getId();
+		group = new TodoGroup();
+		group.setName("清单组XXX");
+		commitResponse = groupController.update(updateId, group);
+		Assertions.assertTrue(commitResponse.getSuccess());
+		Assertions.assertEquals("清单组XXX", groupMapper.selectById(updateId).getName());
+
+		// delete group 空组
+		updateId = groupMapper.selectOne(new QueryWrapper<TodoGroup>().eq("name", "到处旅游")).getId();
+		commitResponse = groupController.delete(updateId);
+		Assertions.assertTrue(commitResponse.getSuccess());
+		Assertions.assertEquals(3, groupMapper.selectList(new QueryWrapper<>()).size());
+
+
 
 		Long groupId = groupMapper.selectOne(new QueryWrapper<TodoGroup>().eq("name", "情侣一起必做的10件事")).getId();
 
@@ -70,33 +99,50 @@ class TodoTests {
 		body = new Todo();
 		body.setTodoGroupId(groupId);
 		body.setName("一起做饭");
+		commitResponse = controller.add(body, cpUserId);
+		Assertions.assertTrue(commitResponse.getSuccess());
+
+		body = new Todo();
+		body.setTodoGroupId(groupId);
+		body.setName("一起旅行");
 		commitResponse = controller.add(body, curUserId);
 		Assertions.assertTrue(commitResponse.getSuccess());
 
 		// query with group
 		List<Todo> list = controller.query(curUserId).getData();
-		System.out.println(list);
+		Assertions.assertEquals(3, list.size());
+		Assertions.assertEquals("情侣一起必做的10件事", list.get(0).getTodoGroupName());
 
-//		TodoQueryDTO dto = new TodoQueryDTO();
-//		dto.setPage(1);
-//		dto.setSize(20);
-//		PageResultDTO<Todo> pageResponse = controller.queryByPage(dto, curUserId).getData();
-//		Assertions.assertEquals(5, pageResponse.getRecords().size());
-////		Assertions.assertEquals("2021-02-14", pageResponse.getRecords().get(1).getTodoDate());
-//
-//		// update
-//		Long updateId = mapper.selectOne(new QueryWrapper<Todo>().eq("name", "结婚")).getId();
-//		String newDate = "2022-05-01";
-//		body = new Todo();
-//		body.setTodoDate(newDate);
-//		commitResponse = controller.update(updateId, body);
-//		Assertions.assertTrue(commitResponse.getSuccess());
-//		Assertions.assertEquals(newDate, mapper.selectById(updateId).getTodoDate());
-//
-//		// delete
-//		commitResponse = controller.delete(pageResponse.getRecords().get(3).getId());
-//		Assertions.assertTrue(commitResponse.getSuccess());
-//		Assertions.assertEquals(4, mapper.selectList(new QueryWrapper<>()).size());
+		// update
+		updateId = mapper.selectOne(new QueryWrapper<Todo>().eq("name", "一起旅行")).getId();
+		String newData = "一起去旅行";
+		body = new Todo();
+		body.setDone(true);
+		body.setName(newData);
+		body.setDoneDate("2022-02-14");
+		body.setDetail("去趟铁岭");
+		commitResponse = controller.update(updateId, body);
+		Assertions.assertTrue(commitResponse.getSuccess());
+		Assertions.assertEquals(newData, mapper.selectById(updateId).getName());
+
+		// delete
+		commitResponse = controller.delete(list.get(1).getId());
+		Assertions.assertTrue(commitResponse.getSuccess());
+		Assertions.assertEquals(2, mapper.selectList(new QueryWrapper<>()).size());
+
+		// delete group 清单组有内容的
+		Long deleteGroupId = groupMapper.selectOne(new QueryWrapper<TodoGroup>().eq("name", "清单组XXX")).getId();
+		for (int i = 0; i < 3; i++) {
+			body = new Todo();
+			body.setTodoGroupId(deleteGroupId);
+			body.setName("清单" + i);
+			controller.add(body, curUserId);
+		}
+		Assertions.assertEquals(3, mapper.selectList(new QueryWrapper<Todo>().eq("todo_group_id", deleteGroupId)).size());
+
+		commitResponse = groupController.delete(deleteGroupId);
+		Assertions.assertTrue(commitResponse.getSuccess());
+		Assertions.assertEquals(0, mapper.selectList(new QueryWrapper<Todo>().eq("todo_group_id", deleteGroupId)).size());
 	}
 
 }

@@ -16,6 +16,8 @@ jwt:
 
 mybatis-plus:
   mapper-locations: classpath:/mapper/*Mapper.xml  # 自定义xml文件路径
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
 qiniu:
   accessKey: wdoVNp9qXmswTakEjVcfFEqdi0JebQi8tNLDxMJg

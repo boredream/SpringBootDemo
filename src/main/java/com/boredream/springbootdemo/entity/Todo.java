@@ -1,5 +1,6 @@
 package com.boredream.springbootdemo.entity;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -20,11 +21,12 @@ public class Todo extends Belong2UserEntity {
 
     private static final long serialVersionUID = 1L;
 
-    @ApiModelProperty(value = "所属清单组id")
-    private Long todoGroupId;
-
+    @TableField(exist = false)
     @ApiModelProperty(value = "所属清单组名称")
     private String todoGroupName;
+
+    @ApiModelProperty(value = "所属清单组id")
+    private Long todoGroupId;
 
     @ApiModelProperty(value = "已完成")
     private boolean done;

@@ -5,9 +5,11 @@ import com.boredream.springbootdemo.entity.User;
 import com.boredream.springbootdemo.entity.dto.ResponseDTO;
 import com.boredream.springbootdemo.entity.dto.WxLoginDTO;
 import com.boredream.springbootdemo.service.IUserService;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -39,6 +41,13 @@ public class UserController {
     @GetMapping(value = "/info", produces = "application/json")
     public ResponseDTO<User> getUserInfo(Long curUserId) {
         return ResponseDTO.success(service.getUserInfo(curUserId));
+    }
+
+    @ApiOperation(value = "修改用户")
+    @PutMapping("/{id}")
+    public ResponseDTO<Boolean> update(@PathVariable("id") Long id, @RequestBody @Validated User params) {
+        params.setId(id);
+        return ResponseDTO.success(service.updateById(params));
     }
 
     @Transactional

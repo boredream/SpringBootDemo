@@ -40,7 +40,7 @@ public class DiaryController extends BaseController {
         wrapper = wrapper.orderByDesc("diary_date");
 
         Page<Diary> page = PageUtil.convert2QueryPage(dto);
-        Page<Diary> resultDto = service.page(page, wrapper);
+        Page<Diary> resultDto = service.queryByPage(page, wrapper);
         return ResponseDTO.success(PageUtil.convert2PageResult(resultDto));
     }
 

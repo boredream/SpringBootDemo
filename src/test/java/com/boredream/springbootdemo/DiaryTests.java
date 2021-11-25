@@ -34,7 +34,17 @@ class DiaryTests {
 	@BeforeAll
 	void before() {
 		// delete all
-		mapper.delete(new QueryWrapper<>());
+//		mapper.delete(new QueryWrapper<>());
+	}
+
+	@Test
+	void test1() {
+		// add
+		DiaryQueryDTO dto = new DiaryQueryDTO();
+		dto.setPage(1);
+		dto.setSize(20);
+		PageResultDTO<Diary> pageResponse = controller.queryByPage(dto, curUserId).getData();
+		System.out.println(pageResponse.getRecords());
 	}
 
 	@Test

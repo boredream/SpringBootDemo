@@ -110,6 +110,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     @Override
     public User getUserInfo(Long curUserId) {
         User user = getById(curUserId);
+        if (user.getCpUserId() != null) {
+            user.setCpUser(getBaseMapper().selectById(user.getCpUserId()));
+        }
         user.setPassword(null);
         return user;
     }
@@ -152,16 +155,17 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
             throw new ApiException("目标绑定用户不存在");
         }
 
-        LambdaUpdateWrapper<User> updateWrapper = new LambdaUpdateWrapper<>();
-        updateWrapper.set(User::getCpUserId, null);
-
         // 自己解绑
         curUser.setCpUserId(null);
-        boolean curBindSuccess = update(curUser, updateWrapper);
+        LambdaUpdateWrapper<User> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper.set(User::getCpUserId, null).eq(User::getId, curUserId);
+        boolean curBindSuccess = update(updateWrapper);
 
         // cp解绑
         cpUser.setCpUserId(null);
-        boolean cpBindSuccess = update(cpUser, updateWrapper);
+        updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper.set(User::getCpUserId, null).eq(User::getId, cpUserId);
+        boolean cpBindSuccess = update(updateWrapper);
 
         return curBindSuccess && cpBindSuccess;
     }

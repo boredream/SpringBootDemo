@@ -68,6 +68,11 @@ class UserTests {
 		User user2 = controller.getUserInfo(userId2).getData();
 		Assertions.assertEquals("小仙女", user2.getUsername());
 
+		// update
+		user1.setBirthday("1989-12-21");
+		controller.update(userId1, user1);
+		Assertions.assertEquals("1989-12-21", mapper.selectById(userId1).getBirthday());
+
 		// bind cp
 		ResponseDTO<Boolean> commitResponse = controller.bindCp(userId1, userId2);
 		Assertions.assertTrue(commitResponse.getSuccess());
@@ -87,57 +92,17 @@ class UserTests {
 		Assertions.assertNull(mapper.selectById(userId1).getCpUserId());
 		Assertions.assertNull(mapper.selectById(userId2).getCpUserId());
 
-//		User body = new User();
-//		body.setContent("content " + System.currentTimeMillis());
-//		body.setUserDate("2021-12-21");
-//		ResponseDTO<Boolean> commitResponse = controller.add(body, curUserId);
-//		Assertions.assertTrue(commitResponse.getSuccess());
-//
-//		body = new User();
-//		body.setContent("content " + System.currentTimeMillis());
-//		body.setUserDate("2021-02-05");
-//		commitResponse = controller.add(body, curUserId);
-//		Assertions.assertTrue(commitResponse.getSuccess());
-//
-//		body = new User();
-//		body.setContent("content " + System.currentTimeMillis());
-//		body.setUserDate("2021-02-05");
-//		commitResponse = controller.add(body, cpUserId);
-//		Assertions.assertTrue(commitResponse.getSuccess());
-//
-//		body = new User();
-//		body.setContent("content " + System.currentTimeMillis());
-//		body.setUserDate("2021-02-14");
-//		commitResponse = controller.add(body, cpUserId);
-//		Assertions.assertTrue(commitResponse.getSuccess());
-//
-//		// query by pages
-//		UserQueryDTO dto = new UserQueryDTO();
-//		dto.setPage(1);
-//		dto.setSize(20);
-//		PageResultDTO<User> pageResponse = controller.queryByPage(dto, curUserId).getData();
-//		Assertions.assertEquals(4, pageResponse.getRecords().size());
-//		Assertions.assertEquals("2021-02-14", pageResponse.getRecords().get(1).getUserDate());
-//
-//		// query by month
-//		dto = new UserQueryDTO();
-//		dto.setQueryDate("2021-12");
-//		List<User> listResponse = controller.queryByMonth(dto, curUserId).getData();
-//		Assertions.assertEquals(1, listResponse.size());
-//
-//		// update
-//		Long updateId = listResponse.get(0).getId();
-//		String newContent = "new content " + System.currentTimeMillis();
-//		body = new User();
-//		body.setContent(newContent);
-//		commitResponse = controller.update(updateId, body);
-//		Assertions.assertTrue(commitResponse.getSuccess());
-//		Assertions.assertEquals(newContent, mapper.selectById(updateId).getContent());
-//
-//		// delete
-//		commitResponse = controller.delete(pageResponse.getRecords().get(1).getId());
-//		Assertions.assertTrue(commitResponse.getSuccess());
-//		Assertions.assertEquals(3, mapper.selectList(new QueryWrapper<>()).size());
+		// bind cp again
+		commitResponse = controller.bindCp(userId2, userId1);
+		Assertions.assertTrue(commitResponse.getSuccess());
+		Assertions.assertEquals(userId2, mapper.selectById(userId1).getCpUserId());
+		Assertions.assertEquals(userId1, mapper.selectById(userId2).getCpUserId());
+
+		// get user info with cp user
+		user1 = controller.getUserInfo(userId1).getData();
+		Assertions.assertEquals("小仙女", user1.getCpUser().getUsername());
+
+
 	}
 
 }

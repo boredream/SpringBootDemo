@@ -1,5 +1,6 @@
 package com.boredream.springbootdemo.entity;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -34,6 +35,10 @@ public class User extends BaseEntity {
 
     @ApiModelProperty(value = "伴侣用户id")
     private Long cpUserId;
+
+    @TableField(exist = false)
+    @ApiModelProperty(value = "伴侣用户")
+    private User cpUser;
 
     @ApiModelProperty(value = "昵称")
     private String nickname;

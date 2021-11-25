@@ -8,6 +8,8 @@ import com.boredream.springbootdemo.service.IDiaryService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * <p>
  * 日记 服务实现类
@@ -22,5 +24,10 @@ public class DiaryServiceImpl extends ServiceImpl<DiaryMapper, Diary> implements
     @Override
     public Page<Diary> queryByPage(Page<Diary> page, QueryWrapper<Diary> wrapper) {
         return getBaseMapper().queryByPage(page, wrapper);
+    }
+
+    @Override
+    public List<Diary> queryByMonth(QueryWrapper<Diary> wrapper) {
+        return getBaseMapper().queryByMonth(wrapper);
     }
 }

@@ -34,38 +34,42 @@ class DiaryTests {
 	@BeforeAll
 	void before() {
 		// delete all
-//		mapper.delete(new QueryWrapper<>());
+		mapper.delete(new QueryWrapper<>());
 	}
 
-	@Test
-	void test1() {
-		// add
-		DiaryQueryDTO dto = new DiaryQueryDTO();
-		dto.setPage(1);
-		dto.setSize(20);
-		PageResultDTO<Diary> pageResponse = controller.queryByPage(dto, curUserId).getData();
-		System.out.println(pageResponse.getRecords());
-	}
+//	@Test
+//	void testTemp() {
+//		DiaryQueryDTO dto = new DiaryQueryDTO();
+//		dto.setQueryDate("2021-12");
+//		List<Diary> listResponse = controller.queryByMonth(dto, curUserId).getData();
+//		Assertions.assertEquals(1, listResponse.size());
+//	}
 
 	@Test
 	void test() {
 		// add
 		Diary body = new Diary();
 		body.setContent("content " + System.currentTimeMillis());
-		body.setDiaryDate("2021-12-21");
+		body.setDiaryDate("2021-02-05");
 		ResponseDTO<Boolean> commitResponse = controller.add(body, curUserId);
 		Assertions.assertTrue(commitResponse.getSuccess());
 
 		body = new Diary();
 		body.setContent("content " + System.currentTimeMillis());
-		body.setDiaryDate("2021-02-05");
+		body.setDiaryDate("2021-12-21");
 		commitResponse = controller.add(body, curUserId);
 		Assertions.assertTrue(commitResponse.getSuccess());
 
 		body = new Diary();
 		body.setContent("content " + System.currentTimeMillis());
 		body.setDiaryDate("2021-02-05");
-		commitResponse = controller.add(body, cpUserId);
+		commitResponse = controller.add(body, -1L);
+		Assertions.assertTrue(commitResponse.getSuccess());
+
+		body = new Diary();
+		body.setContent("content " + System.currentTimeMillis());
+		body.setDiaryDate("2021-12-21");
+		commitResponse = controller.add(body, -2L);
 		Assertions.assertTrue(commitResponse.getSuccess());
 
 		body = new Diary();
@@ -79,8 +83,10 @@ class DiaryTests {
 		dto.setPage(1);
 		dto.setSize(20);
 		PageResultDTO<Diary> pageResponse = controller.queryByPage(dto, curUserId).getData();
-		Assertions.assertEquals(4, pageResponse.getRecords().size());
+		Assertions.assertEquals(3, pageResponse.getRecords().size());
 		Assertions.assertEquals("2021-02-14", pageResponse.getRecords().get(1).getDiaryDate());
+		Assertions.assertEquals(curUserId, pageResponse.getRecords().get(0).getUserId());
+		Assertions.assertEquals(curUserId, pageResponse.getRecords().get(0).getUser().getId());
 
 		// query by month
 		dto = new DiaryQueryDTO();
@@ -98,9 +104,11 @@ class DiaryTests {
 		Assertions.assertEquals(newContent, mapper.selectById(updateId).getContent());
 
 		// delete
-		commitResponse = controller.delete(pageResponse.getRecords().get(1).getId());
+		Assertions.assertEquals(5, mapper.selectList(new QueryWrapper<>()).size());
+		commitResponse = controller.delete(mapper.selectOne(
+				new QueryWrapper<Diary>().eq("user_id", -1L)).getId());
 		Assertions.assertTrue(commitResponse.getSuccess());
-		Assertions.assertEquals(3, mapper.selectList(new QueryWrapper<>()).size());
+		Assertions.assertEquals(4, mapper.selectList(new QueryWrapper<>()).size());
 	}
 
 }

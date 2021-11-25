@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.boredream.springbootdemo.entity.Diary;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import java.util.List;
+
 /**
  * <p>
  * 日记 服务类
@@ -17,4 +19,5 @@ public interface IDiaryService extends IService<Diary> {
 
     Page<Diary> queryByPage(Page<Diary> page, QueryWrapper<Diary> wrapper);
 
+    List<Diary> queryByMonth(QueryWrapper<Diary> wrapper);
 }

@@ -32,7 +32,7 @@ public class TodoController extends BaseController {
     @ApiOperation(value = "查询所有清单")
     @GetMapping()
     public ResponseDTO<List<Todo>> query(Long curUserId) {
-        QueryWrapper<Todo> wrapper = genUserQuery(curUserId);
+        QueryWrapper<Todo> wrapper = genUserQuery("todo", curUserId);
         return ResponseDTO.success(service.getTodoListWithGroup(wrapper));
     }
 

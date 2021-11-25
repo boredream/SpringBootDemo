@@ -71,13 +71,17 @@ class TheDayTests {
 		commitResponse = controller.add(body, curUserId);
 		Assertions.assertTrue(commitResponse.getSuccess());
 
+		body = new TheDay();
+		body.setName("XXX");
+		commitResponse = controller.add(body, -1L);
+		Assertions.assertTrue(commitResponse.getSuccess());
+
 		// query by pages
 		TheDayQueryDTO dto = new TheDayQueryDTO();
 		dto.setPage(1);
 		dto.setSize(20);
 		PageResultDTO<TheDay> pageResponse = controller.queryByPage(dto, curUserId).getData();
 		Assertions.assertEquals(5, pageResponse.getRecords().size());
-//		Assertions.assertEquals("2021-02-14", pageResponse.getRecords().get(1).getTheDayDate());
 
 		// update
 		Long updateId = mapper.selectOne(new QueryWrapper<TheDay>().eq("name", "结婚")).getId();
@@ -91,7 +95,8 @@ class TheDayTests {
 		// delete
 		commitResponse = controller.delete(pageResponse.getRecords().get(3).getId());
 		Assertions.assertTrue(commitResponse.getSuccess());
-		Assertions.assertEquals(4, mapper.selectList(new QueryWrapper<>()).size());
+		pageResponse = controller.queryByPage(dto, curUserId).getData();
+		Assertions.assertEquals(4, pageResponse.getRecords().size());
 	}
 
 }

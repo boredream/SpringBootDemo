@@ -108,6 +108,12 @@ class TodoTests {
 		commitResponse = controller.add(body, curUserId);
 		Assertions.assertTrue(commitResponse.getSuccess());
 
+		body = new Todo();
+		body.setTodoGroupId(groupId);
+		body.setName("一起XXX");
+		commitResponse = controller.add(body, -1L);
+		Assertions.assertTrue(commitResponse.getSuccess());
+
 		// query with group
 		List<Todo> list = controller.query(curUserId).getData();
 		Assertions.assertEquals(3, list.size());
@@ -128,7 +134,7 @@ class TodoTests {
 		// delete
 		commitResponse = controller.delete(list.get(1).getId());
 		Assertions.assertTrue(commitResponse.getSuccess());
-		Assertions.assertEquals(2, mapper.selectList(new QueryWrapper<>()).size());
+		Assertions.assertEquals(2, controller.query(curUserId).getData().size());
 
 		// delete group 清单组有内容的
 		Long deleteGroupId = groupMapper.selectOne(new QueryWrapper<TodoGroup>().eq("name", "清单组XXX")).getId();

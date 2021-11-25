@@ -38,7 +38,6 @@ public class DiaryController extends BaseController {
     public ResponseDTO<PageResultDTO<Diary>> queryByPage(DiaryQueryDTO dto, Long curUserId) {
         QueryWrapper<Diary> wrapper = genUserQuery(curUserId);
         wrapper = wrapper.orderByDesc("diary_date");
-
         Page<Diary> page = PageUtil.convert2QueryPage(dto);
         Page<Diary> resultDto = service.queryByPage(page, wrapper);
         return ResponseDTO.success(PageUtil.convert2PageResult(resultDto));
@@ -50,8 +49,7 @@ public class DiaryController extends BaseController {
         QueryWrapper<Diary> wrapper = genUserQuery(curUserId);
         wrapper = wrapper.likeRight("diary_date", dto.getQueryDate())
                 .orderByDesc("diary_date");
-
-        List<Diary> resultDto = service.list(wrapper);
+        List<Diary> resultDto = service.queryByMonth(wrapper);
         return ResponseDTO.success(resultDto);
     }
 

@@ -99,6 +99,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
                 user = new User();
                 user.setUsername(session.getOpenid());
                 user.setOpenId(session.getOpenid());
+                // TODO: chunyang 2021/11/25 从微信取默认用户信息
+                user.setNickname("用户" + session.getOpenid().substring(0, 8));
                 save(user);
             }
             return jwtUtil.generateToken(user);

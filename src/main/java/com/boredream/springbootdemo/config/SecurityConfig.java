@@ -44,7 +44,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     // 获取AuthenticationManager（认证管理器），可以在其他地方使用
-    @Bean(name = "authenticationManagerBean" )
+    @Bean(name = "authenticationManagerBean")
     @Override
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
@@ -80,7 +80,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
 
                 // 不用登陆
-                .antMatchers("/user/register" , "/user/login", "/user/wxlogin")
+                .antMatchers(
+                        "/user/register", "/user/login", "/user/wxlogin",
+                        "/swagger-ui/*", "/v2/**", "/swagger-resources/**", "/swagger-ui.html", "/webjars/**")
                 .permitAll()
 
                 // 除上面外的所有请求都需要登录
@@ -98,7 +100,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**" , new CorsConfiguration().applyPermitDefaultValues());
+        source.registerCorsConfiguration("/**", new CorsConfiguration().applyPermitDefaultValues());
         return source;
     }
 }

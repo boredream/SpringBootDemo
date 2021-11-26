@@ -67,6 +67,6 @@ public class SmartGlobalExceptionHandler {
             return ResponseDTO.error("参数格式错误 " + String.join(",", msgList));
         }
 
-        return ResponseDTO.error("系统错误 " + e.getMessage());
+        return ResponseDTO.error(e.getMessage());
     }
 }

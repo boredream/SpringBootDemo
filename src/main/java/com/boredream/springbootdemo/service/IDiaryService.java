@@ -2,10 +2,8 @@ package com.boredream.springbootdemo.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.boredream.springbootdemo.entity.Diary;
 import com.baomidou.mybatisplus.extension.service.IService;
-
-import java.util.List;
+import com.boredream.springbootdemo.entity.Diary;
 
 /**
  * <p>
@@ -19,5 +17,5 @@ public interface IDiaryService extends IService<Diary> {
 
     Page<Diary> queryByPage(Page<Diary> page, QueryWrapper<Diary> wrapper);
 
-    List<Diary> queryByMonth(QueryWrapper<Diary> wrapper);
+    Page<Diary> queryByMonth(Page<Diary> page, QueryWrapper<Diary> wrapper);
 }

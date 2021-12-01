@@ -15,8 +15,6 @@ import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.List;
-
 @SpringBootTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @MapperScan("com.boredream.springbootdemo.mapper")
@@ -90,12 +88,14 @@ class DiaryTests {
 
 		// query by month
 		dto = new DiaryQueryDTO();
+		dto.setPage(1);
+		dto.setSize(20);
 		dto.setQueryDate("2021-12");
-		List<Diary> listResponse = controller.queryByMonth(dto, curUserId).getData();
-		Assertions.assertEquals(1, listResponse.size());
+		PageResultDTO<Diary> listResponse = controller.queryByMonth(dto, curUserId).getData();
+		Assertions.assertEquals(1, listResponse.getRecords().size());
 
 		// update
-		Long updateId = listResponse.get(0).getId();
+		Long updateId = listResponse.getRecords().get(0).getId();
 		String newContent = "new content " + System.currentTimeMillis();
 		body = new Diary();
 		body.setContent(newContent);

@@ -36,6 +36,9 @@ public class User extends BaseEntity {
     @ApiModelProperty(value = "伴侣用户id")
     private Long cpUserId;
 
+    @ApiModelProperty(value = "伴侣在一起时间")
+    private String cpTogetherDate;
+
     @TableField(exist = false)
     @ApiModelProperty(value = "伴侣用户")
     private User cpUser;

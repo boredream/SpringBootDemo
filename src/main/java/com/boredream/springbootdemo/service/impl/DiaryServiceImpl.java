@@ -2,13 +2,11 @@ package com.boredream.springbootdemo.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.boredream.springbootdemo.entity.Diary;
 import com.boredream.springbootdemo.mapper.DiaryMapper;
 import com.boredream.springbootdemo.service.IDiaryService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 /**
  * <p>
@@ -27,7 +25,7 @@ public class DiaryServiceImpl extends ServiceImpl<DiaryMapper, Diary> implements
     }
 
     @Override
-    public List<Diary> queryByMonth(QueryWrapper<Diary> wrapper) {
-        return getBaseMapper().queryByMonth(wrapper);
+    public Page<Diary> queryByMonth(Page<Diary> page, QueryWrapper<Diary> wrapper) {
+        return getBaseMapper().queryByMonth(page, wrapper);
     }
 }

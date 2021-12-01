@@ -10,8 +10,10 @@ import springfox.documentation.spring.web.plugins.Docket;
 
 @Configuration
 public class SwaggerConfig {
+
     @Bean
     public Docket getUserDocket() {
+        // http://localhost:8080/api/swagger-ui/index.html#/
         ApiInfo apiInfo = new ApiInfoBuilder()
                 .title("接口文档")//api标题
                 .description("描述")//api描述

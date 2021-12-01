@@ -68,6 +68,12 @@ class UserTests {
 		User user2 = controller.getUserInfo(userId2).getData();
 		Assertions.assertEquals("小仙女", user2.getUsername());
 
+		// login
+		token2 = controller.login(request).getData();
+		userId2 = Long.parseLong(jwtUtil.getUserIdFromToken(token2));
+		user2 = controller.getUserInfo(userId2).getData();
+		Assertions.assertEquals("小仙女", user2.getUsername());
+
 		// update
 		user1.setBirthday("1989-12-21");
 		controller.update(userId1, user1);

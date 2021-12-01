@@ -7,19 +7,20 @@ USE `love_cookbook`;
 DROP TABLE IF EXISTS `user`;
 CREATE TABLE IF NOT EXISTS `user`
 (
-    id          int unsigned auto_increment comment '主键id' primary key,
-    username    varchar(50)                           not null comment '用户名',
-    password    varchar(100)                          null comment '密码',
-    role        varchar(50)                           null comment '角色',
-    open_id     varchar(50)                           null comment '第三方id',
-    cp_user_id  int                                   null comment '伴侣用户id',
+    id             int unsigned auto_increment comment '主键id' primary key,
+    username       varchar(50)                           not null comment '用户名',
+    password       varchar(100)                          null comment '密码',
+    role           varchar(50)                           null comment '角色',
+    open_id        varchar(50)                           null comment '第三方id',
+    cp_user_id     int                                   null comment '伴侣用户id',
+    cp_together_date varchar(50)                           null comment '伴侣在一起时间',
 
-    nickname    varchar(50)                           null comment '昵称',
-    avatar      varchar(200)                          null comment '头像',
-    gender      varchar(50)                           null comment '性别',
-    birthday    long                                  null comment '生日',
-    create_time timestamp default current_timestamp() not null,
-    update_time timestamp default current_timestamp() not null on update current_timestamp()
+    nickname       varchar(50)                           null comment '昵称',
+    avatar         varchar(200)                          null comment '头像',
+    gender         varchar(50)                           null comment '性别',
+    birthday       long                                  null comment '生日',
+    create_time    timestamp default current_timestamp() not null,
+    update_time    timestamp default current_timestamp() not null on update current_timestamp()
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci COMMENT ='用户';

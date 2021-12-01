@@ -35,8 +35,7 @@ public class TheDayController extends BaseController {
     @GetMapping("/page")
     public ResponseDTO<PageResultDTO<TheDay>> queryByPage(TheDayQueryDTO dto, Long curUserId) {
         QueryWrapper<TheDay> wrapper = genUserQuery(curUserId);
-        // TODO: chunyang 2021/11/24 排序规则？
-//        wrapper = wrapper.orderByDesc("the_day_date");
+        wrapper = wrapper.orderByDesc("create_time");
         Page<TheDay> page = PageUtil.convert2QueryPage(dto);
         Page<TheDay> resultDto = service.page(page, wrapper);
         return ResponseDTO.success(PageUtil.convert2PageResult(resultDto));

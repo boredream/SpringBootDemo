@@ -23,12 +23,12 @@ public class TheDay extends Belong2UserEntity {
     /**
      * 提醒方式 累计天数
      */
-    public static final int NOTIFY_TYPE_TOTAL_COUNT = 0;
+    public static final int NOTIFY_TYPE_TOTAL_COUNT = 1;
 
     /**
      * 提醒方式 按年倒计天数
      */
-    public static final int NOTIFY_TYPE_YEAR_COUNT_DOWN = 1;
+    public static final int NOTIFY_TYPE_YEAR_COUNT_DOWN = 2;
 
     @ApiModelProperty(value = "名称")
     private String name;

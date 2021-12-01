@@ -15,8 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 /**
  * <p>
  * 日记 前端控制器
@@ -45,12 +43,13 @@ public class DiaryController extends BaseController {
 
     @ApiOperation(value = "按月查询日记")
     @GetMapping("/month")
-    public ResponseDTO<List<Diary>> queryByMonth(DiaryQueryDTO dto, Long curUserId) {
+    public ResponseDTO<PageResultDTO<Diary>> queryByMonth(DiaryQueryDTO dto, Long curUserId) {
         QueryWrapper<Diary> wrapper = genUserQuery(curUserId);
         wrapper = wrapper.likeRight("diary_date", dto.getQueryDate())
                 .orderByDesc("diary_date");
-        List<Diary> resultDto = service.queryByMonth(wrapper);
-        return ResponseDTO.success(resultDto);
+        Page<Diary> page = PageUtil.convert2QueryPage(dto);
+        Page<Diary> resultDto = service.queryByMonth(page, wrapper);
+        return ResponseDTO.success(PageUtil.convert2PageResult(resultDto));
     }
 
     @ApiOperation(value = "添加日记")

@@ -8,8 +8,6 @@ import com.boredream.springbootdemo.entity.Diary;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
-import java.util.List;
-
 /**
  * <p>
  * 日记 Mapper 接口
@@ -23,5 +21,5 @@ public interface DiaryMapper extends BaseMapper<Diary> {
 
     Page<Diary> queryByPage(Page<Diary> page, @Param(Constants.WRAPPER) QueryWrapper<Diary> wrapper);
 
-    List<Diary> queryByMonth(@Param(Constants.WRAPPER) QueryWrapper<Diary> wrapper);
+    Page<Diary> queryByMonth(Page<Diary> page, @Param(Constants.WRAPPER) QueryWrapper<Diary> wrapper);
 }

@@ -27,7 +27,7 @@ class TodoTests {
 	TodoGroupMapper groupMapper;
 
 	@Autowired
-	TodoGroupController  groupController;
+	TodoGroupController groupController;
 
 	@Autowired
 	TodoController controller;
@@ -113,6 +113,18 @@ class TodoTests {
 		body.setName("一起XXX");
 		commitResponse = controller.add(body, -1L);
 		Assertions.assertTrue(commitResponse.getSuccess());
+
+		// query group with tod
+		List<TodoGroup> data = groupController.query(curUserId).getData();
+		Assertions.assertEquals(3, data.size());
+		for (TodoGroup tg : data) {
+			if("情侣一起必做的10件事".equalsIgnoreCase(tg.getName())) {
+				// 组内的一定是我或cp新建的，不关心todo的user id
+				Assertions.assertEquals(4, tg.getTodoList().size());
+			} else {
+				Assertions.assertEquals(0, tg.getTodoList().size());
+			}
+		}
 
 		// query with group
 		List<Todo> list = controller.query(curUserId).getData();

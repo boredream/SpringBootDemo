@@ -1,9 +1,12 @@
 package com.boredream.springbootdemo.entity;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+
+import java.util.List;
 
 /**
  * <p>
@@ -22,5 +25,9 @@ public class TodoGroup extends Belong2UserEntity {
 
     @ApiModelProperty(value = "名称")
     private String name;
+
+    @TableField(exist = false)
+    @ApiModelProperty(value = "包含的所有清单")
+    private List<Todo> todoList;
 
 }

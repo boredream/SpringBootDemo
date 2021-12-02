@@ -15,6 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 /**
  * <p>
  * 清单组 前端控制器
@@ -27,13 +29,26 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/todo_group")
 @EnableTransactionManagement
 @Api(tags = {"清单组"})
-public class TodoGroupController {
+public class TodoGroupController extends BaseController {
 
     @Autowired
     private ITodoGroupService service;
 
     @Autowired
     private ITodoService todoService;
+
+    @ApiOperation(value = "查询所有清单组，包括组内所有清单")
+    @GetMapping()
+    public ResponseDTO<List<TodoGroup>> query(Long curUserId) {
+        QueryWrapper<TodoGroup> wrapper = genUserQuery(curUserId);
+        List<TodoGroup> list = service.list(wrapper);
+        for (TodoGroup group : list) {
+            Long groupId = group.getId();
+            List<Todo> todoList = todoService.list(new QueryWrapper<Todo>().eq("todo_group_id", groupId));
+            group.setTodoList(todoList);
+        }
+        return ResponseDTO.success(list);
+    }
 
     @ApiOperation(value = "添加清单组")
     @PostMapping

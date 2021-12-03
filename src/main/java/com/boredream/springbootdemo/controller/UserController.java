@@ -13,7 +13,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import javax.websocket.server.PathParam;
 
 @RestController
 @EnableTransactionManagement
@@ -52,13 +51,13 @@ public class UserController {
 
     @Transactional
     @PutMapping(value = "/cp/{cpUserId}", produces = "application/json")
-    public ResponseDTO<User> bindCp(Long curUserId, @PathParam("cpUserId") Long cpUserId) {
+    public ResponseDTO<User> bindCp(Long curUserId, @PathVariable("cpUserId") Long cpUserId) {
         return ResponseDTO.success(service.bindCp(curUserId, cpUserId));
     }
 
     @Transactional
     @DeleteMapping(value = "/cp/{cpUserId}", produces = "application/json")
-    public ResponseDTO<Boolean> unbindCp(Long curUserId, @PathParam("cpUserId") Long cpUserId) {
+    public ResponseDTO<Boolean> unbindCp(Long curUserId, @PathVariable("cpUserId") Long cpUserId) {
         return ResponseDTO.success(service.unbindCp(curUserId, cpUserId));
     }
 

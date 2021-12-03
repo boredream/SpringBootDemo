@@ -52,7 +52,7 @@ public class UserController {
 
     @Transactional
     @PutMapping(value = "/cp/{cpUserId}", produces = "application/json")
-    public ResponseDTO<Boolean> bindCp(Long curUserId, @PathParam("cpUserId") Long cpUserId) {
+    public ResponseDTO<User> bindCp(Long curUserId, @PathParam("cpUserId") Long cpUserId) {
         return ResponseDTO.success(service.bindCp(curUserId, cpUserId));
     }
 

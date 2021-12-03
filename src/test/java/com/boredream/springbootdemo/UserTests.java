@@ -80,8 +80,9 @@ class UserTests {
 		Assertions.assertEquals("1989-12-21", mapper.selectById(userId1).getBirthday());
 
 		// bind cp
-		ResponseDTO<Boolean> commitResponse = controller.bindCp(userId1, userId2);
-		Assertions.assertTrue(commitResponse.getSuccess());
+		ResponseDTO<User> bindResponse = controller.bindCp(userId1, userId2);
+		Assertions.assertTrue(bindResponse.getSuccess());
+		Assertions.assertEquals(userId2, bindResponse.getData().getId());
 		Assertions.assertEquals(userId2, mapper.selectById(userId1).getCpUserId());
 		Assertions.assertEquals(userId1, mapper.selectById(userId2).getCpUserId());
 
@@ -93,14 +94,14 @@ class UserTests {
 		}
 
 		// unbind cp
-		commitResponse = controller.unbindCp(userId2, userId1);
+		ResponseDTO<Boolean> commitResponse = controller.unbindCp(userId2, userId1);
 		Assertions.assertTrue(commitResponse.getSuccess());
 		Assertions.assertNull(mapper.selectById(userId1).getCpUserId());
 		Assertions.assertNull(mapper.selectById(userId2).getCpUserId());
 
 		// bind cp again
-		commitResponse = controller.bindCp(userId2, userId1);
-		Assertions.assertTrue(commitResponse.getSuccess());
+		bindResponse = controller.bindCp(userId2, userId1);
+		Assertions.assertTrue(bindResponse.getSuccess());
 		Assertions.assertEquals(userId2, mapper.selectById(userId1).getCpUserId());
 		Assertions.assertEquals(userId1, mapper.selectById(userId2).getCpUserId());
 

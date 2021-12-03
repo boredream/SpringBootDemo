@@ -121,7 +121,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
 
     @Transactional
     @Override
-    public boolean bindCp(Long curUserId, Long cpUserId) {
+    public User bindCp(Long curUserId, Long cpUserId) {
         User curUser = getBaseMapper().selectById(curUserId);
         User cpUser = getBaseMapper().selectById(cpUserId);
 
@@ -145,7 +145,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         cpUser.setCpUserId(curUserId);
         boolean cpBindSuccess = updateById(cpUser);
 
-        return curBindSuccess && cpBindSuccess;
+        cpUser.setPassword(null);
+        return cpUser;
     }
 
     @Override

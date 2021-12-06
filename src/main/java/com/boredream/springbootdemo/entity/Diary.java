@@ -18,8 +18,6 @@ import lombok.EqualsAndHashCode;
 @ApiModel(value="Diary对象", description="日记")
 public class Diary extends Belong2UserEntity {
 
-    private static final long serialVersionUID = 1L;
-
     @ApiModelProperty(value = "文字内容")
     private String content;
 

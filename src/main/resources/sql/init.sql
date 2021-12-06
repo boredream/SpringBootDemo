@@ -86,4 +86,18 @@ CREATE TABLE IF NOT EXISTS `todo`
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci COMMENT ='清单';
 
+--
+DROP TABLE IF EXISTS `feed_back`;
+CREATE TABLE IF NOT EXISTS `feed_back`
+(
+    id            int unsigned auto_increment comment '主键id' primary key,
+    user_id       int                                    not null comment '所属用户id',
+    detail        varchar(200)                           null comment '描述',
+    images        varchar(3000)                          null comment '图片',
+    create_time   timestamp  default current_timestamp() not null,
+    update_time   timestamp  default current_timestamp() not null on update current_timestamp()
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_unicode_ci COMMENT ='意见反馈';
+
 

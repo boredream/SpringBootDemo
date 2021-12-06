@@ -18,8 +18,6 @@ import lombok.EqualsAndHashCode;
 @ApiModel(value="TheDay对象", description="纪念日")
 public class TheDay extends Belong2UserEntity {
 
-    private static final long serialVersionUID = 1L;
-
     /**
      * 提醒方式 累计天数
      */

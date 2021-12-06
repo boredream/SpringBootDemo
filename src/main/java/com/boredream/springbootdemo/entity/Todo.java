@@ -19,8 +19,6 @@ import lombok.EqualsAndHashCode;
 @ApiModel(value="Todo对象", description="清单")
 public class Todo extends Belong2UserEntity {
 
-    private static final long serialVersionUID = 1L;
-
     @TableField(exist = false)
     @ApiModelProperty(value = "所属清单组名称")
     private String todoGroupName;

@@ -21,8 +21,6 @@ import java.util.List;
 @ApiModel(value="TodoGroup对象", description="清单组")
 public class TodoGroup extends Belong2UserEntity {
 
-    private static final long serialVersionUID = 1L;
-
     @ApiModelProperty(value = "名称")
     private String name;
 

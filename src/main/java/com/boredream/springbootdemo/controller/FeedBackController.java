@@ -34,7 +34,7 @@ public class FeedBackController {
     @ApiOperation(value = "分页查询意见反馈")
     @GetMapping("/page")
     public ResponseDTO<PageResultDTO<FeedBack>> queryByPage(FeedBackQueryDTO dto, Long curUserId) {
-        QueryWrapper<FeedBack> wrapper = new QueryWrapper<FeedBack>().eq("userId", curUserId);
+        QueryWrapper<FeedBack> wrapper = new QueryWrapper<FeedBack>().eq("user_id", curUserId);
         Page<FeedBack> page = PageUtil.convert2QueryPage(dto);
         Page<FeedBack> resultDto = service.page(page, wrapper);
         return ResponseDTO.success(PageUtil.convert2PageResult(resultDto));

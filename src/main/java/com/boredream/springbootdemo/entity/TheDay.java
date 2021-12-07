@@ -35,6 +35,6 @@ public class TheDay extends Belong2UserEntity {
     private String theDayDate;
 
     @ApiModelProperty(value = "提醒方式")
-    private int notifyType;
+    private Integer notifyType;
 
 }

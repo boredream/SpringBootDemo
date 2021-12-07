@@ -9,9 +9,6 @@ import com.boredream.springbootdemo.entity.User;
 import com.boredream.springbootdemo.entity.dto.WxLoginDTO;
 import com.boredream.springbootdemo.entity.dto.WxSessionDTO;
 import com.boredream.springbootdemo.exception.ApiException;
-import com.boredream.springbootdemo.mapper.TheDayMapper;
-import com.boredream.springbootdemo.mapper.TodoGroupMapper;
-import com.boredream.springbootdemo.mapper.TodoMapper;
 import com.boredream.springbootdemo.mapper.UserMapper;
 import com.boredream.springbootdemo.service.IUserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -42,17 +39,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     @Autowired
     PasswordEncoder passwordEncoder;
 
-//    @Autowired
-//    RecommendTheDayMapper recommendTheDayMapper;
-    @Autowired
-    TheDayMapper theDayMapper;
-
-    @Autowired
-    TodoGroupMapper todoGroupMapper;
-
-    @Autowired
-    TodoMapper todoMapper;
-
     @Autowired
     private RestTemplate restTemplate;
 
@@ -77,32 +63,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         user.setUsername(request.getUsername());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         save(user);
-
-        // 默认生成推荐内容
-//        List<RecommendTheDay> recommendTheDays = recommendTheDayMapper.selectList(new QueryWrapper<>());
-//        for (RecommendTheDay recommend : recommendTheDays) {
-//            // 自动新建一系列推荐数据
-//            TheDay day = new TheDay();
-//            day.setUserId(user.getId());
-//            day.setName(recommend.getName());
-//            day.setNotifyType(recommend.getNotifyType());
-//            day.setTheDayDate(recommend.getTheDayDate());
-//
-//            // 特殊处理
-//            if("情人节".equalsIgnoreCase(recommend.getName())) {
-//                Calendar calendar = Calendar.getInstance();
-//                calendar.set(Calendar.MONTH, 2);
-//                calendar.set(Calendar.DAY_OF_MONTH, 14);
-//                if(Calendar.getInstance().after(calendar)) {
-//                    // 如果今年情人节已经过了，延续到下一年
-//                    calendar.add(Calendar.YEAR, 1);
-//                }
-//                day.setTheDayDate(DateUtils.calendar2str(calendar));
-//                day.setNotifyType(TheDay.NOTIFY_TYPE_YEAR_COUNT_DOWN);
-//            }
-//
-//            theDayMapper.insert(day);
-//        }
 
         return jwtUtil.generateToken(user);
     }

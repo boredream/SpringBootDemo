@@ -6,7 +6,6 @@ import com.boredream.springbootdemo.controller.UserController;
 import com.boredream.springbootdemo.entity.LoginRequest;
 import com.boredream.springbootdemo.entity.User;
 import com.boredream.springbootdemo.entity.dto.ResponseDTO;
-import com.boredream.springbootdemo.exception.ApiException;
 import com.boredream.springbootdemo.mapper.UserMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -87,11 +86,11 @@ class UserTests {
 		Assertions.assertEquals(userId1, mapper.selectById(userId2).getCpUserId());
 
 		// bind duplicate
-		try {
-			controller.bindCp(userId1, 1L);
-		} catch (ApiException e) {
-			Assertions.assertEquals("无法绑定。您已经绑定过伴侣了，请先解绑后再重新尝试", e.getMessage());
-		}
+//		try {
+//			controller.bindCp(userId1, 1L);
+//		} catch (ApiException e) {
+//			Assertions.assertEquals("无法绑定。您已经绑定过伴侣了，请先解绑后再重新尝试", e.getMessage());
+//		}
 
 		// unbind cp
 		ResponseDTO<Boolean> commitResponse = controller.unbindCp(userId2, userId1);

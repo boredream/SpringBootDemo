@@ -24,6 +24,9 @@ public class TodoGroup extends Belong2UserEntity {
     @ApiModelProperty(value = "名称")
     private String name;
 
+    @ApiModelProperty(value = "图标")
+    private Integer icon;
+
     @TableField(exist = false)
     @ApiModelProperty(value = "包含的所有清单")
     private List<Todo> todoList;

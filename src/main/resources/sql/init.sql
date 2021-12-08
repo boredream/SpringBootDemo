@@ -61,6 +61,7 @@ CREATE TABLE IF NOT EXISTS `todo_group`
 (
     id          int unsigned auto_increment comment '主键id' primary key,
     user_id     int                                   not null comment '所属用户id',
+    icon        int                                   null comment '图标',
     name        varchar(50)                           not null comment '名称',
     create_time timestamp default current_timestamp() not null,
     update_time timestamp default current_timestamp() not null on update current_timestamp()

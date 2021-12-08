@@ -19,6 +19,7 @@ DROP TABLE IF EXISTS `recommend_todo_group`;
 CREATE TABLE IF NOT EXISTS `recommend_todo_group`
 (
     id          int unsigned auto_increment comment '主键id' primary key,
+    icon        int                                   null comment '图标',
     name        varchar(50)                           not null comment '名称',
     create_time timestamp default current_timestamp() not null,
     update_time timestamp default current_timestamp() not null on update current_timestamp()

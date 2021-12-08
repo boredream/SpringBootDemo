@@ -17,7 +17,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ApiModel(value="Todo对象", description="清单")
-public class Todo extends Belong2UserEntity {
+public class Todo extends RecommendDataEntity {
 
     @TableField(exist = false)
     @ApiModelProperty(value = "所属清单组名称")
@@ -41,5 +41,8 @@ public class Todo extends Belong2UserEntity {
     @ApiModelProperty(value = "图片")
     private String images;
 
-
+    @Override
+    public boolean hasUpdated() {
+        return name != null;
+    }
 }

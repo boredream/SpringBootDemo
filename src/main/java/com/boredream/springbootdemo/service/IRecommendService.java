@@ -1,5 +1,7 @@
 package com.boredream.springbootdemo.service;
 
+import com.boredream.springbootdemo.entity.RecommendDataEntity;
+
 /**
  * <p>
  * 推荐 服务类
@@ -19,6 +21,11 @@ public interface IRecommendService {
      * 合并推荐内容，隐藏其中一方的推荐数据
      */
     void mergeRecommendData(Long userId, Long cpUserId);
+
+    /**
+     * 用户提交之后视为自己的数据，清楚推荐信息
+     */
+    void unbindRecommendData(RecommendDataEntity data);
 
     /**
      * 拆分推荐内容，恢复双方的隐藏推荐

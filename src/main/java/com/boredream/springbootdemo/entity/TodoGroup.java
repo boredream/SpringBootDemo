@@ -19,7 +19,7 @@ import java.util.List;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ApiModel(value="TodoGroup对象", description="清单组")
-public class TodoGroup extends Belong2UserEntity {
+public class TodoGroup extends RecommendDataEntity {
 
     @ApiModelProperty(value = "名称")
     private String name;
@@ -28,4 +28,8 @@ public class TodoGroup extends Belong2UserEntity {
     @ApiModelProperty(value = "包含的所有清单")
     private List<Todo> todoList;
 
+    @Override
+    public boolean hasUpdated() {
+        return name != null;
+    }
 }

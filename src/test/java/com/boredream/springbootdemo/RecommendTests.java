@@ -86,11 +86,13 @@ class RecommendTests {
 		// 双方生成推荐内容
 		service.genRecommendData(user1.getId());
 		service.genRecommendData(user2.getId());
+		assertEquals(user1.getId(), todoMapper, 30);
+		assertEquals(user2.getId(), todoMapper,  30);
 
 		// 绑定cp后双方合并数据，删除被绑定一方的推荐
 		service.mergeRecommendData(user1.getId(), user2.getId());
-		assertEquals(user1.getId(), todoMapper, 30);
-		assertEquals(user1.getId(), todoMapper,  0);
+		assertEquals(user1.getId(), todoMapper, 0);
+		assertEquals(user2.getId(), todoMapper,  30);
 
 
 	}

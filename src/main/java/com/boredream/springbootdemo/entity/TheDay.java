@@ -16,7 +16,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ApiModel(value="TheDay对象", description="纪念日")
-public class TheDay extends Belong2UserEntity {
+public class TheDay extends RecommendDataEntity {
 
     /**
      * 提醒方式 累计天数
@@ -35,6 +35,10 @@ public class TheDay extends Belong2UserEntity {
     private String theDayDate;
 
     @ApiModelProperty(value = "提醒方式")
-    private int notifyType;
+    private Integer notifyType;
 
+    @Override
+    public boolean hasUpdated() {
+        return name != null;
+    }
 }

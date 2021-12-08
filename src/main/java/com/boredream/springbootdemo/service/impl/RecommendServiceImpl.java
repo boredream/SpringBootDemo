@@ -1,6 +1,7 @@
 package com.boredream.springbootdemo.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.boredream.springbootdemo.entity.*;
 import com.boredream.springbootdemo.mapper.*;
 import com.boredream.springbootdemo.service.IRecommendService;
@@ -12,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Calendar;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * <p>
@@ -48,6 +50,7 @@ public class RecommendServiceImpl implements IRecommendService {
         for (RecommendTheDay recommend : recommendTheDays) {
             TheDay day = new TheDay();
             day.setUserId(userId);
+            day.setRecommendId(recommend.getId());
             day.setName(recommend.getName());
             day.setNotifyType(recommend.getNotifyType());
             day.setTheDayDate(recommend.getTheDayDate());
@@ -72,6 +75,7 @@ public class RecommendServiceImpl implements IRecommendService {
         for (RecommendTodoGroup recommendGroup : recommendTodoGroups) {
             TodoGroup group = new TodoGroup();
             group.setUserId(userId);
+            group.setRecommendId(recommendGroup.getId());
             group.setName(recommendGroup.getName());
             todoGroupMapper.insert(group);
 
@@ -79,6 +83,7 @@ public class RecommendServiceImpl implements IRecommendService {
             for (RecommendTodo recommend : recommendTodos) {
                 Todo todo = new Todo();
                 todo.setUserId(userId);
+                todo.setRecommendId(recommend.getId());
                 todo.setTodoGroupId(group.getId());
                 todo.setName(recommend.getName());
                 todo.setDetail(recommend.getDetail());
@@ -94,8 +99,49 @@ public class RecommendServiceImpl implements IRecommendService {
     @Override
     public void mergeRecommendData(Long userId, Long cpUserId) {
         // TODO: chunyang 2021/12/7 检查cp关系
-
+        // 删除某一方未填写的推荐数据
+        deleteRecommendData(userId, cpUserId, theDayMapper);
+        deleteRecommendData(userId, cpUserId, todoGroupMapper);
+        deleteRecommendData(userId, cpUserId, todoMapper);
     }
+
+    @Override
+    public void unbindRecommendData(RecommendDataEntity data) {
+        // TODO: chunyang 2021/12/7
+    }
+
+    private static <T extends RecommendDataEntity> void deleteRecommendData(Long userId, Long cpUserId, BaseMapper<T> mapper) {
+        List<T> userDataList = mapper.selectList(
+                new QueryWrapper<T>().eq("user_id", userId)
+                        .and(wrapper -> wrapper.isNotNull("recommend_id")));
+        List<T> cpUserDataList = mapper.selectList(
+                new QueryWrapper<T>().eq("user_id", cpUserId)
+                        .and(wrapper -> wrapper.isNotNull("recommend_id")));
+        for (T userData : userDataList) {
+            T cpUserData = null;
+            for (T day : cpUserDataList) {
+                if (Objects.equals(userData.getRecommendId(), day.getRecommendId())) {
+                    cpUserData = day;
+                    break;
+                }
+            }
+            if (cpUserData != null) {
+                if (!userData.hasUpdated() && !cpUserData.hasUpdated()) {
+                    // 双方都有某个推荐，且都没有填写的时候，删除我方的
+                    mapper.deleteById(userData);
+                } else if (userData.hasUpdated() && !cpUserData.hasUpdated()) {
+                    // 双方都有某个推荐，且对方没有填写的时候，删除对方的
+                    mapper.deleteById(cpUserData);
+                }
+            }
+        }
+    }
+//
+//    private static <T> void deleteRecommendData(Long userId, BaseMapper<T> mapper) {
+//        mapper.delete(new QueryWrapper<T>().eq("user_id", userId)
+//                .and(wrapper -> wrapper.isNotNull("recommend_id"))
+//                .and(wrapper -> wrapper.isNull("name")));
+//    }
 
     @Override
     public void splitRecommendData(Long userId, Long cpUserId) {

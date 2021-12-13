@@ -1,6 +1,6 @@
 package com.boredream.springbootdemo.controller;
 
-import com.boredream.springbootdemo.entity.LoginRequest;
+import com.boredream.springbootdemo.entity.dto.LoginRequestDTO;
 import com.boredream.springbootdemo.entity.User;
 import com.boredream.springbootdemo.entity.dto.ResponseDTO;
 import com.boredream.springbootdemo.entity.dto.WxLoginDTO;
@@ -23,12 +23,12 @@ public class UserController {
     private IUserService service;
 
     @PostMapping(value = "/register", produces = "application/json")
-    public ResponseDTO<String> register(@Valid @RequestBody LoginRequest authRequest) {
+    public ResponseDTO<String> register(@Valid @RequestBody LoginRequestDTO authRequest) {
         return ResponseDTO.success(service.register(authRequest));
     }
 
     @PostMapping(value = "/login", produces = "application/json")
-    public ResponseDTO<String> login(@Valid @RequestBody LoginRequest authRequest) {
+    public ResponseDTO<String> login(@Valid @RequestBody LoginRequestDTO authRequest) {
         return ResponseDTO.success(service.login(authRequest));
     }
 

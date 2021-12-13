@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.boredream.springbootdemo.auth.JwtUtil;
-import com.boredream.springbootdemo.entity.LoginRequest;
+import com.boredream.springbootdemo.entity.dto.LoginRequestDTO;
 import com.boredream.springbootdemo.entity.User;
 import com.boredream.springbootdemo.entity.dto.WxLoginDTO;
 import com.boredream.springbootdemo.entity.dto.WxSessionDTO;
@@ -52,7 +52,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         return getOne(wrapper);
     }
 
-    public String register(LoginRequest request) {
+    public String register(LoginRequestDTO request) {
         User oldUser = getUserByUsername(request.getUsername());
         if (oldUser != null) {
             throw new ApiException("用户已存在");
@@ -67,7 +67,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         return jwtUtil.generateToken(user);
     }
 
-    public String login(LoginRequest request) {
+    public String login(LoginRequestDTO request) {
         User user = getUserByUsername(request.getUsername());
         if (user == null) {
             throw new ApiException("用户不存在");

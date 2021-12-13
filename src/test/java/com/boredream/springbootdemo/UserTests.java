@@ -3,7 +3,7 @@ package com.boredream.springbootdemo;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.boredream.springbootdemo.auth.JwtUtil;
 import com.boredream.springbootdemo.controller.UserController;
-import com.boredream.springbootdemo.entity.LoginRequest;
+import com.boredream.springbootdemo.entity.dto.LoginRequestDTO;
 import com.boredream.springbootdemo.entity.User;
 import com.boredream.springbootdemo.entity.dto.ResponseDTO;
 import com.boredream.springbootdemo.exception.ApiException;
@@ -47,13 +47,13 @@ class UserTests {
 //		Assertions.assertNotNull(token);
 
 		// register
-		LoginRequest request = new LoginRequest();
+		LoginRequestDTO request = new LoginRequestDTO();
 		request.setUsername("二狗子");
 		request.setPassword("123456");
 		String token1 = controller.register(request).getData();
 		Assertions.assertNotNull(token1);
 
-		request = new LoginRequest();
+		request = new LoginRequestDTO();
 		request.setUsername("小仙女");
 		request.setPassword("123456");
 		String token2 = controller.register(request).getData();

@@ -1,7 +1,7 @@
 package com.boredream.springbootdemo.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.boredream.springbootdemo.entity.LoginRequest;
+import com.boredream.springbootdemo.entity.dto.LoginRequestDTO;
 import com.boredream.springbootdemo.entity.User;
 import com.boredream.springbootdemo.entity.dto.WxLoginDTO;
 
@@ -15,9 +15,9 @@ import com.boredream.springbootdemo.entity.dto.WxLoginDTO;
  */
 public interface IUserService extends IService<User> {
 
-    String register(LoginRequest request);
+    String register(LoginRequestDTO request);
 
-    String login(LoginRequest request);
+    String login(LoginRequestDTO request);
 
     String wxLogin(WxLoginDTO dto);
 

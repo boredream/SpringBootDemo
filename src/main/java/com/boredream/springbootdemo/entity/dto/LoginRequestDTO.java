@@ -1,4 +1,4 @@
-package com.boredream.springbootdemo.entity;
+package com.boredream.springbootdemo.entity.dto;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -7,10 +7,10 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
-public class LoginRequest {
+public class LoginRequestDTO {
 
     @SuppressWarnings("unused")
-    private static final Logger log = LoggerFactory.getLogger(LoginRequest.class);
+    private static final Logger log = LoggerFactory.getLogger(LoginRequestDTO.class);
 
     @NotNull(message = "账号必须填")
     @Pattern(regexp = "^[1][0-9]{10}$", message = "账号请输入11位手机号") // 手机号

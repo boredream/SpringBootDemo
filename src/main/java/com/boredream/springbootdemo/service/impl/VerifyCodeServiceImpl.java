@@ -1,13 +1,16 @@
 package com.boredream.springbootdemo.service.impl;
 
-import com.boredream.springbootdemo.entity.VerifyCode;
+import com.boredream.springbootdemo.entity.ShansumaResponse;
+import com.boredream.springbootdemo.exception.ApiException;
 import com.boredream.springbootdemo.service.IVerifyCodeService;
 import com.boredream.springbootdemo.utils.DateUtils;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-import org.springframework.web.client.RestTemplate;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -17,49 +20,117 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.MessageDigest;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @EnableTransactionManagement
 public class VerifyCodeServiceImpl implements IVerifyCodeService {
 
+    private static final Logger log = LoggerFactory.getLogger(VerifyCodeServiceImpl.class);
+
     @Autowired
-    private RestTemplate restTemplate;
+    private RedisTemplate<String, String> redisTemplate;
 
     @Override
-    public VerifyCode sendVerifyCode(String phone, Integer verifyType) {
+    public String sendVerifyCode(String phone, long duration, boolean mock) {
+        // 限制发送频率，最大频率1次/分钟，5次/小时，10次/天
+        checkSendCount(getVerifyCode1dKey(phone), "明天", 10);
+        checkSendCount(getVerifyCode1hKey(phone), "1小时后", 5);
+        checkSendCount(getVerifyCode1mKey(phone), "1分钟后", 1);
+
         // 生成验证码
         String code = genVerifyCode();
-        // 验证码有效时间，单位分
-        long validDuration = 5 * DateUtils.ONE_MINUTE_MILLIONS;
-        // 服务端保存验证码校验信息，用于后续验证
-        // TODO: chunyang 2021/12/13  
         // 发送验证码
-        try {
-            sendMsm(phone, code);
-        } catch (IOException e) {
-            // TODO: chunyang 2021/12/13 短信发送失败
-            e.printStackTrace();
+        if (!mock) {
+            // 模拟发送用于测试，不实际发送短信
+            try {
+                ShansumaResponse response = sendMsm(phone, code);
+                if (response.getCode() != 0) {
+                    throw new ApiException("短信发送失败 " + response.getMessage());
+                }
+                if (response.getData() != null && response.getData().getCode() != 0) {
+                    throw new ApiException("短信发送失败 " + response.getData().getMessage());
+                }
+            } catch (IOException e) {
+                throw new ApiException("短信发送失败 " + e.getMessage());
+            }
         }
-        return null;
+        // 服务端保存验证码校验信息，用于后续验证。验证码有效时间5分钟
+        redisTemplate.opsForValue().set(getVerifyCodeKey(phone), code, duration, TimeUnit.MILLISECONDS);
+
+        // 记录手机时间段内发送次数
+        // 1天，次日00:00点过期
+        recordSendCount(getVerifyCode1dKey(phone), DateUtils.getTomorrowStartDate());
+        // 1小时
+        recordSendCount(getVerifyCode1hKey(phone), DateUtils.nextDate(DateUtils.ONE_HOUR_MILLIONS));
+        // 1分钟
+        recordSendCount(getVerifyCode1mKey(phone), DateUtils.nextDate(DateUtils.ONE_MINUTE_MILLIONS));
+
+        log.debug("发送验证码 " + phone + " : " + code);
+        return code;
     }
 
-    private String genVerifyCode() {
-        // 4位随机数
-        String code = String.valueOf(new Random().nextInt(10000));
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < 4 - code.length(); i++) {
-            sb.append("0");
+    private void recordSendCount(String key, Date expiredDate) {
+        Boolean hasSend = redisTemplate.hasKey(key);
+        Long increment = redisTemplate.opsForValue().increment(key);
+        if (hasSend == null || !hasSend) {
+            // 未发送过，设置过期时间
+            redisTemplate.expireAt(key, expiredDate);
         }
-        sb.append(code);
-        return sb.toString();
+    }
+
+    private void checkSendCount(String key, String expiredDate, int maxCount) {
+        String countStr = redisTemplate.opsForValue().get(key);
+        if (countStr != null) {
+            try {
+                int count = Integer.parseInt(countStr);
+                if (count >= maxCount) {
+                    throw new ApiException("短信发送过于频繁，请于" + expiredDate + "再重新尝试");
+                }
+            } catch (NumberFormatException e) {
+                //
+            }
+        }
+    }
+
+    private String getVerifyCodeKey(String phone) {
+        return "VerifyCode:" + phone;
+    }
+
+    private String getVerifyCode1mKey(String phone) {
+        return "VerifyCode1m:" + phone;
+    }
+
+    private String getVerifyCode1hKey(String phone) {
+        return "VerifyCode1h:" + phone;
+    }
+
+    private String getVerifyCode1dKey(String phone) {
+        return "VerifyCode1d:" + phone;
+    }
+
+    @Override
+    public boolean checkVerifyCode(String phone, String code) {
+        String redisKey = getVerifyCodeKey(phone);
+        String realCode = redisTemplate.opsForValue().get(redisKey);
+        if (realCode == null) {
+            throw new ApiException("短信验证码已过期，请重新发送");
+        }
+        boolean success = realCode.equals(code);
+        if (success) {
+            // 成功后删除
+            redisTemplate.delete(redisKey);
+        }
+        return success;
     }
 
     /**
      * 发送短信
+     *
      * @param phone 手机
-     * @param code 验证码
+     * @param code  验证码
      */
-    private void sendMsm(String phone, String code) throws IOException {
+    private ShansumaResponse sendMsm(String phone, String code) throws IOException {
         // http://sms.shansuma.com/docs
         Client client = new Client();
         client.setAppId("hw_10730");     //开发者ID，在【设置】-【开发设置】中获取
@@ -72,17 +143,25 @@ public class VerifyCodeServiceImpl implements IVerifyCodeService {
         HashMap<String, Object> bizContent = new HashMap<>();
         bizContent.put("mobile", Collections.singletonList(phone));
         bizContent.put("type", 0); // 0. 验证码  1. 行业通知  2. 营销短信 3. 国际短信
-        bizContent.put("template_id", "ST_2020101100000007"); //短信模板id
+        bizContent.put("template_id", "ST_2021121300000001"); //短信模板id
         bizContent.put("sign", "恋爱手册"); // 短信签名
-        bizContent.put("params", "{\"code\":" + code + "}"); // 短信签名
-        request.setBizContent(new ObjectMapper().writeValueAsString(bizContent));
+        HashMap<String, Object> params = new HashMap<>();
+        params.put("code", code);
+        bizContent.put("params", params); // 短信签名
+        request.setBizContent(new Gson().toJson(bizContent));
         request.setMethod("sms.message.send");
-        System.out.println(client.execute(request));
+        return new Gson().fromJson(client.execute(request), ShansumaResponse.class);
     }
 
-    @Override
-    public boolean checkVerifyCode(VerifyCode verifyCode) {
-        return false;
+    private String genVerifyCode() {
+        // 4位随机数
+        String code = String.valueOf(new Random().nextInt(10000));
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < 4 - code.length(); i++) {
+            sb.append("0");
+        }
+        sb.append(code);
+        return sb.toString();
     }
 
     static class Client {

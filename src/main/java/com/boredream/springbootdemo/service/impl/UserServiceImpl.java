@@ -4,14 +4,16 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.boredream.springbootdemo.auth.JwtUtil;
-import com.boredream.springbootdemo.entity.dto.LoginRequestDTO;
 import com.boredream.springbootdemo.entity.User;
+import com.boredream.springbootdemo.entity.dto.LoginRequestDTO;
+import com.boredream.springbootdemo.entity.dto.VerifyCodeDTO;
 import com.boredream.springbootdemo.entity.dto.WxLoginDTO;
 import com.boredream.springbootdemo.entity.dto.WxSessionDTO;
 import com.boredream.springbootdemo.exception.ApiException;
 import com.boredream.springbootdemo.mapper.UserMapper;
 import com.boredream.springbootdemo.service.IUserService;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.boredream.springbootdemo.service.IVerifyCodeService;
+import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -43,6 +45,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     private RestTemplate restTemplate;
 
     @Autowired
+    private IVerifyCodeService verifyCodeService;
+
+    @Autowired
     public UserServiceImpl(JwtUtil jwtUtil) {
         this.jwtUtil = jwtUtil;
     }
@@ -59,9 +64,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         }
 
         User user = new User();
-        user.setNickname("小公主/骑士"); // TODO: chunyang 2021/11/24 默认昵称？
+        user.setNickname("昵称");
         user.setUsername(request.getUsername());
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        if (request.getPassword() != null) {
+            user.setPassword(passwordEncoder.encode(request.getPassword()));
+        }
         save(user);
 
         return jwtUtil.generateToken(user);
@@ -90,7 +97,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
 
         String json = restTemplate.getForObject(url, String.class, requestMap);
         try {
-            WxSessionDTO session = new ObjectMapper().readValue(json, WxSessionDTO.class);
+            WxSessionDTO session = new Gson().fromJson(json, WxSessionDTO.class);
             QueryWrapper<User> wrapper = new QueryWrapper<User>().eq("open_id", session.getOpenid());
             User user = getOne(wrapper);
 
@@ -106,6 +113,27 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
             return jwtUtil.generateToken(user);
         } catch (Exception e) {
             throw new ApiException("微信登录失败 " + e.getMessage());
+        }
+    }
+
+    @Override
+    public String loginWithVerifyCode(VerifyCodeDTO dto) {
+        // 使用验证码注册或登录用户
+        boolean success = verifyCodeService.checkVerifyCode(dto.getPhone(), dto.getCode());
+        if (!success) {
+            throw new ApiException("短信验证码错误");
+        }
+
+        // 短信验证通过后，判断是登录还是注册
+        User user = getUserByUsername(dto.getPhone());
+        LoginRequestDTO request = new LoginRequestDTO();
+        request.setUsername(dto.getPhone());
+        if (user == null) {
+            // 注册
+            return register(request);
+        } else {
+            // 登录，验证码登录，无需验证密码
+            return jwtUtil.generateToken(user);
         }
     }
 

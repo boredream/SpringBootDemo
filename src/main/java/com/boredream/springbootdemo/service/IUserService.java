@@ -1,8 +1,9 @@
 package com.boredream.springbootdemo.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.boredream.springbootdemo.entity.dto.LoginRequestDTO;
 import com.boredream.springbootdemo.entity.User;
+import com.boredream.springbootdemo.entity.dto.LoginRequestDTO;
+import com.boredream.springbootdemo.entity.dto.VerifyCodeDTO;
 import com.boredream.springbootdemo.entity.dto.WxLoginDTO;
 
 /**
@@ -21,9 +22,12 @@ public interface IUserService extends IService<User> {
 
     String wxLogin(WxLoginDTO dto);
 
+    String loginWithVerifyCode(VerifyCodeDTO dto);
+
     User getUserInfo(Long curUserId);
 
     User bindCp(Long curUserId, Long cpUserId);
 
     boolean unbindCp(Long curUserId, Long cpUserId);
+
 }

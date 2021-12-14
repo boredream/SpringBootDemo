@@ -81,7 +81,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
                 // 不用登陆
                 .antMatchers(
-                        "/user/register", "/user/login", "/user/wxlogin",
+                        "/user/register", "/user/login", "/user/wxlogin", "/user/sendVerifyCode", "/user/loginWithVerifyCode",
                         "/swagger-ui/*", "/v2/**", "/swagger-resources/**", "/swagger-ui.html", "/webjars/**")
                 .permitAll()
 

@@ -1,11 +1,9 @@
 package com.boredream.springbootdemo.service;
 
-import com.boredream.springbootdemo.entity.VerifyCode;
-
 public interface IVerifyCodeService {
 
-    VerifyCode sendVerifyCode(String phone, Integer verifyType);
+    String sendVerifyCode(String phone, long duration, boolean mock);
 
-    boolean checkVerifyCode(VerifyCode verifyCode);
+    boolean checkVerifyCode(String phone, String code);
 
 }

@@ -1,10 +1,10 @@
 package com.boredream.springbootdemo.controller;
 
-import com.boredream.springbootdemo.entity.dto.LoginRequestDTO;
 import com.boredream.springbootdemo.entity.User;
-import com.boredream.springbootdemo.entity.dto.ResponseDTO;
-import com.boredream.springbootdemo.entity.dto.WxLoginDTO;
+import com.boredream.springbootdemo.entity.dto.*;
 import com.boredream.springbootdemo.service.IUserService;
+import com.boredream.springbootdemo.service.IVerifyCodeService;
+import com.boredream.springbootdemo.utils.DateUtils;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -21,6 +21,22 @@ public class UserController {
 
     @Autowired
     private IUserService service;
+
+    @Autowired
+    private IVerifyCodeService verifyCodeService;
+
+    @ApiOperation(value = "发送验证码")
+    @GetMapping(value = "/sendVerifyCode", produces = "application/json")
+    public ResponseDTO<Boolean> sendVerifyCode(@Valid PhoneDTO dto) {
+        String code = verifyCodeService.sendVerifyCode(dto.getPhone(), 5 * DateUtils.ONE_MINUTE_MILLIONS, false);
+        return ResponseDTO.success(code != null);
+    }
+
+    @ApiOperation(value = "使用验证码注册或登录用户")
+    @PostMapping(value = "/loginWithVerifyCode", produces = "application/json")
+    public ResponseDTO<String> loginWithVerifyCode(@Valid @RequestBody VerifyCodeDTO dto) {
+        return ResponseDTO.success(service.loginWithVerifyCode(dto));
+    }
 
     @PostMapping(value = "/register", produces = "application/json")
     public ResponseDTO<String> register(@Valid @RequestBody LoginRequestDTO authRequest) {

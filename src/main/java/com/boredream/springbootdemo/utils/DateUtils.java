@@ -218,9 +218,23 @@ public class DateUtils {
       }
    }
 
-   //获取今天0点0分0秒的信息
-   public static Calendar getDayCalendar() {
+   // 获取今天0点0分0秒的信息
+   public static Calendar getTodayStartCalendar() {
       return clearToDayCalendar(Calendar.getInstance());
+   }
+
+   // 获取次日0点0分0秒的信息
+   public static Date getTomorrowStartDate() {
+      Calendar calendar = getTodayStartCalendar();
+      calendar.add(Calendar.DAY_OF_MONTH, 1);
+      return new Date(calendar.getTimeInMillis());
+   }
+
+   // 获取从现在开始的下一个时刻
+   public static Date nextDate(long millisecond) {
+      Date date = new Date();
+      date.setTime(date.getTime() + millisecond);
+      return date;
    }
 
    //清除时分秒毫秒信息

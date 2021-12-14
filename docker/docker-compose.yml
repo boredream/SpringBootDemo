@@ -1,14 +1,5 @@
 version: "3.9"
 services:
-#  web:  # 容器名称
-#    build: .  # 使用Dockerfile新生成镜像
-#    image: boredream/springbootdemo_web
-#    ports: # 宿主机端口:容器端口
-#      - "8080:8080"
-#    depends_on: # 依赖先执行的容器
-#      - nginx
-#      - mysql
-
   nginx:
     image: nginx
     restart: always
@@ -29,6 +20,17 @@ services:
     ports:
       - "3306:3306"
     volumes:
+      - ./mysql/data:/var/lib/mysql # 数据
       - ./mysql/conf:/etc/mysql # 配置
       - ./mysql/log:/var/log/mysql # 日志
       - ./mysql/init:/docker-entrypoint-initdb.d # mysql第一次启动时执行,之后重启容器不会重复执行
+
+  redis:
+    image: redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./redis/data:/data
+    command: redis-server --requirepass root
+    privileged: true

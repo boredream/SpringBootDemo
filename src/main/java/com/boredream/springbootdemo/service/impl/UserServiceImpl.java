@@ -141,7 +141,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     public User getUserInfo(Long curUserId) {
         User user = getById(curUserId);
         if (user.getCpUserId() != null) {
-            user.setCpUser(getBaseMapper().selectById(user.getCpUserId()));
+            User cpUser = getBaseMapper().selectById(user.getCpUserId());
+            cpUser.setPassword(null);
+            user.setCpUser(cpUser);
         }
         user.setPassword(null);
         return user;

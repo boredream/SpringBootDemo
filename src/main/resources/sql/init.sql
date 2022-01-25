@@ -46,7 +46,7 @@ CREATE TABLE IF NOT EXISTS `diary`
 (
     id          int unsigned auto_increment comment '主键id' primary key,
     user_id     int                                   not null comment '所属用户id',
-    content     varchar(50)                           not null comment '文字内容',
+    content     varchar(500)                          not null comment '文字内容',
     diary_date  varchar(50)                           null comment '日记日期',
     images      varchar(3000)                         null comment '图片',
     create_time timestamp default current_timestamp() not null,

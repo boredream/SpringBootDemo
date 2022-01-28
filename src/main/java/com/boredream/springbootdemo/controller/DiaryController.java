@@ -8,6 +8,8 @@ import com.boredream.springbootdemo.entity.dto.DiaryQueryDTO;
 import com.boredream.springbootdemo.entity.dto.PageResultDTO;
 import com.boredream.springbootdemo.entity.dto.ResponseDTO;
 import com.boredream.springbootdemo.service.IDiaryService;
+import com.boredream.springbootdemo.service.IWxService;
+import com.boredream.springbootdemo.service.impl.WxServiceImpl;
 import com.boredream.springbootdemo.utils.PageUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -30,6 +32,9 @@ public class DiaryController extends BaseController {
 
     @Autowired
     private IDiaryService service;
+
+    @Autowired
+    private IWxService wxService;
 
     @ApiOperation(value = "分页查询日记")
     @GetMapping("/page")
@@ -55,13 +60,23 @@ public class DiaryController extends BaseController {
     @ApiOperation(value = "添加日记")
     @PostMapping
     public ResponseDTO<Boolean> add(@RequestBody @Validated Diary body, Long curUserId) {
+        boolean checkMsgSec = wxService.checkMsgSec(body.getPlatform(), curUserId, IWxService.SCENE_SOCIAL, body.getContent());
+        if(!checkMsgSec) {
+            return ResponseDTO.errorMsgSecCheck();
+        }
+
         body.setUserId(curUserId);
         return ResponseDTO.success(service.save(body));
     }
 
     @ApiOperation(value = "修改日记")
     @PutMapping("/{id}")
-    public ResponseDTO<Boolean> update(@PathVariable("id") Long id, @RequestBody @Validated Diary body) {
+    public ResponseDTO<Boolean> update(@PathVariable("id") Long id, @RequestBody @Validated Diary body, Long curUserId) {
+        boolean checkMsgSec = wxService.checkMsgSec(body.getPlatform(), curUserId, WxServiceImpl.SCENE_SOCIAL, body.getContent());
+        if(!checkMsgSec) {
+            return ResponseDTO.errorMsgSecCheck();
+        }
+
         body.setId(id);
         return ResponseDTO.success(service.updateById(body));
     }

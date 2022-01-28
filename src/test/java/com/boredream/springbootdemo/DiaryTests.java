@@ -99,7 +99,7 @@ class DiaryTests {
 		String newContent = "new content " + System.currentTimeMillis();
 		body = new Diary();
 		body.setContent(newContent);
-		commitResponse = controller.update(updateId, body);
+		commitResponse = controller.update(updateId, body, curUserId);
 		Assertions.assertTrue(commitResponse.getSuccess());
 		Assertions.assertEquals(newContent, mapper.selectById(updateId).getContent());
 

@@ -40,6 +40,12 @@ public class ResponseDTO<T> {
         return new ResponseDTO<>(code, msg, false, data);
     }
 
+    // 错误封装
+
+    public static <T> ResponseDTO<T> errorMsgSecCheck() {
+        return new ResponseDTO<>(200, "内容包含敏感字符，请重新编辑后发送", false, null);
+    }
+
     @Override
     public String toString() {
         return "ResponseDTO{" + "code=" + code + ", msg='" + msg + '\'' + ", success=" + success + ", data=" + data +

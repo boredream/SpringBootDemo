@@ -44,7 +44,10 @@ public class TodoGroupController extends BaseController {
         List<TodoGroup> list = service.list(wrapper);
         for (TodoGroup group : list) {
             Long groupId = group.getId();
-            List<Todo> todoList = todoService.list(new QueryWrapper<Todo>().eq("todo_group_id", groupId));
+            List<Todo> todoList = todoService.list(
+                    new QueryWrapper<Todo>()
+                            .eq("todo_group_id", groupId)
+                            .orderByAsc("done_date"));
             group.setTodoList(todoList);
         }
         return ResponseDTO.success(list);

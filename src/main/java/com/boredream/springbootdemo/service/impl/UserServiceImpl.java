@@ -13,16 +13,13 @@ import com.boredream.springbootdemo.exception.ApiException;
 import com.boredream.springbootdemo.mapper.UserMapper;
 import com.boredream.springbootdemo.service.IUserService;
 import com.boredream.springbootdemo.service.IVerifyCodeService;
-import com.google.gson.Gson;
+import com.boredream.springbootdemo.service.IWxService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * <p>
@@ -46,6 +43,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
 
     @Autowired
     private IVerifyCodeService verifyCodeService;
+
+    @Autowired
+    private IWxService wxService;
 
     @Autowired
     public UserServiceImpl(JwtUtil jwtUtil) {
@@ -88,16 +88,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     }
 
     public String wxLogin(WxLoginDTO dto) {
-        // TODO: chunyang 2021/10/28 使用配置
-        String url = "https://api.weixin.qq.com/sns/jscode2session?appid={appid}&secret={secret}&js_code={code}&grant_type=authorization_code";
-        Map<String, String> requestMap = new HashMap<>();
-        requestMap.put("appid", "wx0896ca1ddd64114e");
-        requestMap.put("secret", "068602332cdecb1a9a5ec5c4b00b16f8");
-        requestMap.put("code", dto.getCode());
-
-        String json = restTemplate.getForObject(url, String.class, requestMap);
         try {
-            WxSessionDTO session = new Gson().fromJson(json, WxSessionDTO.class);
+            WxSessionDTO session = wxService.wxLogin(dto);
             QueryWrapper<User> wrapper = new QueryWrapper<User>().eq("open_id", session.getOpenid());
             User user = getOne(wrapper);
 

@@ -88,6 +88,7 @@ public class WxServiceImpl implements IWxService {
         requestMap.put("scene", scene);
         requestMap.put("content", content);
         WxMsgSecCheckResult checkResult = restTemplate.postForObject(url, requestMap, WxMsgSecCheckResult.class, urlParamsMap);
+        log.info("[checkMsgSec checkResult]" + new Gson().toJson(checkResult));
         return checkResult != null && checkResult.isPass();
     }
 }

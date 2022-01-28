@@ -75,7 +75,7 @@ class TodoTests {
 		Long updateId = groupMapper.selectOne(new QueryWrapper<TodoGroup>().eq("name", "待修改")).getId();
 		group = new TodoGroup();
 		group.setName("清单组XXX");
-		commitResponse = groupController.update(updateId, group);
+		commitResponse = groupController.update(updateId, group, curUserId);
 		Assertions.assertTrue(commitResponse.getSuccess());
 		Assertions.assertEquals("清单组XXX", groupMapper.selectById(updateId).getName());
 
@@ -139,7 +139,7 @@ class TodoTests {
 		body.setName(newData);
 		body.setDoneDate("2022-02-14");
 		body.setDetail("去趟铁岭");
-		commitResponse = controller.update(updateId, body);
+		commitResponse = controller.update(updateId, body, curUserId);
 		Assertions.assertTrue(commitResponse.getSuccess());
 		Assertions.assertEquals(newData, mapper.selectById(updateId).getName());
 

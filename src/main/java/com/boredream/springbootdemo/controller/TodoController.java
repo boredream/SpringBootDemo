@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.boredream.springbootdemo.entity.Todo;
 import com.boredream.springbootdemo.entity.dto.ResponseDTO;
 import com.boredream.springbootdemo.service.ITodoService;
+import com.boredream.springbootdemo.service.IWxService;
+import com.boredream.springbootdemo.service.impl.WxServiceImpl;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +31,9 @@ public class TodoController extends BaseController {
     @Autowired
     private ITodoService service;
 
+    @Autowired
+    private WxServiceImpl wxService;
+
     @ApiOperation(value = "查询所有清单")
     @GetMapping()
     public ResponseDTO<List<Todo>> query(Long curUserId) {
@@ -39,13 +44,21 @@ public class TodoController extends BaseController {
     @ApiOperation(value = "添加清单")
     @PostMapping
     public ResponseDTO<Boolean> add(@RequestBody @Validated Todo params, Long curUserId) {
+        boolean checkMsgSec = wxService.checkMsgSec(params.getPlatform(), curUserId, IWxService.SCENE_SOCIAL, params.getName());
+        if(!checkMsgSec) {
+            return ResponseDTO.errorMsgSecCheck();
+        }
         params.setUserId(curUserId);
         return ResponseDTO.success(service.save(params));
     }
 
     @ApiOperation(value = "修改清单")
     @PutMapping("/{id}")
-    public ResponseDTO<Boolean> update(@PathVariable("id") Long id, @RequestBody @Validated Todo params) {
+    public ResponseDTO<Boolean> update(@PathVariable("id") Long id, @RequestBody @Validated Todo params, Long curUserId) {
+        boolean checkMsgSec = wxService.checkMsgSec(params.getPlatform(), curUserId, IWxService.SCENE_SOCIAL, params.getName());
+        if(!checkMsgSec) {
+            return ResponseDTO.errorMsgSecCheck();
+        }
         params.setId(id);
         return ResponseDTO.success(service.updateById(params));
     }

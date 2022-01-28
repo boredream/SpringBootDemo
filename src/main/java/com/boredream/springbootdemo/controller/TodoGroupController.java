@@ -7,6 +7,8 @@ import com.boredream.springbootdemo.entity.TodoGroup;
 import com.boredream.springbootdemo.entity.dto.ResponseDTO;
 import com.boredream.springbootdemo.service.ITodoGroupService;
 import com.boredream.springbootdemo.service.ITodoService;
+import com.boredream.springbootdemo.service.IWxService;
+import com.boredream.springbootdemo.service.impl.WxServiceImpl;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +39,9 @@ public class TodoGroupController extends BaseController {
     @Autowired
     private ITodoService todoService;
 
+    @Autowired
+    private WxServiceImpl wxService;
+
     @ApiOperation(value = "查询所有清单组，包括组内所有清单")
     @GetMapping()
     public ResponseDTO<List<TodoGroup>> query(Long curUserId) {
@@ -56,13 +61,21 @@ public class TodoGroupController extends BaseController {
     @ApiOperation(value = "添加清单组")
     @PostMapping
     public ResponseDTO<Boolean> add(@RequestBody @Validated TodoGroup body, Long curUserId) {
+        boolean checkMsgSec = wxService.checkMsgSec(body.getPlatform(), curUserId, IWxService.SCENE_SOCIAL, body.getName());
+        if(!checkMsgSec) {
+            return ResponseDTO.errorMsgSecCheck();
+        }
         body.setUserId(curUserId);
         return ResponseDTO.success(service.save(body));
     }
 
     @ApiOperation(value = "修改清单组")
     @PutMapping("/{id}")
-    public ResponseDTO<Boolean> update(@PathVariable("id") Long id, @RequestBody @Validated TodoGroup body) {
+    public ResponseDTO<Boolean> update(@PathVariable("id") Long id, @RequestBody @Validated TodoGroup body, Long curUserId) {
+        boolean checkMsgSec = wxService.checkMsgSec(body.getPlatform(), curUserId, IWxService.SCENE_SOCIAL, body.getName());
+        if(!checkMsgSec) {
+            return ResponseDTO.errorMsgSecCheck();
+        }
         body.setId(id);
         return ResponseDTO.success(service.updateById(body));
     }

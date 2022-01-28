@@ -88,7 +88,7 @@ class TheDayTests {
 		String newDate = "2022-05-01";
 		body = new TheDay();
 		body.setTheDayDate(newDate);
-		commitResponse = controller.update(updateId, body);
+		commitResponse = controller.update(updateId, body, curUserId);
 		Assertions.assertTrue(commitResponse.getSuccess());
 		Assertions.assertEquals(newDate, mapper.selectById(updateId).getTheDayDate());
 

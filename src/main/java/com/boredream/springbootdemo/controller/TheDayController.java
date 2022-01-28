@@ -8,6 +8,8 @@ import com.boredream.springbootdemo.entity.dto.PageResultDTO;
 import com.boredream.springbootdemo.entity.dto.ResponseDTO;
 import com.boredream.springbootdemo.entity.dto.TheDayQueryDTO;
 import com.boredream.springbootdemo.service.ITheDayService;
+import com.boredream.springbootdemo.service.IWxService;
+import com.boredream.springbootdemo.service.impl.WxServiceImpl;
 import com.boredream.springbootdemo.utils.PageUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -31,6 +33,9 @@ public class TheDayController extends BaseController {
     @Autowired
     private ITheDayService service;
 
+    @Autowired
+    private WxServiceImpl wxService;
+
     @ApiOperation(value = "分页查询纪念日")
     @GetMapping("/page")
     public ResponseDTO<PageResultDTO<TheDay>> queryByPage(TheDayQueryDTO dto, Long curUserId) {
@@ -44,13 +49,23 @@ public class TheDayController extends BaseController {
     @ApiOperation(value = "添加纪念日")
     @PostMapping
     public ResponseDTO<Boolean> add(@RequestBody @Validated TheDay params, Long curUserId) {
+        boolean checkMsgSec = wxService.checkMsgSec(params.getPlatform(), curUserId, IWxService.SCENE_SOCIAL, params.getName());
+        if(!checkMsgSec) {
+            return ResponseDTO.errorMsgSecCheck();
+        }
+
         params.setUserId(curUserId);
         return ResponseDTO.success(service.save(params));
     }
 
     @ApiOperation(value = "修改纪念日")
     @PutMapping("/{id}")
-    public ResponseDTO<Boolean> update(@PathVariable("id") Long id, @RequestBody @Validated TheDay params) {
+    public ResponseDTO<Boolean> update(@PathVariable("id") Long id, @RequestBody @Validated TheDay params, Long curUserId) {
+        boolean checkMsgSec = wxService.checkMsgSec(params.getPlatform(), curUserId, IWxService.SCENE_SOCIAL, params.getName());
+        if(!checkMsgSec) {
+            return ResponseDTO.errorMsgSecCheck();
+        }
+
         params.setId(id);
         return ResponseDTO.success(service.updateById(params));
     }

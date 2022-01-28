@@ -4,6 +4,7 @@ import com.boredream.springbootdemo.entity.User;
 import com.boredream.springbootdemo.entity.dto.*;
 import com.boredream.springbootdemo.service.IUserService;
 import com.boredream.springbootdemo.service.IVerifyCodeService;
+import com.boredream.springbootdemo.service.IWxService;
 import com.boredream.springbootdemo.utils.DateUtils;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,9 @@ public class UserController {
 
     @Autowired
     private IVerifyCodeService verifyCodeService;
+
+    @Autowired
+    private IWxService wxService;
 
     @ApiOperation(value = "发送验证码")
     @GetMapping(value = "/sendVerifyCode", produces = "application/json")
@@ -61,6 +65,10 @@ public class UserController {
     @ApiOperation(value = "修改用户")
     @PutMapping("/{id}")
     public ResponseDTO<Boolean> update(@PathVariable("id") Long id, @RequestBody @Validated User params) {
+        boolean checkMsgSec = wxService.checkMsgSec(params.getPlatform(), id, IWxService.SCENE_SOCIAL, params.getNickname());
+        if(!checkMsgSec) {
+            return ResponseDTO.errorMsgSecCheck();
+        }
         params.setId(id);
         return ResponseDTO.success(service.updateById(params));
     }
@@ -76,6 +84,5 @@ public class UserController {
     public ResponseDTO<Boolean> unbindCp(Long curUserId, @PathVariable("cpUserId") Long cpUserId) {
         return ResponseDTO.success(service.unbindCp(curUserId, cpUserId));
     }
-
 
 }

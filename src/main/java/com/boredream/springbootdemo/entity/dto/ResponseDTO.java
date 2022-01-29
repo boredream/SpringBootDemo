@@ -43,7 +43,7 @@ public class ResponseDTO<T> {
     // 错误封装
 
     public static <T> ResponseDTO<T> errorMsgSecCheck() {
-        return new ResponseDTO<>(200, "发送内容不合规", false, null);
+        return new ResponseDTO<>(200, "发送文字不合规", false, null);
     }
 
     @Override

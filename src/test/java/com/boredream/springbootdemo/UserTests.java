@@ -6,6 +6,7 @@ import com.boredream.springbootdemo.controller.UserController;
 import com.boredream.springbootdemo.entity.dto.LoginRequestDTO;
 import com.boredream.springbootdemo.entity.User;
 import com.boredream.springbootdemo.entity.dto.ResponseDTO;
+import com.boredream.springbootdemo.entity.dto.SetPasswordRequestDTO;
 import com.boredream.springbootdemo.exception.ApiException;
 import com.boredream.springbootdemo.mapper.UserMapper;
 import org.junit.jupiter.api.Assertions;
@@ -33,19 +34,67 @@ class UserTests {
 	@BeforeAll
 	void before() {
 		// delete all
-		mapper.delete(new QueryWrapper<User>().eq("username", "二狗子")
-				.or().eq("username", "小仙女"));
+		mapper.delete(new QueryWrapper<User>()
+				.eq("username", "二狗子")
+				.or().eq("username", "小仙女")
+				.or().eq("username", "设置密码")
+		);
+	}
+
+	@Test
+	void testSetPassword() {
+		// register
+		LoginRequestDTO loginDto = new LoginRequestDTO();
+		loginDto.setUsername("设置密码");
+		loginDto.setPassword("123456");
+		ResponseDTO<String> response = controller.register(loginDto);
+		Assertions.assertTrue(response.getSuccess());
+
+		Long curUserId = Long.parseLong(jwtUtil.getUserIdFromToken(response.getData()));
+
+		// setPassword error
+		SetPasswordRequestDTO setPswDto = new SetPasswordRequestDTO();
+		try {
+			setPswDto.setPassword("123");
+			controller.setPassword(setPswDto, curUserId);
+		} catch (ApiException e) {
+			Assertions.assertEquals("密码必须是6至16位的数字或字母组成", e.getMessage());
+		}
+
+		try {
+			setPswDto.setPassword("__________");
+			controller.setPassword(setPswDto, curUserId);
+		} catch (ApiException e) {
+			Assertions.assertEquals("密码必须是6至16位的数字或字母组成", e.getMessage());
+		}
+
+		try {
+			setPswDto.setPassword("12345678901234567890");
+			controller.setPassword(setPswDto, curUserId);
+		} catch (ApiException e) {
+			Assertions.assertEquals("密码必须是6至16位的数字或字母组成", e.getMessage());
+		}
+
+		// setPassword
+		setPswDto.setPassword("123456abcd");
+		ResponseDTO<Boolean> booleanResponse = controller.setPassword(setPswDto, curUserId);
+		Assertions.assertTrue(booleanResponse.getSuccess());
+
+		// login error
+		try {
+			controller.login(loginDto);
+		} catch (ApiException e) {
+			Assertions.assertEquals("密码不正确", e.getMessage());
+		}
+
+		// login success
+		loginDto.setPassword(setPswDto.getPassword());
+		response = controller.login(loginDto);
+		Assertions.assertTrue(response.getSuccess());
 	}
 
 	@Test
 	void test() {
-		// TODO: chunyang 2021/11/24
-		// wx login
-//		WxLoginDTO dto = new WxLoginDTO();
-//		dto.setCode("123456");
-//		String token = controller.wxLogin(dto).getData();
-//		Assertions.assertNotNull(token);
-
 		// register
 		LoginRequestDTO request = new LoginRequestDTO();
 		request.setUsername("二狗子");

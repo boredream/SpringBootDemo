@@ -19,7 +19,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
 
 /**
  * <p>
@@ -37,9 +36,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
 
     @Autowired
     PasswordEncoder passwordEncoder;
-
-    @Autowired
-    private RestTemplate restTemplate;
 
     @Autowired
     private IVerifyCodeService verifyCodeService;
@@ -72,6 +68,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         save(user);
 
         return jwtUtil.generateToken(user);
+    }
+
+    @Override
+    public Boolean setPassword(Long curUserId, String password) {
+        User user = getBaseMapper().selectById(curUserId);
+        user.setPassword(passwordEncoder.encode(password));
+        return updateById(user);
     }
 
     public String login(LoginRequestDTO request) {

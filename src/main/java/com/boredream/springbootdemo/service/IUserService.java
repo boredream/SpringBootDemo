@@ -18,6 +18,8 @@ public interface IUserService extends IService<User> {
 
     String register(LoginRequestDTO request);
 
+    Boolean setPassword(Long curUserId, String password);
+
     String login(LoginRequestDTO request);
 
     String wxLogin(WxLoginDTO dto);

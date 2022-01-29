@@ -41,7 +41,7 @@ class WxTests {
         body.setDiaryDate("2021-12-21");
         body.setPlatform("wx");
         ResponseDTO<Boolean> commitResponse = controller.add(body, curUserId);
-        Assertions.assertEquals("发送内容不合规", commitResponse.getMsg());
+        Assertions.assertEquals("发送文字不合规", commitResponse.getMsg());
 
         body.setPlatform(null);
         commitResponse = controller.add(body, curUserId);

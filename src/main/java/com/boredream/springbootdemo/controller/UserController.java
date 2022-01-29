@@ -73,6 +73,12 @@ public class UserController {
         return ResponseDTO.success(service.updateById(params));
     }
 
+    @ApiOperation(value = "设置密码")
+    @PutMapping("/setPassword")
+    public ResponseDTO<Boolean> setPassword(@RequestBody @Validated SetPasswordRequestDTO params, Long curUserId) {
+        return ResponseDTO.success(service.setPassword(curUserId, params.getPassword()));
+    }
+
     @Transactional
     @PutMapping(value = "/cp/{cpUserId}", produces = "application/json")
     public ResponseDTO<User> bindCp(Long curUserId, @PathVariable("cpUserId") Long cpUserId) {

@@ -8,6 +8,7 @@ import com.boredream.springbootdemo.entity.TodoGroup;
 import com.boredream.springbootdemo.entity.dto.ResponseDTO;
 import com.boredream.springbootdemo.mapper.TodoGroupMapper;
 import com.boredream.springbootdemo.mapper.TodoMapper;
+import com.boredream.springbootdemo.mapper.UserMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -22,6 +23,9 @@ import java.util.List;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @MapperScan("com.boredream.springbootdemo.mapper")
 class TodoTests {
+
+	@Autowired
+	UserMapper userMapper;
 
 	@Autowired
 	TodoGroupMapper groupMapper;
@@ -43,6 +47,64 @@ class TodoTests {
 		// delete all
 		groupMapper.delete(new QueryWrapper<>());
 		mapper.delete(new QueryWrapper<>());
+	}
+
+	@Test
+	void testCount() {
+		// add group
+		TodoGroup group = new TodoGroup();
+		group.setName("情侣一起必做的10件事");
+		ResponseDTO<Boolean> commitResponse = groupController.add(group, curUserId);
+		Assertions.assertTrue(commitResponse.getSuccess());
+
+		Long groupId = groupMapper.selectOne(new QueryWrapper<TodoGroup>().eq("name", "情侣一起必做的10件事")).getId();
+
+		// add t
+		Todo body = new Todo();
+		body.setTodoGroupId(groupId);
+		body.setName("一起拉练");
+		commitResponse = controller.add(body, curUserId);
+		Assertions.assertTrue(commitResponse.getSuccess());
+
+		body = new Todo();
+		body.setTodoGroupId(groupId);
+		body.setName("一起做饭");
+		commitResponse = controller.add(body, cpUserId);
+		Assertions.assertTrue(commitResponse.getSuccess());
+
+		body = new Todo();
+		body.setTodoGroupId(groupId);
+		body.setName("一起旅行");
+		commitResponse = controller.add(body, curUserId);
+		Assertions.assertTrue(commitResponse.getSuccess());
+
+		// query group with count
+		List<TodoGroup> todoGroupList = groupController.queryOnlyGroup(curUserId).getData();
+		Assertions.assertEquals(1, todoGroupList.size());
+		Assertions.assertEquals(0, todoGroupList.get(0).getProgress());
+		Assertions.assertEquals(3, todoGroupList.get(0).getTotal());
+
+		// query t list
+		List<Todo> todoList = controller.queryByGroupId(groupId).getData();
+		Assertions.assertEquals(3, todoList.size());
+
+		// update t done
+		Todo todo = todoList.get(0);
+		todo.setDone(true);
+		commitResponse = controller.update(todo.getId(), todo, curUserId);
+		Assertions.assertTrue(commitResponse.getSuccess());
+
+		todoGroupList = groupController.queryOnlyGroup(curUserId).getData();
+		Assertions.assertEquals(1, todoGroupList.get(0).getProgress());
+		Assertions.assertEquals(3, todoGroupList.get(0).getTotal());
+
+		// delete t
+		commitResponse = controller.delete(todo.getId());
+		Assertions.assertTrue(commitResponse.getSuccess());
+
+		todoGroupList = groupController.queryOnlyGroup(curUserId).getData();
+		Assertions.assertEquals(0, todoGroupList.get(0).getProgress());
+		Assertions.assertEquals(2, todoGroupList.get(0).getTotal());
 	}
 
 	@Test

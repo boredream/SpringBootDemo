@@ -1,7 +1,10 @@
 package com.boredream.springbootdemo.service;
 
-import com.boredream.springbootdemo.entity.TodoGroup;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.boredream.springbootdemo.entity.TodoGroup;
+
+import java.util.List;
 
 /**
  * <p>
@@ -12,5 +15,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @since 2021-11-24
  */
 public interface ITodoGroupService extends IService<TodoGroup> {
+
+    List<TodoGroup> getTodoGroupListWithCount(QueryWrapper<TodoGroup> wrapper);
 
 }

@@ -35,6 +35,15 @@ public class TodoController extends BaseController {
     private WxServiceImpl wxService;
 
     @ApiOperation(value = "查询所有清单")
+    @GetMapping("/{id}")
+    public ResponseDTO<List<Todo>> queryByGroupId(@PathVariable("id") Long groupId) {
+        List<Todo> todoList = service.list(new QueryWrapper<Todo>()
+                .eq("todo_group_id", groupId)
+                .orderByAsc("done_date"));
+        return ResponseDTO.success(todoList);
+    }
+
+    @ApiOperation(value = "查询所有清单")
     @GetMapping()
     public ResponseDTO<List<Todo>> query(Long curUserId) {
         QueryWrapper<Todo> wrapper = genUserQuery("todo", curUserId);

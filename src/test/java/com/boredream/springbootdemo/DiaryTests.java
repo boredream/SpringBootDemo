@@ -7,6 +7,7 @@ import com.boredream.springbootdemo.entity.dto.DiaryQueryDTO;
 import com.boredream.springbootdemo.entity.dto.PageResultDTO;
 import com.boredream.springbootdemo.entity.dto.ResponseDTO;
 import com.boredream.springbootdemo.mapper.DiaryMapper;
+import com.boredream.springbootdemo.service.IUserService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -14,6 +15,8 @@ import org.junit.jupiter.api.TestInstance;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import java.lang.reflect.Method;
 
 @SpringBootTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -25,6 +28,9 @@ class DiaryTests {
 
 	@Autowired
 	DiaryMapper mapper;
+
+	@Autowired
+	IUserService service;
 
 	private Long curUserId = 1L;
 	private Long cpUserId = 2L;
@@ -42,6 +48,15 @@ class DiaryTests {
 //		List<Diary> listResponse = controller.queryByMonth(dto, curUserId).getData();
 //		Assertions.assertEquals(1, listResponse.size());
 //	}
+
+	@Test
+	void test2() {
+		Method[] methods = service.getClass().getDeclaredMethods();
+		for (Method method : methods) {
+			String name = method.getName();
+			System.out.println(name);
+		}
+	}
 
 	@Test
 	void test() {

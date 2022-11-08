@@ -42,6 +42,13 @@ public class TodoGroupController extends BaseController {
     @Autowired
     private WxServiceImpl wxService;
 
+    @ApiOperation(value = "查询所有清单组，不包括组内所有清单")
+    @GetMapping("/only_group")
+    public ResponseDTO<List<TodoGroup>> queryOnlyGroup(Long curUserId) {
+        QueryWrapper<TodoGroup> wrapper = genUserQuery(curUserId);
+        return ResponseDTO.success(service.getTodoGroupListWithCount(wrapper));
+    }
+
     @ApiOperation(value = "查询所有清单组，包括组内所有清单")
     @GetMapping()
     public ResponseDTO<List<TodoGroup>> query(Long curUserId) {
@@ -85,8 +92,7 @@ public class TodoGroupController extends BaseController {
     @Transactional
     public ResponseDTO<Boolean> delete(@PathVariable("id") Long id) {
         // 同时删除组内所有清单
-        return ResponseDTO.success(service.removeById(id) && todoService.remove(
-                new QueryWrapper<Todo>().eq("todo_group_id", id)));
+        return ResponseDTO.success(service.removeById(id));
     }
 
 }

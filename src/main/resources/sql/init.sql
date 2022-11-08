@@ -75,14 +75,15 @@ CREATE TABLE IF NOT EXISTS `todo`
 (
     id            int unsigned auto_increment comment '主键id' primary key,
     user_id       int                                    not null comment '所属用户id',
-    todo_group_id int                                    not null comment '所属清单组id',
+    todo_group_id int unsigned                           not null comment '所属清单组id',
     done          tinyint(1) default 0                   not null comment '已完成',
     name          varchar(50)                            not null comment '名称',
     done_date     varchar(50)                            null comment '完成日期',
     detail        varchar(200)                           null comment '描述',
     images        varchar(3000)                          null comment '图片',
     create_time   timestamp  default current_timestamp() not null,
-    update_time   timestamp  default current_timestamp() not null on update current_timestamp()
+    update_time   timestamp  default current_timestamp() not null on update current_timestamp(),
+    constraint fk_todo_group_id foreign key (todo_group_id) references todo_group (id) on update cascade on delete cascade
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci COMMENT ='清单';

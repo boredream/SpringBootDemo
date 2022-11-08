@@ -8,6 +8,7 @@ import com.boredream.springbootdemo.entity.dto.WxSessionDTO;
 import com.boredream.springbootdemo.mapper.UserMapper;
 import com.boredream.springbootdemo.service.IWxService;
 import com.google.gson.Gson;
+import io.netty.util.internal.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -86,9 +87,9 @@ public class WxServiceImpl implements IWxService {
         requestMap.put("version", 2);
         requestMap.put("openid", curUser.getOpenId());
         requestMap.put("scene", scene);
-        requestMap.put("content", content);
+        requestMap.put("content", StringUtil.isNullOrEmpty(content) ? "content" : content);
         WxMsgSecCheckResult checkResult = restTemplate.postForObject(url, requestMap, WxMsgSecCheckResult.class, urlParamsMap);
-        log.info("[checkMsgSec checkResult]" + new Gson().toJson(checkResult));
+        log.info("[checkMsgSec] params = " + new Gson().toJson(requestMap) + ", result = " + new Gson().toJson(checkResult));
         return checkResult != null && checkResult.isPass();
     }
 }

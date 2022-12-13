@@ -2,7 +2,6 @@ package com.boredream.springbootdemo;
 
 import com.baomidou.mybatisplus.generator.FastAutoGenerator;
 import com.baomidou.mybatisplus.generator.config.OutputFile;
-import com.baomidou.mybatisplus.generator.config.TemplateType;
 import com.boredream.springbootdemo.entity.BaseEntity;
 
 import java.util.Collections;
@@ -14,7 +13,7 @@ public class CodeGenerator {
         FastAutoGenerator
                 .create("jdbc:mysql://localhost:3306/love_cookbook",
                         "root",
-                        "root")
+                        "c06b4e42600d464b")
                 .globalConfig(builder -> {
                     builder.author("boredream") // 设置作者
                             .enableSwagger() // 开启 swagger 模式
@@ -35,12 +34,12 @@ public class CodeGenerator {
                                     System.getProperty("user.dir") + "/src/main/resources/mapper")); // 设置mapperXml生成路径
                 })
                 .strategyConfig(builder -> {
-                    builder.addInclude("recommend_todo", "recommend_the_day", "recommend_todo_group"); // 设置需要生成的表名
+                    builder.addInclude("trace_record", "trace_location"); // 设置需要生成的表名
 //                            .addTablePrefix("t_", "c_"); // 设置过滤表前缀
                 })
                 .templateConfig(builder -> builder
-                        .disable(TemplateType.XML, TemplateType.CONTROLLER, TemplateType.SERVICE, TemplateType.SERVICEIMPL)
-//                        .controller("/templates/RestController.java")
+//                        .disable(TemplateType.XML, TemplateType.CONTROLLER, TemplateType.SERVICE, TemplateType.SERVICEIMPL)
+                        .controller("/templates/RestController.java")
                         .build())
 //                .templateEngine(new FreemarkerTemplateEngine()) // 使用Freemarker引擎模板，默认的是Velocity引擎模板
                 .strategyConfig(builder -> builder

@@ -1,5 +1,7 @@
 package com.boredream.springbootdemo.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -18,7 +20,10 @@ import lombok.Setter;
 @Setter
 @TableName("trace_location")
 @ApiModel(value = "TraceLocation对象", description = "轨迹点信息")
-public class TraceLocation extends BaseEntity {
+public class TraceLocation {
+
+    @TableId(type = IdType.AUTO)
+    private Long id;
 
     @ApiModelProperty("所属轨迹id")
     private Long traceRecordId;

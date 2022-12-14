@@ -31,4 +31,13 @@ public class TraceRecord extends Belong2UserEntity {
     @ApiModelProperty("轨迹列表")
     private String traceListStr;
 
+    @ApiModelProperty("开始时间")
+    private Long startTime;
+
+    @ApiModelProperty("结束时间")
+    private Long endTime;
+
+    @ApiModelProperty("轨迹总长(米)")
+    private Integer distance;
+
 }

@@ -120,12 +120,15 @@ CREATE TABLE IF NOT EXISTS `trace_location`
 DROP TABLE IF EXISTS `trace_record`;
 CREATE TABLE IF NOT EXISTS `trace_record`
 (
-    id             int unsigned auto_increment comment '主键id' primary key,
-    user_id        int                                   not null comment '所属用户id',
-    name           varchar(50)                           not null comment '名称',
-    detail         varchar(200)                          null comment '描述',
-    create_time    timestamp default current_timestamp() not null,
-    update_time    timestamp default current_timestamp() not null on update current_timestamp()
+    id          int unsigned auto_increment comment '主键id' primary key,
+    user_id     int                                   not null comment '所属用户id',
+    name        varchar(50)                           not null comment '名称',
+    start_time  bigint                                not null comment '开始时间',
+    end_time    bigint                                not null comment '结束时间',
+    distance    int                                   not null comment '距离',
+    detail      varchar(200)                          null comment '描述',
+    create_time timestamp default current_timestamp() not null,
+    update_time timestamp default current_timestamp() not null on update current_timestamp()
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci COMMENT ='轨迹信息';

@@ -72,7 +72,11 @@ public class TheDayController extends BaseController {
 
     @ApiOperation(value = "删除纪念日")
     @DeleteMapping("/{id}")
-    public ResponseDTO<Boolean> delete(@PathVariable("id") Long id) {
+    public ResponseDTO<Boolean> delete(@PathVariable("id") Long id, Long curUserId) {
+        TheDay theDay = service.getById(id);
+        if(theDay != null && !theDay.getUserId().equals(curUserId)) {
+            return ResponseDTO.error("不能删除其他用户数据");
+        }
         return ResponseDTO.success(service.removeById(id));
     }
 

@@ -92,8 +92,14 @@ class TheDayTests {
 		Assertions.assertTrue(commitResponse.getSuccess());
 		Assertions.assertEquals(newDate, mapper.selectById(updateId).getTheDayDate());
 
-		// delete
-		commitResponse = controller.delete(pageResponse.getRecords().get(3).getId());
+		// delete other data
+		commitResponse = controller.delete(pageResponse.getRecords().get(2).getId(), curUserId);
+		Assertions.assertFalse(commitResponse.getSuccess());
+		pageResponse = controller.queryByPage(dto, curUserId).getData();
+		Assertions.assertEquals(5, pageResponse.getRecords().size());
+
+		// delete my data
+		commitResponse = controller.delete(pageResponse.getRecords().get(2).getId(), cpUserId);
 		Assertions.assertTrue(commitResponse.getSuccess());
 		pageResponse = controller.queryByPage(dto, curUserId).getData();
 		Assertions.assertEquals(4, pageResponse.getRecords().size());

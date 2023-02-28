@@ -15,9 +15,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @EnableWebSecurity // 添加security过滤器
 @EnableGlobalMethodSecurity(prePostEnabled = true) // 可以在controller方法上配置权限
@@ -81,7 +78,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
                 // 不用登陆
                 .antMatchers(
-                        "/user/register", "/user/login", "/user/wxlogin", "/user/sendVerifyCode", "/user/loginWithVerifyCode",
+                        "/hello",
+                        "/user/register",
+                        "/user/login",
+                        "/user/wxlogin",
+                        "/user/sendVerifyCode",
+                        "/user/loginWithVerifyCode",
                         "/swagger-ui/*", "/v2/**", "/swagger-resources/**", "/swagger-ui.html", "/webjars/**")
                 .permitAll()
 
@@ -94,13 +96,5 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         // 禁用缓存
 //      http.headers().cacheControl();
-    }
-
-    // 配置跨源访问(CORS)
-    @Bean
-    CorsConfigurationSource corsConfigurationSource() {
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", new CorsConfiguration().applyPermitDefaultValues());
-        return source;
     }
 }

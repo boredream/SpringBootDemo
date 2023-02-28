@@ -18,6 +18,8 @@ import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.List;
+
 @SpringBootTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @MapperScan("com.boredream.springbootdemo.mapper")
@@ -48,7 +50,29 @@ class TraceRecordTests {
 	}
 
 	@Test
-	void test() {
+	void testRecordSort() {
+		// add group
+		for (int i = 1; i < 5; i++) {
+			TraceRecord group = new TraceRecord();
+			group.setUserId(curUserId);
+			group.setName("轨迹A");
+			group.setStartTime(1000L * i);
+			group.setEndTime(2000L + group.getStartTime());
+			group.setDistance(100);
+			ResponseDTO<Boolean> commitResponse = groupController.add(group, curUserId);
+			Assertions.assertTrue(commitResponse.getSuccess());
+		}
+
+		TraceRecordQueryDTO queryDTO = new TraceRecordQueryDTO();
+		queryDTO.setPage(1);
+		queryDTO.setSize(10);
+		ResponseDTO<PageResultDTO<TraceRecord>> queryResponse = groupController.queryByPage(queryDTO, curUserId);
+		List<TraceRecord> records = queryResponse.getData().getRecords();
+		Assertions.assertTrue(records.get(0).getStartTime() > records.get(1).getStartTime());
+	}
+
+	@Test
+	void testAddRecord() {
 		// add group
 		TraceRecord group = new TraceRecord();
 		group.setName("轨迹A");

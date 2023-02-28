@@ -17,7 +17,7 @@ public class SpringBootDemoApplication {
     }
 
     @GetMapping("/hello" )
-    public String hello(@RequestParam(value = "name" , defaultValue = "${project.name}" ) String name) {
+    public String hello(@RequestParam(value = "name" , defaultValue = "my name!" ) String name) {
         return String.format("Hello %s!" , name);
     }
 }

@@ -44,6 +44,7 @@ public class TraceRecordController extends BaseController {
     @GetMapping("/page")
     public ResponseDTO<PageResultDTO<TraceRecord>> queryByPage(TraceRecordQueryDTO dto, Long curUserId) {
         QueryWrapper<TraceRecord> wrapper = genUserQuery(curUserId);
+        wrapper = wrapper.orderByDesc("start_time");
         Page<TraceRecord> page = PageUtil.convert2QueryPage(dto);
         Page<TraceRecord> resultDto = service.page(page, wrapper);
         return ResponseDTO.success(PageUtil.convert2PageResult(resultDto));
@@ -55,8 +56,12 @@ public class TraceRecordController extends BaseController {
     public ResponseDTO<Boolean> add(@RequestBody @Validated TraceRecord body, Long curUserId) {
         body.setUserId(curUserId);
         boolean save = service.save(body);
-        if(save && body.getTraceListStr() != null) {
-            List<TraceLocation> traceLocationList = new ArrayList<>();
+        if(!save) {
+            return ResponseDTO.error("保存TraceRecord失败");
+        }
+
+        List<TraceLocation> traceLocationList = new ArrayList<>();
+        if (body.getTraceListStr() != null) {
             for (String s : body.getTraceListStr().split("_")) {
                 String[] split = s.split(",");
                 TraceLocation location = new TraceLocation();
@@ -66,11 +71,9 @@ public class TraceRecordController extends BaseController {
                 location.setLongitude(Double.parseDouble(split[2]));
                 traceLocationList.add(location);
             }
-            save = traceLocationService.saveBatch(traceLocationList);
-            return ResponseDTO.success(save);
-        } else {
-            return ResponseDTO.error("保存TraceRecord失败");
         }
+        save = traceLocationService.saveBatch(traceLocationList);
+        return ResponseDTO.success(save);
     }
 
     @ApiOperation(value = "修改轨迹信息")

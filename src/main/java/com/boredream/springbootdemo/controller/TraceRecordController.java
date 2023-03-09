@@ -8,6 +8,7 @@ import com.boredream.springbootdemo.entity.TraceRecord;
 import com.boredream.springbootdemo.entity.dto.PageResultDTO;
 import com.boredream.springbootdemo.entity.dto.ResponseDTO;
 import com.boredream.springbootdemo.entity.dto.TraceRecordQueryDTO;
+import com.boredream.springbootdemo.entity.dto.TraceRecordSyncQueryDTO;
 import com.boredream.springbootdemo.service.ITraceLocationService;
 import com.boredream.springbootdemo.service.ITraceRecordService;
 import com.boredream.springbootdemo.utils.PageUtil;
@@ -40,6 +41,14 @@ public class TraceRecordController extends BaseController {
     @Autowired
     private ITraceLocationService traceLocationService;
 
+    @ApiOperation(value = "按同步时间查询戳轨迹信息，会返回时间戳以后的所有数据")
+    @GetMapping("/sync")
+    public ResponseDTO<List<TraceRecord>> queryBySyncTimestamp(TraceRecordSyncQueryDTO dto, Long curUserId) {
+        QueryWrapper<TraceRecord> wrapper = genUserQuery(curUserId);
+        wrapper = wrapper.ge("sync_timestamp", dto.getLocalTimestamp());
+        return ResponseDTO.success(service.list(wrapper));
+    }
+
     @ApiOperation(value = "分页查询轨迹信息")
     @GetMapping("/page")
     public ResponseDTO<PageResultDTO<TraceRecord>> queryByPage(TraceRecordQueryDTO dto, Long curUserId) {
@@ -53,10 +62,19 @@ public class TraceRecordController extends BaseController {
     @ApiOperation(value = "添加轨迹信息")
     @PostMapping
     @Transactional
-    public ResponseDTO<Boolean> add(@RequestBody @Validated TraceRecord body, Long curUserId) {
+    public ResponseDTO<TraceRecord> add(@RequestBody @Validated TraceRecord body, Long curUserId) {
         body.setUserId(curUserId);
-        boolean save = service.save(body);
-        if(!save) {
+        // 服务端保存的时候，更新同步相关数据
+        body.setSyncTimestamp(System.currentTimeMillis());
+        body.setSynced(true);
+
+        // 如果dbId相同，代表手机端发起过同步，但未收到成功回执，所以会再次发起
+        QueryWrapper<TraceRecord> wrapper = new QueryWrapper<TraceRecord>()
+                .eq("db_id", body.getDbId());
+        TraceRecord oldTraceRecord = service.getOne(wrapper);
+
+        boolean save = service.saveOrUpdate(body, wrapper);
+        if (!save) {
             return ResponseDTO.error("保存TraceRecord失败");
         }
 
@@ -72,8 +90,8 @@ public class TraceRecordController extends BaseController {
                 traceLocationList.add(location);
             }
         }
-        save = traceLocationService.saveBatch(traceLocationList);
-        return ResponseDTO.success(save);
+        traceLocationService.saveBatch(traceLocationList);
+        return ResponseDTO.success(body);
     }
 
     @ApiOperation(value = "修改轨迹信息")

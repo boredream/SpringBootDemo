@@ -21,6 +21,17 @@ import lombok.Setter;
 @ApiModel(value = "TraceRecord对象", description = "轨迹信息")
 public class TraceRecord extends Belong2UserEntity {
 
+    // 同步用字段 start
+    @ApiModelProperty(value = "前端本地数据库id")
+    private Long dbId;
+
+    @ApiModelProperty(value = "同步数据状态")
+    private Boolean synced;
+
+    @ApiModelProperty(value = "同步数据时间戳")
+    private Long syncTimestamp;
+    // 同步用字段 end
+
     @ApiModelProperty("名称")
     private String name;
 

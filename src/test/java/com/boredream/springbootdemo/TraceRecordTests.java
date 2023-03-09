@@ -59,7 +59,7 @@ class TraceRecordTests {
 			group.setStartTime(1000L * i);
 			group.setEndTime(2000L + group.getStartTime());
 			group.setDistance(100);
-			ResponseDTO<Boolean> commitResponse = groupController.add(group, curUserId);
+			ResponseDTO<TraceRecord> commitResponse = groupController.add(group, curUserId);
 			Assertions.assertTrue(commitResponse.getSuccess());
 		}
 
@@ -77,7 +77,7 @@ class TraceRecordTests {
 		TraceRecord group = new TraceRecord();
 		group.setName("轨迹A");
 		group.setTraceListStr("1670649408256,31.211536660702205,121.35730474509023_1670649410261,31.21151721209348,121.35738285946206_1670649413005,31.21152318708789,121.35740809024271_1670649415011,31.21149942949412,121.35744620438744");
-		ResponseDTO<Boolean> commitResponse = groupController.add(group, curUserId);
+		ResponseDTO<TraceRecord> commitResponse = groupController.add(group, curUserId);
 		Assertions.assertTrue(commitResponse.getSuccess());
 
 		TraceRecordQueryDTO queryDTO = new TraceRecordQueryDTO();

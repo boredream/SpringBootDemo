@@ -23,13 +23,16 @@ public class TraceRecord extends Belong2UserEntity {
 
     // 同步用字段 start
     @ApiModelProperty(value = "前端本地数据库id")
-    private Long dbId;
+    private String dbId;
 
-    @ApiModelProperty(value = "同步数据状态")
-    private Boolean synced;
+    @TableField(exist = false)
+    private Boolean synced = true;
 
     @ApiModelProperty(value = "同步数据时间戳")
     private Long syncTimestamp;
+
+    @ApiModelProperty(value = "是否已经软删除")
+    private Boolean isDelete;
     // 同步用字段 end
 
     @ApiModelProperty("名称")

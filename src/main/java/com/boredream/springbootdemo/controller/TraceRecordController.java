@@ -45,7 +45,7 @@ public class TraceRecordController extends BaseController {
     @GetMapping("/sync")
     public ResponseDTO<List<TraceRecord>> queryBySyncTimestamp(TraceRecordSyncQueryDTO dto, Long curUserId) {
         QueryWrapper<TraceRecord> wrapper = genUserQuery(curUserId);
-        wrapper = wrapper.ge("sync_timestamp", dto.getLocalTimestamp());
+        wrapper = wrapper.gt("sync_timestamp", dto.getLocalTimestamp());
         return ResponseDTO.success(service.list(wrapper));
     }
 
@@ -71,7 +71,6 @@ public class TraceRecordController extends BaseController {
         // 如果dbId相同，代表手机端发起过同步，但未收到成功回执，所以会再次发起
         QueryWrapper<TraceRecord> wrapper = new QueryWrapper<TraceRecord>()
                 .eq("db_id", body.getDbId());
-        TraceRecord oldTraceRecord = service.getOne(wrapper);
 
         boolean save = service.saveOrUpdate(body, wrapper);
         if (!save) {
@@ -96,15 +95,21 @@ public class TraceRecordController extends BaseController {
 
     @ApiOperation(value = "修改轨迹信息")
     @PutMapping("/{id}")
-    public ResponseDTO<Boolean> update(@PathVariable("id") Long id, @RequestBody @Validated TraceRecord body) {
+    public ResponseDTO<TraceRecord> update(@PathVariable("id") Long id, @RequestBody @Validated TraceRecord body) {
         body.setId(id);
-        return ResponseDTO.success(service.updateById(body));
+        body.setSyncTimestamp(System.currentTimeMillis());
+        service.updateById(body);
+
+        body.setSynced(true);
+        return ResponseDTO.success(body);
     }
 
     @ApiOperation(value = "删除轨迹信息")
     @DeleteMapping("/{id}")
-    public ResponseDTO<Boolean> delete(@PathVariable("id") Long id) {
-        return ResponseDTO.success(service.removeById(id));
+    public ResponseDTO<TraceRecord> delete(@PathVariable("id") Long id) {
+        TraceRecord record = service.getById(id);
+        record.setIsDelete(true);
+        return update(id, record);
     }
 
 }

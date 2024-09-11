@@ -135,66 +135,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     @Override
     public User getUserInfo(Long curUserId) {
         User user = getById(curUserId);
-        if (user.getCpUserId() != null) {
-            User cpUser = getBaseMapper().selectById(user.getCpUserId());
-            cpUser.setPassword(null);
-            user.setCpUser(cpUser);
-        }
         user.setPassword(null);
         return user;
     }
 
-    @Transactional
-    @Override
-    public User bindCp(Long curUserId, Long cpUserId) {
-        User curUser = getBaseMapper().selectById(curUserId);
-        User cpUser = getBaseMapper().selectById(cpUserId);
-
-        if (cpUser == null) {
-            throw new ApiException("目标绑定用户不存在");
-        }
-
-        // 先判断是否已经各自有cp
-        if (curUser.getCpUserId() != null) {
-            throw new ApiException("无法绑定。您已经绑定过伴侣了，请先解绑后再重新尝试");
-        }
-        if (cpUser.getCpUserId() != null) {
-            throw new ApiException("无法绑定。对方已经绑定过伴侣了");
-        }
-
-        // 自己绑cp
-        curUser.setCpUserId(cpUserId);
-        boolean curBindSuccess = updateById(curUser);
-
-        // cp绑自己
-        cpUser.setCpUserId(curUserId);
-        boolean cpBindSuccess = updateById(cpUser);
-
-        cpUser.setPassword(null);
-        return cpUser;
-    }
-
-    @Override
-    public boolean unbindCp(Long curUserId, Long cpUserId) {
-        User curUser = getBaseMapper().selectById(curUserId);
-        User cpUser = getBaseMapper().selectById(cpUserId);
-
-        if (cpUser == null) {
-            throw new ApiException("目标绑定用户不存在");
-        }
-
-        // 自己解绑
-        curUser.setCpUserId(null);
-        LambdaUpdateWrapper<User> updateWrapper = new LambdaUpdateWrapper<>();
-        updateWrapper.set(User::getCpUserId, null).eq(User::getId, curUserId);
-        boolean curBindSuccess = update(updateWrapper);
-
-        // cp解绑
-        cpUser.setCpUserId(null);
-        updateWrapper = new LambdaUpdateWrapper<>();
-        updateWrapper.set(User::getCpUserId, null).eq(User::getId, cpUserId);
-        boolean cpBindSuccess = update(updateWrapper);
-
-        return curBindSuccess && cpBindSuccess;
-    }
 }

@@ -3,9 +3,13 @@ server:
   servlet:
     context-path: /api
 
+#logging:
+#  file:
+#    name: springboot.log
+
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/love_cookbook
+    url: jdbc:mysql://localhost:3306/septalk
     username: root
     password: root
     driver-class-name: com.mysql.jdbc.Driver
@@ -20,11 +24,11 @@ jwt:
 mybatis-plus:
   mapper-locations: classpath:/mapper/*Mapper.xml  # 自定义xml文件路径
   configuration:
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
 
 qiniu:
   accessKey: wdoVNp9qXmswTakEjVcfFEqdi0JebQi8tNLDxMJg
   secretKey: Jmool8zj8njyMlVOX_zduoZgb_2ssqBO9V3sy-XH
-  bucket: boredream-files
+  bucket: sep-talk
   uploadHost: https://upload.qiniup.com/
-  downloadHost: https://file.papikoala.cn/
+  downloadHost: https://sjn69vzve.hd-bkt.clouddn.com/

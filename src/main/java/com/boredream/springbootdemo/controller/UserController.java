@@ -9,7 +9,6 @@ import com.boredream.springbootdemo.utils.DateUtils;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -77,18 +76,6 @@ public class UserController {
     @PutMapping("/setPassword")
     public ResponseDTO<Boolean> setPassword(@RequestBody @Validated SetPasswordRequestDTO params, Long curUserId) {
         return ResponseDTO.success(service.setPassword(curUserId, params.getPassword()));
-    }
-
-    @Transactional
-    @PutMapping(value = "/cp/{cpUserId}", produces = "application/json")
-    public ResponseDTO<User> bindCp(Long curUserId, @PathVariable("cpUserId") Long cpUserId) {
-        return ResponseDTO.success(service.bindCp(curUserId, cpUserId));
-    }
-
-    @Transactional
-    @DeleteMapping(value = "/cp/{cpUserId}", produces = "application/json")
-    public ResponseDTO<Boolean> unbindCp(Long curUserId, @PathVariable("cpUserId") Long cpUserId) {
-        return ResponseDTO.success(service.unbindCp(curUserId, cpUserId));
     }
 
 }

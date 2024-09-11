@@ -28,8 +28,4 @@ public interface IUserService extends IService<User> {
 
     User getUserInfo(Long curUserId);
 
-    User bindCp(Long curUserId, Long cpUserId);
-
-    boolean unbindCp(Long curUserId, Long cpUserId);
-
 }

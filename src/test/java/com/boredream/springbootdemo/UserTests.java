@@ -127,38 +127,6 @@ class UserTests {
 		user1.setBirthday("1989-12-21");
 		controller.update(userId1, user1);
 		Assertions.assertEquals("1989-12-21", mapper.selectById(userId1).getBirthday());
-
-		// bind cp
-		ResponseDTO<User> bindResponse = controller.bindCp(userId1, userId2);
-		Assertions.assertTrue(bindResponse.getSuccess());
-		Assertions.assertEquals(userId2, bindResponse.getData().getId());
-		Assertions.assertEquals(userId2, mapper.selectById(userId1).getCpUserId());
-		Assertions.assertEquals(userId1, mapper.selectById(userId2).getCpUserId());
-
-		// bind duplicate
-		try {
-			controller.bindCp(userId1, 1L);
-		} catch (ApiException e) {
-			Assertions.assertEquals("无法绑定。您已经绑定过伴侣了，请先解绑后再重新尝试", e.getMessage());
-		}
-
-		// unbind cp
-		ResponseDTO<Boolean> commitResponse = controller.unbindCp(userId2, userId1);
-		Assertions.assertTrue(commitResponse.getSuccess());
-		Assertions.assertNull(mapper.selectById(userId1).getCpUserId());
-		Assertions.assertNull(mapper.selectById(userId2).getCpUserId());
-
-		// bind cp again
-		bindResponse = controller.bindCp(userId2, userId1);
-		Assertions.assertTrue(bindResponse.getSuccess());
-		Assertions.assertEquals(userId2, mapper.selectById(userId1).getCpUserId());
-		Assertions.assertEquals(userId1, mapper.selectById(userId2).getCpUserId());
-
-		// get user info with cp user
-		user1 = controller.getUserInfo(userId1).getData();
-		Assertions.assertEquals("小仙女", user1.getCpUser().getUsername());
-
-
 	}
 
 }

@@ -15,6 +15,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsUtils;
 
 @EnableWebSecurity // 添加security过滤器
 @EnableGlobalMethodSecurity(prePostEnabled = true) // 可以在controller方法上配置权限
@@ -75,6 +76,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
                 // 设置权限
                 .authorizeRequests()
+
+                // 跳过预检请求
+                .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
 
                 // 不用登陆
                 .antMatchers(

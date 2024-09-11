@@ -11,9 +11,9 @@ public class CodeGenerator {
     public static void main(String[] args) {
         // https://baomidou.com/guide/generator-new.html
         FastAutoGenerator
-                .create("jdbc:mysql://localhost:3306/love_cookbook",
+                .create("jdbc:mysql://localhost:3306/septalk",
                         "root",
-                        "c06b4e42600d464b")
+                        "root")
                 .globalConfig(builder -> {
                     builder.author("boredream") // 设置作者
                             .enableSwagger() // 开启 swagger 模式

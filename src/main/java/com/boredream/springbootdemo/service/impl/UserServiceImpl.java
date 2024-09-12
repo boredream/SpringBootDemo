@@ -1,7 +1,6 @@
 package com.boredream.springbootdemo.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.boredream.springbootdemo.auth.JwtUtil;
 import com.boredream.springbootdemo.entity.User;
@@ -18,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * <p>
@@ -77,7 +75,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         return updateById(user);
     }
 
-    public String login(LoginRequestDTO request) {
+    public User login(LoginRequestDTO request) {
         User user = getUserByUsername(request.getUsername());
         if (user == null) {
             throw new ApiException("用户不存在");
@@ -87,7 +85,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
             throw new ApiException("密码不正确");
         }
 
-        return jwtUtil.generateToken(user);
+        String token = jwtUtil.generateToken(user);
+        user.setToken(token);
+        return user;
     }
 
     public String wxLogin(WxLoginDTO dto) {

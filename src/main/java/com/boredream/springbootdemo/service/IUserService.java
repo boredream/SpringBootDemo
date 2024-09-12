@@ -20,7 +20,7 @@ public interface IUserService extends IService<User> {
 
     Boolean setPassword(Long curUserId, String password);
 
-    String login(LoginRequestDTO request);
+    User login(LoginRequestDTO request);
 
     String wxLogin(WxLoginDTO dto);
 

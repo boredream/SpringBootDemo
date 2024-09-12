@@ -47,7 +47,7 @@ public class UserController {
     }
 
     @PostMapping(value = "/login", produces = "application/json")
-    public ResponseDTO<String> login(@Valid @RequestBody LoginRequestDTO authRequest) {
+    public ResponseDTO<User> login(@Valid @RequestBody LoginRequestDTO authRequest) {
         return ResponseDTO.success(service.login(authRequest));
     }
 

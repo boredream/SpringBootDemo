@@ -1,5 +1,6 @@
 package com.boredream.springbootdemo.entity;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -41,5 +42,8 @@ public class User extends BaseEntity {
 
     @ApiModelProperty(value = "生日")
     private String birthday;
+
+    @TableField(exist = false)
+    private String token;
 
 }

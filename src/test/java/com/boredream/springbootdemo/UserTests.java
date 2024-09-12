@@ -89,8 +89,8 @@ class UserTests {
 
 		// login success
 		loginDto.setPassword(setPswDto.getPassword());
-		response = controller.login(loginDto);
-		Assertions.assertTrue(response.getSuccess());
+		ResponseDTO<User> loginResponse = controller.login(loginDto);
+		Assertions.assertTrue(loginResponse.getSuccess());
 	}
 
 	@Test
@@ -118,7 +118,7 @@ class UserTests {
 		Assertions.assertEquals("小仙女", user2.getUsername());
 
 		// login
-		token2 = controller.login(request).getData();
+		token2 = controller.login(request).getData().getToken();
 		userId2 = Long.parseLong(jwtUtil.getUserIdFromToken(token2));
 		user2 = controller.getUserInfo(userId2).getData();
 		Assertions.assertEquals("小仙女", user2.getUsername());

@@ -1,7 +1,7 @@
 -- 导出 love_cookbook 的数据库结构
-DROP DATABASE IF EXISTS `septalk`;
-CREATE DATABASE IF NOT EXISTS `septalk` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
-USE `septalk`;
+DROP DATABASE IF EXISTS `sep_talk`;
+CREATE DATABASE IF NOT EXISTS `sep_talk` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
+USE `sep_talk`;
 
 --
 DROP TABLE IF EXISTS `user`;

@@ -1,6 +1,7 @@
 package com.boredream.springbootdemo.controller;
 
 
+import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.boredream.springbootdemo.entity.Case;
@@ -18,6 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * <p>
@@ -59,10 +62,21 @@ public class CaseController {
         }
     }
 
+    @ApiOperation(value = "查询解析中的案例")
+    @GetMapping("/getParsingCase")
+    public ResponseDTO<Case> queryParsingCase(Long curUserId) {
+        QueryWrapper<Case> wrapper = new QueryWrapper<Case>()
+                .eq("user_id", curUserId)
+                .or(wq -> wq.isNull("ai_result").or().eq("ai_result", ""));
+
+        List<Case> list = service.list(wrapper);
+        return ResponseDTO.success(CollectionUtil.isEmpty(list) ? null : list.get(0));
+    }
+
     @ApiOperation(value = "分页查询案例")
     @GetMapping("/page")
     public ResponseDTO<PageResultDTO<Case>> queryByPage(CaseQueryDTO dto, Long curUserId) {
-        QueryWrapper<Case> wrapper = new QueryWrapper<Case>().eq("userId", curUserId);
+        QueryWrapper<Case> wrapper = new QueryWrapper<Case>().eq("user_id", curUserId);
         Page<Case> page = PageUtil.convert2QueryPage(dto);
         Page<Case> resultDto = service.page(page, wrapper);
         return ResponseDTO.success(PageUtil.convert2PageResult(resultDto));

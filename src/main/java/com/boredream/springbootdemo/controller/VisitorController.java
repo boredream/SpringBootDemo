@@ -34,7 +34,7 @@ public class VisitorController {
     @ApiOperation(value = "分页查询用户")
     @GetMapping("/page")
     public ResponseDTO<PageResultDTO<Visitor>> queryByPage(VisitorQueryDTO dto, Long curUserId) {
-        QueryWrapper<Visitor> wrapper = new QueryWrapper<Visitor>().eq("userId", curUserId);
+        QueryWrapper<Visitor> wrapper = new QueryWrapper<Visitor>().eq("user_id", curUserId);
         Page<Visitor> page = PageUtil.convert2QueryPage(dto);
         Page<Visitor> resultDto = service.page(page, wrapper);
         return ResponseDTO.success(PageUtil.convert2PageResult(resultDto));

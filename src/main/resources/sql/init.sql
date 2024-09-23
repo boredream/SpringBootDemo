@@ -30,6 +30,8 @@ CREATE TABLE IF NOT EXISTS `visitor`
     user_id            long                                  not null comment '所属用户',
     # 基本信息
     name               varchar(50)                           not null comment '姓名',
+    first_contact_time long                                  not null comment '初次来访时间',
+    school_num         varchar(50)                           null comment '学号',
     impression         varchar(50)                           null comment '印象',
     age                int                                   null comment '年龄',
     gender             varchar(50)                           null comment '性别',
@@ -40,8 +42,8 @@ CREATE TABLE IF NOT EXISTS `visitor`
     current_occupation varchar(50)                           null comment '现职业/专业',
     religion           varchar(50)                           null comment '宗教信仰',
     marriage           varchar(50)                           null comment '婚姻状况',
-    first_visit_time   varchar(50)                           null comment '初次来访时间',
     number             varchar(50)                           null comment '联系方式',
+    # 历史信息
     family             varchar(50)                           null comment '家庭成员构成',
     personality        varchar(50)                           null comment '家庭成员人格特点',
     relationship       varchar(50)                           null comment '家庭成员与来访的关系',
@@ -62,18 +64,18 @@ CREATE TABLE IF NOT EXISTS `visitor`
   COLLATE = utf8mb4_unicode_ci COMMENT ='用户';
 
 --
-DROP TABLE IF EXISTS `case`;
-CREATE TABLE IF NOT EXISTS `case`
+DROP TABLE IF EXISTS `talk_case`;
+CREATE TABLE IF NOT EXISTS `talk_case`
 (
-    id          int unsigned auto_increment comment '主键id' primary key,
-    user_id     long                                  not null comment '所属用户',
-    case_index  int                                   not null comment '索引',
-    type        int                                   not null comment '类型 1-评估 2-咨询',
-    file_url    varchar(50)                           not null comment '文件地址',
-    ai_result   varchar(200)                          not null comment 'AI解析结果',
-    visitor_id  varchar(50)                           not null comment '访客id',
-    create_time timestamp default current_timestamp() not null,
-    update_time timestamp default current_timestamp() not null on update current_timestamp()
+    id           int unsigned auto_increment comment '主键id' primary key,
+    user_id      long                                  not null comment '所属用户',
+    type         int                                   not null comment '类型 1-评估 2-咨询',
+    file_url     varchar(50)                           not null comment '文件地址',
+    ai_result    varchar(200)                          null comment 'AI解析结果',
+    visitor_id   long                                  not null comment '访客id',
+    contact_time long                                  not null comment '当次来访时间',
+    create_time  timestamp default current_timestamp() not null,
+    update_time  timestamp default current_timestamp() not null on update current_timestamp()
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci COMMENT ='案例';

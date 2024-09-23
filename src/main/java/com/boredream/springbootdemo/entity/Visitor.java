@@ -5,8 +5,6 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
-
 /**
  * <p>
  * 用户
@@ -57,7 +55,7 @@ public class Visitor extends BaseEntity {
     private String marriage;
 
     @ApiModelProperty("初次来访时间")
-    private String firstVisitTime;
+    private Long firstContactTime;
 
     @ApiModelProperty("联系方式")
     private String number;
@@ -100,10 +98,5 @@ public class Visitor extends BaseEntity {
 
     @ApiModelProperty("上瘾史")
     private String addiction;
-
-    private LocalDateTime createTime;
-
-    private LocalDateTime updateTime;
-
 
 }

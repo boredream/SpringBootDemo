@@ -4,6 +4,7 @@ package com.boredream.springbootdemo.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.boredream.springbootdemo.entity.Case;
+import com.boredream.springbootdemo.entity.Visitor;
 import com.boredream.springbootdemo.entity.dto.CaseQueryDTO;
 import com.boredream.springbootdemo.entity.dto.CreateCaseWithVisitorDTO;
 import com.boredream.springbootdemo.entity.dto.PageResultDTO;
@@ -14,6 +15,7 @@ import com.boredream.springbootdemo.utils.PageUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,15 +38,25 @@ public class CaseController {
     @Autowired
     private IVisitorService visitorService;
 
+    @Transactional
     @ApiOperation(value = "添加案例并关联访客信息")
     @PostMapping("/createWithVisitor")
     public ResponseDTO<Boolean> add(@RequestBody @Validated CreateCaseWithVisitorDTO body, Long curUserId) {
-        if(body.getVisitorDto().getId() == 0L) {
-            // 新访客，创建访客之后再创建案例
-            visitorService.save(body.getVisitorDto());
+        try {
+            Visitor visitorDto = body.getVisitorDto();
+            visitorDto.setUserId(curUserId);
+            if (visitorDto.getId() == null || visitorDto.getId() == 0L) {
+                // 新访客，创建访客之后再创建案例
+                visitorService.save(visitorDto);
+            }
+            Case caseDto = body.getCaseDto();
+            caseDto.setUserId(curUserId);
+            caseDto.setVisitorId(visitorDto.getId());
+
+            return ResponseDTO.success(service.save(caseDto));
+        } catch (Exception e) {
+            return ResponseDTO.error(e.getMessage());
         }
-        body.getCaseDto().setVisitorId(body.getVisitorDto().getId());
-        return ResponseDTO.success(service.save(body.getCaseDto()));
     }
 
     @ApiOperation(value = "分页查询案例")

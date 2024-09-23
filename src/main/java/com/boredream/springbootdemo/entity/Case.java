@@ -1,11 +1,11 @@
 package com.boredream.springbootdemo.entity;
 
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.time.LocalDateTime;
 
 /**
  * <p>
@@ -18,11 +18,13 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @ApiModel(value = "Case对象", description = "案例")
+@TableName("talk_case")
 public class Case extends BaseEntity {
 
     @ApiModelProperty("所属用户")
     private Long userId;
 
+    @TableField(exist = false)
     @ApiModelProperty("索引")
     private Integer caseIndex;
 
@@ -38,9 +40,7 @@ public class Case extends BaseEntity {
     @ApiModelProperty("访客id")
     private Long visitorId;
 
-    private LocalDateTime createTime;
-
-    private LocalDateTime updateTime;
-
+    @ApiModelProperty("本次对话日期")
+    private Long contactTime;
 
 }

@@ -27,6 +27,7 @@ DROP TABLE IF EXISTS `visitor`;
 CREATE TABLE IF NOT EXISTS `visitor`
 (
     id                 int unsigned auto_increment comment '主键id' primary key,
+    user_id            long                                  not null comment '所属用户',
     # 基本信息
     name               varchar(50)                           not null comment '姓名',
     impression         varchar(50)                           null comment '印象',
@@ -65,7 +66,7 @@ DROP TABLE IF EXISTS `case`;
 CREATE TABLE IF NOT EXISTS `case`
 (
     id          int unsigned auto_increment comment '主键id' primary key,
-    user_id     varchar(50)                           not null comment '所属用户',
+    user_id     long                                  not null comment '所属用户',
     case_index  int                                   not null comment '索引',
     type        int                                   not null comment '类型 1-评估 2-咨询',
     file_url    varchar(50)                           not null comment '文件地址',

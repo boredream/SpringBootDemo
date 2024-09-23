@@ -31,4 +31,4 @@ qiniu:
   secretKey: Jmool8zj8njyMlVOX_zduoZgb_2ssqBO9V3sy-XH
   bucket: sep-talk
   uploadHost: https://upload.qiniup.com/
-  downloadHost: https://sjn69vzve.hd-bkt.clouddn.com/
+  downloadHost: https://sep-talk.s3.cn-east-1.qiniucs.com/

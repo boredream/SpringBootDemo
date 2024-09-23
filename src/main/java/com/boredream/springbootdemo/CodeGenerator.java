@@ -11,9 +11,9 @@ public class CodeGenerator {
     public static void main(String[] args) {
         // https://baomidou.com/guide/generator-new.html
         FastAutoGenerator
-                .create("jdbc:mysql://localhost:3306/septalk",
-                        "root",
-                        "root")
+                .create("jdbc:mysql://117.72.94.74:3306/sep_talk",
+                        "sep",
+                        "aDmbKmMLBZpGyWEK")
                 .globalConfig(builder -> {
                     builder.author("boredream") // 设置作者
                             .enableSwagger() // 开启 swagger 模式
@@ -34,7 +34,7 @@ public class CodeGenerator {
                                     System.getProperty("user.dir") + "/src/main/resources/mapper")); // 设置mapperXml生成路径
                 })
                 .strategyConfig(builder -> {
-                    builder.addInclude("trace_record", "trace_location"); // 设置需要生成的表名
+                    builder.addInclude("visitor", "case"); // 设置需要生成的表名
 //                            .addTablePrefix("t_", "c_"); // 设置过滤表前缀
                 })
                 .templateConfig(builder -> builder

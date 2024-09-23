@@ -1,9 +1,12 @@
 package com.boredream.springbootdemo.entity;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.List;
 
 /**
  * <p>
@@ -98,5 +101,9 @@ public class Visitor extends BaseEntity {
 
     @ApiModelProperty("上瘾史")
     private String addiction;
+
+    @TableField(exist = false)
+    @ApiModelProperty("案例")
+    private List<Case> caseList;
 
 }

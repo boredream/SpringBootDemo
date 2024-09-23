@@ -40,14 +40,18 @@ public class CaseController {
 
     @Autowired
     private IVisitorService visitorService;
-    @Autowired
-    private TodoController todoController;
 
     @Transactional
     @ApiOperation(value = "添加案例并关联访客信息")
     @PostMapping("/createWithVisitor")
     public ResponseDTO<Boolean> add(@RequestBody @Validated CreateCaseWithVisitorDTO body, Long curUserId) {
         try {
+            QueryWrapper<Case> wrapper = new QueryWrapper<Case>().eq("user_id", curUserId);
+            long count = service.count(wrapper);
+            if(count >= 5) {
+                return ResponseDTO.error("案例数量已达上限5条，请联系管理员删除后再试");
+            }
+
             Visitor visitorDto = body.getVisitorDto();
             visitorDto.setUserId(curUserId);
             if (visitorDto.getId() == null || visitorDto.getId() == 0L) {

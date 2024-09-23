@@ -40,6 +40,10 @@ public class Case extends BaseEntity {
     @ApiModelProperty("访客id")
     private Long visitorId;
 
+    @TableField(exist = false)
+    @ApiModelProperty("访问者")
+    private Visitor visitor;
+
     @ApiModelProperty("本次对话日期")
     private Long contactTime;
 

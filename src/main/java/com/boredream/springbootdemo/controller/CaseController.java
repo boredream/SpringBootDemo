@@ -40,6 +40,8 @@ public class CaseController {
 
     @Autowired
     private IVisitorService visitorService;
+    @Autowired
+    private TodoController todoController;
 
     @Transactional
     @ApiOperation(value = "添加案例并关联访客信息")
@@ -79,6 +81,14 @@ public class CaseController {
         QueryWrapper<Case> wrapper = new QueryWrapper<Case>().eq("user_id", curUserId);
         Page<Case> page = PageUtil.convert2QueryPage(dto);
         Page<Case> resultDto = service.page(page, wrapper);
+        if(resultDto.getRecords() != null) {
+            // TODO 数据库查询更好？
+            resultDto.getRecords().forEach(item -> {
+                QueryWrapper<Visitor> visitorWrapper = new QueryWrapper<Visitor>()
+                        .eq("id", item.getVisitorId());
+                item.setVisitor(visitorService.getOne(visitorWrapper));
+            });
+        }
         return ResponseDTO.success(PageUtil.convert2PageResult(resultDto));
     }
 

@@ -2,7 +2,6 @@ package com.boredream.springbootdemo.controller;
 
 
 import cn.hutool.core.collection.CollectionUtil;
-import com.alibaba.druid.util.StringUtils;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.boredream.springbootdemo.entity.Case;
@@ -46,51 +45,64 @@ public class CaseController {
     @Autowired
     private IAiService aiService;
 
+    @ApiOperation(value = "新增案例预检")
+    @GetMapping("/checkCreate")
+    public ResponseDTO<Boolean> check(Long curUserId) {
+        // 校验最大数量，和正在解析中文件情况，防止重复上传文件浪费资源
+        QueryWrapper<Case> wrapper = new QueryWrapper<Case>()
+                .eq("delete_flag", 0)
+                .eq("user_id", curUserId);
+        long count = service.count(wrapper);
+        if (count >= 5) {
+            return ResponseDTO.error("案例数量已达上限5条，请联系管理员删除后再试");
+        }
+
+        // 如果有正在解析中的案例，也暂时不让上传
+        QueryWrapper<Case> caseWrapper = new QueryWrapper<Case>()
+                .eq("user_id", curUserId)
+                .eq("ai_parse_status", Case.AI_PARSE_STATUS_PARSING);
+        if (service.count(caseWrapper) > 0) {
+            return ResponseDTO.error("有正在解析中的案例，请稍后再试");
+        }
+        return ResponseDTO.success(true);
+    }
+
     @Transactional
     @ApiOperation(value = "添加案例并关联访客信息")
     @PostMapping("/createWithVisitor")
     public ResponseDTO<Boolean> add(@RequestBody @Validated CreateCaseWithVisitorDTO body, Long curUserId) {
         try {
-            QueryWrapper<Case> wrapper = new QueryWrapper<Case>()
-                    .eq("delete_flag", 0)
-                    .eq("user_id", curUserId);
-            long count = service.count(wrapper);
-            if (count >= 5) {
-                return ResponseDTO.error("案例数量已达上限5条，请联系管理员删除后再试");
-            }
-
-//            // 查询case里index字段数字最大的那一条数据
-//            int maxIndex = 0;
-//            try {
-//                QueryWrapper<Case> caseWrapper = new QueryWrapper<Case>()
-//                        .eq("user_id", curUserId)
-//                        .orderByDesc("case_index")
-//                        .last("limit 1");
-//                Case maxIndexCase = service.getOne(caseWrapper);
-//                if(maxIndexCase != null && maxIndexCase.getCaseIndex() != null) {
-//                    maxIndex = maxIndexCase.getCaseIndex() + 1;
-//                }
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-
             Visitor visitorDto = body.getVisitorDto();
             visitorDto.setUserId(curUserId);
             if (visitorDto.getId() == null || visitorDto.getId() == 0L) {
                 // 新访客，创建访客之后再创建案例
                 visitorService.save(visitorDto);
             }
+
+            // 设置案例索引
+            Long visitorId = visitorDto.getId();
+            int type = body.getCaseDto().getType();
+
+            // 查询同一visitor_id和type的最大case_index
+            QueryWrapper<Case> wrapper = new QueryWrapper<>();
+            wrapper.eq("visitor_id", visitorId)
+                    .eq("type", type)
+                    .select("COALESCE(MAX(case_index), 0) as case_index");
+            Case maxIndexCase = service.getOne(wrapper);
+            int maxIndex = 0;
+            if (maxIndexCase != null) {
+                maxIndex = maxIndexCase.getCaseIndex();
+            }
+
             Case caseDto = body.getCaseDto();
-//            caseDto.setCaseIndex(maxIndex);
+            caseDto.setCaseIndex(maxIndex + 1);
+            caseDto.setAiParseStatus(Case.AI_PARSE_STATUS_PARSING);
             caseDto.setUserId(curUserId);
             caseDto.setVisitorId(visitorDto.getId());
 
             service.save(caseDto);
 
             // 异步调用 AI 解析
-            if (StringUtils.isEmpty(caseDto.getFileUrl())) {
-                return ResponseDTO.error("案例缺失文件地址");
-            }
             aiService.parseAIContent(caseDto);
 
             return ResponseDTO.success(true);
@@ -102,10 +114,10 @@ public class CaseController {
     @ApiOperation(value = "案例发起AI解析")
     @PostMapping("/parseAI")
     public ResponseDTO<Boolean> parseAI(@RequestBody @Validated Case body, Long curUserId) {
+        body.setAiParseStatus(Case.AI_PARSE_STATUS_PARSING);
+        service.updateById(body);
+
         // 异步调用 AI 解析
-        if (StringUtils.isEmpty(body.getFileUrl())) {
-            return ResponseDTO.error("案例缺失文件地址");
-        }
         aiService.parseAIContent(body);
         return ResponseDTO.success(true);
     }
@@ -115,7 +127,7 @@ public class CaseController {
     public ResponseDTO<Case> queryParsingCase(Long curUserId) {
         QueryWrapper<Case> wrapper = new QueryWrapper<Case>()
                 .eq("user_id", curUserId)
-                .or(wq -> wq.isNull("ai_result").or().eq("ai_result", ""));
+                .eq("ai_parse_status", Case.AI_PARSE_STATUS_PARSING);
 
         List<Case> list = service.list(wrapper);
         return ResponseDTO.success(CollectionUtil.isEmpty(list) ? null : list.get(0));

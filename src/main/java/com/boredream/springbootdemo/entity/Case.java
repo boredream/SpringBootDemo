@@ -21,6 +21,27 @@ import lombok.Setter;
 @TableName("talk_case")
 public class Case extends BaseEntity {
 
+    /**
+     * AI解析状态 闲置
+     */
+    public static final int AI_PARSE_STATUS_IDLE = 0;
+
+    /**
+     * AI解析状态 解析中
+     */
+    public static final int AI_PARSE_STATUS_PARSING = 1;
+
+    /**
+     * AI解析状态 解析成功
+     */
+    public static final int AI_PARSE_STATUS_SUCCESS = 2;
+
+    /**
+     * AI解析状态 解析失败
+     */
+    public static final int AI_PARSE_STATUS_FAIL = 3;
+
+
     @ApiModelProperty("删除标记 1=删除")
     private Integer deleteFlag;
 
@@ -37,7 +58,7 @@ public class Case extends BaseEntity {
     private String fileUrl;
 
     @ApiModelProperty("AI解析状态 0-闲置 1-解析中 2-解析成功 3-解析失败")
-    private String aiParseStatus;
+    private Integer aiParseStatus;
 
     @ApiModelProperty("访客id")
     private Long visitorId;

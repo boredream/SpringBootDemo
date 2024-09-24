@@ -1,19 +1,24 @@
 package com.boredream.springbootdemo.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.alibaba.druid.util.StringUtils;
 import com.boredream.springbootdemo.entity.Case;
 import com.boredream.springbootdemo.entity.CaseAiResultResponse;
+import com.boredream.springbootdemo.entity.TalkCaseDetail;
+import com.boredream.springbootdemo.exception.ApiException;
 import com.boredream.springbootdemo.service.IAiService;
 import com.boredream.springbootdemo.service.ICaseService;
+import com.boredream.springbootdemo.service.ITalkCaseDetailService;
 import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -23,22 +28,61 @@ public class AiServiceImpl implements IAiService {
     private ICaseService caseService;
 
     @Autowired
+    private ITalkCaseDetailService caseDetailService;
+
+    @Autowired
     private RestTemplate restTemplate;
 
     @Async
     @Override
     @Transactional
     public void parseAIContent(Case talkCase) {
-        // 调用 AI 服务器进行解析
-        String aiResult = sendRequestToAiServer(talkCase);
-        // TODO 异常处理更新状态
-        if (aiResult != null) {
-            // 返回数据后，保存数据并更新案例的AI解析状态
-            CaseAiResultResponse response = new Gson().fromJson(aiResult, CaseAiResultResponse.class);
+        try {
+            if (StringUtils.isEmpty(talkCase.getFileUrl())) {
+                throw new ApiException("案例缺失文件地址");
+            }
 
-            QueryWrapper<Case> wrapper = new QueryWrapper<>();
-            wrapper.eq("id", talkCase.getId());
-            caseService.update(talkCase, wrapper);
+            if (talkCase.getId() == null) {
+                // 需要先创建案例成功后，才发起AI解析
+                throw new ApiException("案例创建失败");
+            }
+
+            // 调用 AI 服务器进行解析
+            String aiResult = sendRequestToAiServer(talkCase);
+            if (StringUtils.isEmpty(aiResult)) {
+                throw new ApiException("AI 服务器返回结果为空");
+            }
+
+            try {
+                // 解析结果
+                CaseAiResultResponse response = new Gson().fromJson(aiResult, CaseAiResultResponse.class);
+
+                List<HashMap<String, String>> label = response.getLabel();
+                if (CollectionUtils.isEmpty(label)) {
+                    throw new ApiException("AI 服务器返回 label 结果为空");
+                }
+
+                // 分 result 1/2/3/4/5... 挨个保存数据
+                for (Map.Entry<String, String> entry : label.get(0).entrySet()) {
+                    TalkCaseDetail detail = new TalkCaseDetail();
+                    detail.setCaseId(talkCase.getId());
+                    detail.setResultType(entry.getKey());
+                    detail.setAiResult(entry.getValue());
+                    caseDetailService.save(detail);
+                }
+
+                // 最后更新 case 的 AI解析状态
+                talkCase.setAiParseStatus(Case.AI_PARSE_STATUS_SUCCESS);
+                caseService.updateById(talkCase);
+            } catch (Exception e) {
+                throw new ApiException("AI 服务器返回结果解析失败");
+            }
+        } catch (Exception e) {
+            // AI解析失败，更新case状态
+            talkCase.setAiParseStatus(Case.AI_PARSE_STATUS_FAIL);
+            caseService.updateById(talkCase);
+
+            throw new ApiException(e.getMessage());
         }
     }
 

@@ -67,16 +67,30 @@ CREATE TABLE IF NOT EXISTS `visitor`
 DROP TABLE IF EXISTS `talk_case`;
 CREATE TABLE IF NOT EXISTS `talk_case`
 (
-    id           int unsigned auto_increment comment '主键id' primary key,
-    user_id      long                                  not null comment '所属用户',
-    type         int                                   not null comment '类型 1-评估 2-咨询',
-    file_url     varchar(200)                          not null comment '文件地址',
-    ai_result    varchar(5000)                         null comment 'AI解析结果',
-    visitor_id   long                                  not null comment '访客id',
-    contact_time long                                  not null comment '当次来访时间',
-    create_time  timestamp default current_timestamp() not null,
-    update_time  timestamp default current_timestamp() not null on update current_timestamp()
+    id              int unsigned auto_increment comment '主键id' primary key,
+    user_id         long                                  not null comment '所属用户',
+    type            int                                   not null comment '类型 1-评估 2-咨询',
+    file_url        varchar(200)                          not null comment '文件地址',
+    ai_parse_status int                                   null comment 'AI解析状态 0-闲置 1-解析中 2-解析成功 3-解析失败',
+    visitor_id      long                                  not null comment '访客id',
+    contact_time    long                                  not null comment '当次来访时间',
+    create_time     timestamp default current_timestamp() not null,
+    update_time     timestamp default current_timestamp() not null on update current_timestamp()
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci COMMENT ='案例';
 
+
+--
+DROP TABLE IF EXISTS `talk_case_detail`;
+CREATE TABLE IF NOT EXISTS `talk_case_detail`
+(
+    id          int unsigned auto_increment comment '主键id' primary key,
+    case_id     long                                  not null comment '所属案例',
+    result_type varchar(50)                           not null comment '解析结果类型 result_1/2/3/4...',
+    ai_result   TEXT                                  null comment '内容',
+    create_time timestamp default current_timestamp() not null,
+    update_time timestamp default current_timestamp() not null on update current_timestamp()
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_unicode_ci COMMENT ='案例详情';

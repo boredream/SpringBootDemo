@@ -1,7 +1,7 @@
 package com.boredream.springbootdemo.service;
 
-import com.boredream.springbootdemo.entity.Case;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.boredream.springbootdemo.entity.Case;
 
 /**
  * <p>

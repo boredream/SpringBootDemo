@@ -2,6 +2,7 @@ package com.boredream.springbootdemo.controller;
 
 
 import cn.hutool.core.collection.CollectionUtil;
+import com.alibaba.druid.util.StringUtils;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.boredream.springbootdemo.entity.Case;
@@ -10,6 +11,7 @@ import com.boredream.springbootdemo.entity.dto.CaseQueryDTO;
 import com.boredream.springbootdemo.entity.dto.CreateCaseWithVisitorDTO;
 import com.boredream.springbootdemo.entity.dto.PageResultDTO;
 import com.boredream.springbootdemo.entity.dto.ResponseDTO;
+import com.boredream.springbootdemo.service.IAiService;
 import com.boredream.springbootdemo.service.ICaseService;
 import com.boredream.springbootdemo.service.IVisitorService;
 import com.boredream.springbootdemo.utils.PageUtil;
@@ -41,16 +43,36 @@ public class CaseController {
     @Autowired
     private IVisitorService visitorService;
 
+    @Autowired
+    private IAiService aiService;
+
     @Transactional
     @ApiOperation(value = "添加案例并关联访客信息")
     @PostMapping("/createWithVisitor")
     public ResponseDTO<Boolean> add(@RequestBody @Validated CreateCaseWithVisitorDTO body, Long curUserId) {
         try {
-            QueryWrapper<Case> wrapper = new QueryWrapper<Case>().eq("user_id", curUserId);
+            QueryWrapper<Case> wrapper = new QueryWrapper<Case>()
+                    .eq("delete_flag", 0)
+                    .eq("user_id", curUserId);
             long count = service.count(wrapper);
-            if(count >= 5) {
+            if (count >= 5) {
                 return ResponseDTO.error("案例数量已达上限5条，请联系管理员删除后再试");
             }
+
+//            // 查询case里index字段数字最大的那一条数据
+//            int maxIndex = 0;
+//            try {
+//                QueryWrapper<Case> caseWrapper = new QueryWrapper<Case>()
+//                        .eq("user_id", curUserId)
+//                        .orderByDesc("case_index")
+//                        .last("limit 1");
+//                Case maxIndexCase = service.getOne(caseWrapper);
+//                if(maxIndexCase != null && maxIndexCase.getCaseIndex() != null) {
+//                    maxIndex = maxIndexCase.getCaseIndex() + 1;
+//                }
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
 
             Visitor visitorDto = body.getVisitorDto();
             visitorDto.setUserId(curUserId);
@@ -59,13 +81,33 @@ public class CaseController {
                 visitorService.save(visitorDto);
             }
             Case caseDto = body.getCaseDto();
+//            caseDto.setCaseIndex(maxIndex);
             caseDto.setUserId(curUserId);
             caseDto.setVisitorId(visitorDto.getId());
 
-            return ResponseDTO.success(service.save(caseDto));
+            service.save(caseDto);
+
+            // 异步调用 AI 解析
+            if (StringUtils.isEmpty(caseDto.getFileUrl())) {
+                return ResponseDTO.error("案例缺失文件地址");
+            }
+            aiService.parseAIContent(caseDto);
+
+            return ResponseDTO.success(true);
         } catch (Exception e) {
             return ResponseDTO.error(e.getMessage());
         }
+    }
+
+    @ApiOperation(value = "案例发起AI解析")
+    @PostMapping("/parseAI")
+    public ResponseDTO<Boolean> parseAI(@RequestBody @Validated Case body, Long curUserId) {
+        // 异步调用 AI 解析
+        if (StringUtils.isEmpty(body.getFileUrl())) {
+            return ResponseDTO.error("案例缺失文件地址");
+        }
+        aiService.parseAIContent(body);
+        return ResponseDTO.success(true);
     }
 
     @ApiOperation(value = "查询解析中的案例")
@@ -85,7 +127,7 @@ public class CaseController {
         QueryWrapper<Case> wrapper = new QueryWrapper<Case>().eq("user_id", curUserId);
         Page<Case> page = PageUtil.convert2QueryPage(dto);
         Page<Case> resultDto = service.page(page, wrapper);
-        if(resultDto.getRecords() != null) {
+        if (resultDto.getRecords() != null) {
             // TODO 数据库查询更好？
             resultDto.getRecords().forEach(item -> {
                 QueryWrapper<Visitor> visitorWrapper = new QueryWrapper<Visitor>()

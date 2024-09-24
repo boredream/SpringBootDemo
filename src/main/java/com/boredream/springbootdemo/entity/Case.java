@@ -21,10 +21,12 @@ import lombok.Setter;
 @TableName("talk_case")
 public class Case extends BaseEntity {
 
+    @ApiModelProperty("删除标记 1=删除")
+    private Integer deleteFlag;
+
     @ApiModelProperty("所属用户")
     private Long userId;
 
-    @TableField(exist = false)
     @ApiModelProperty("索引")
     private Integer caseIndex;
 
@@ -34,8 +36,8 @@ public class Case extends BaseEntity {
     @ApiModelProperty("文件地址")
     private String fileUrl;
 
-    @ApiModelProperty("AI解析结果")
-    private String aiResult;
+    @ApiModelProperty("AI解析状态 0-闲置 1-解析中 2-解析成功 3-解析失败")
+    private String aiParseStatus;
 
     @ApiModelProperty("访客id")
     private Long visitorId;

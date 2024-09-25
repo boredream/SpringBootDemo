@@ -13,4 +13,5 @@ import com.boredream.springbootdemo.entity.Case;
  */
 public interface ICaseService extends IService<Case> {
 
+    void saveAiResult(String aiResult, Case talkCase);
 }

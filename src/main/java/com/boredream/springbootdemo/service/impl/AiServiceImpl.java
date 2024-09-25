@@ -2,25 +2,19 @@ package com.boredream.springbootdemo.service.impl;
 
 import com.alibaba.druid.util.StringUtils;
 import com.boredream.springbootdemo.entity.Case;
-import com.boredream.springbootdemo.entity.CaseAiResultResponse;
-import com.boredream.springbootdemo.entity.TalkCaseDetail;
 import com.boredream.springbootdemo.exception.ApiException;
 import com.boredream.springbootdemo.service.IAiService;
 import com.boredream.springbootdemo.service.ICaseService;
 import com.boredream.springbootdemo.service.ITalkCaseDetailService;
-import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -38,7 +32,6 @@ public class AiServiceImpl implements IAiService {
 
     @Async
     @Override
-    @Transactional
     public void parseAIContent(Case talkCase) {
         try {
             if (StringUtils.isEmpty(talkCase.getFileUrl())) {
@@ -56,42 +49,21 @@ public class AiServiceImpl implements IAiService {
                 throw new ApiException("AI 服务器返回结果为空");
             }
 
-            try {
-                // 解析结果
-                CaseAiResultResponse response = new Gson().fromJson(aiResult, CaseAiResultResponse.class);
-
-                List<HashMap<String, String>> label = response.getLabel();
-                if (CollectionUtils.isEmpty(label)) {
-                    throw new ApiException("AI 服务器返回 label 结果为空");
-                }
-
-                // 分 result 1/2/3/4/5... 挨个保存数据
-                for (Map.Entry<String, String> entry : label.get(0).entrySet()) {
-                    TalkCaseDetail detail = new TalkCaseDetail();
-                    detail.setCaseId(talkCase.getId());
-                    detail.setResultType(entry.getKey());
-                    detail.setAiResult(entry.getValue());
-                    caseDetailService.save(detail);
-                }
-
-                // 最后更新 case 的 AI解析状态
-                talkCase.setAiParseStatus(Case.AI_PARSE_STATUS_SUCCESS);
-                caseService.updateById(talkCase);
-            } catch (Exception e) {
-                throw new ApiException("AI 服务器返回结果解析失败");
-            }
+            caseService.saveAiResult(aiResult, talkCase);
         } catch (Exception e) {
             // AI解析失败，更新case状态
             talkCase.setAiParseStatus(Case.AI_PARSE_STATUS_FAIL);
-            caseService.updateById(talkCase);
-            log.error(e.getMessage());
+            boolean success = caseService.updateById(talkCase);
+
+            System.out.println("AI 解析失败，原因：" + e.getMessage());
+            System.out.println("失败后更新案例状态 " + success);
             throw new ApiException(e.getMessage());
         }
     }
 
     private String sendRequestToAiServer(Case talkCase) {
         // 实现对 AI 服务器的请求
-        System.out.println("case[" + talkCase.getId() + "] sendRequestToAiServer");
+        System.out.println("发送请求至AI服务器：case[" + talkCase.getId() + "] sendRequestToAiServer");
         String url = "http://121.41.57.69:80/test";
 
         // 文本格式：.txt、.doc .docx、.pdf、.rtf、.md
@@ -113,7 +85,7 @@ public class AiServiceImpl implements IAiService {
 
         long startTime = System.currentTimeMillis();
         ResponseEntity<String> response = restTemplate.postForEntity(url, params, String.class);
-        System.out.println("case[" + talkCase.getId() + "] Time taken: " + (System.currentTimeMillis() - startTime) + " ms");
+        System.out.println("收到AI服务器返回数据：case[" + talkCase.getId() + "] Time taken: " + (System.currentTimeMillis() - startTime) + " ms");
 
         return response.getBody();  // 返回解析结果
     }

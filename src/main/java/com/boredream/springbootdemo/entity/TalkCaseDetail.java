@@ -6,8 +6,6 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
-
 /**
  * <p>
  * 案例详情
@@ -30,10 +28,6 @@ public class TalkCaseDetail extends BaseEntity {
 
     @ApiModelProperty("内容")
     private String aiResult;
-
-    private LocalDateTime createTime;
-
-    private LocalDateTime updateTime;
 
 
 }

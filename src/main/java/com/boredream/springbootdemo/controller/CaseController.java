@@ -143,7 +143,9 @@ public class CaseController {
     @ApiOperation(value = "分页查询案例")
     @GetMapping("/page")
     public ResponseDTO<PageResultDTO<Case>> queryByPage(CaseQueryDTO dto, Long curUserId) {
-        QueryWrapper<Case> wrapper = new QueryWrapper<Case>().eq("user_id", curUserId);
+        QueryWrapper<Case> wrapper = new QueryWrapper<Case>()
+                .eq("delete_flag", 0)
+                .eq("user_id", curUserId);
         Page<Case> page = PageUtil.convert2QueryPage(dto);
         Page<Case> resultDto = service.page(page, wrapper);
         if (resultDto.getRecords() != null) {

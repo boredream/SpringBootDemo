@@ -39,7 +39,7 @@ public class AiServiceImpl implements IAiService {
             conn.setRequestMethod("HEAD");
             conn.connect();
             int responseCode = conn.getResponseCode();
-            return responseCode == HttpURLConnection.HTTP_OK;
+            return responseCode < 500;
         } catch (Exception e) {
             e.printStackTrace();
         }

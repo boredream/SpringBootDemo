@@ -5,7 +5,6 @@ import com.boredream.springbootdemo.entity.Case;
 import com.boredream.springbootdemo.exception.ApiException;
 import com.boredream.springbootdemo.service.IAiService;
 import com.boredream.springbootdemo.service.ICaseService;
-import com.boredream.springbootdemo.service.ITalkCaseDetailService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +12,8 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,14 +22,29 @@ import java.util.Map;
 @Service
 public class AiServiceImpl implements IAiService {
 
+    private final String aiServiceUrl = "http://121.41.57.69:80/test";
+
     @Autowired
     private ICaseService caseService;
 
     @Autowired
-    private ITalkCaseDetailService caseDetailService;
-
-    @Autowired
     private RestTemplate restTemplate;
+
+    @Override
+    public boolean isAvailable() {
+        // Example: Sync check for AI service availability
+        try {
+            URL url = new URL(aiServiceUrl);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("HEAD");
+            conn.connect();
+            int responseCode = conn.getResponseCode();
+            return responseCode == HttpURLConnection.HTTP_OK;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 
     @Async
     @Override
@@ -64,7 +80,6 @@ public class AiServiceImpl implements IAiService {
     private String sendRequestToAiServer(Case talkCase) {
         // 实现对 AI 服务器的请求
         System.out.println("发送请求至AI服务器：case[" + talkCase.getId() + "] sendRequestToAiServer");
-        String url = "http://121.41.57.69:80/test";
 
         // 文本格式：.txt、.doc .docx、.pdf、.rtf、.md
         // 音频格式：.mp3、.wav .aac、.flac、.ogg、.wma、.m4a
@@ -84,7 +99,7 @@ public class AiServiceImpl implements IAiService {
         params.put("counsel", talkCase.getType() == 2 ? 1 : 0);  // 0不是咨询稿件(评估)，1为咨询稿件
 
         long startTime = System.currentTimeMillis();
-        ResponseEntity<String> response = restTemplate.postForEntity(url, params, String.class);
+        ResponseEntity<String> response = restTemplate.postForEntity(aiServiceUrl, params, String.class);
         System.out.println("收到AI服务器返回数据：case[" + talkCase.getId() + "] Time taken: " + (System.currentTimeMillis() - startTime) + " ms");
 
         return response.getBody();  // 返回解析结果

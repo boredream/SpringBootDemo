@@ -64,6 +64,13 @@ public class CaseController {
         if (service.count(caseWrapper) > 0) {
             return ResponseDTO.error("有正在解析中的案例，请稍后再试");
         }
+
+        // 先预检AI服务器接口
+        boolean available = aiService.isAvailable();
+        if(!available) {
+            return ResponseDTO.error("AI 服务器不可用，请稍后再试");
+        }
+
         return ResponseDTO.success(true);
     }
 

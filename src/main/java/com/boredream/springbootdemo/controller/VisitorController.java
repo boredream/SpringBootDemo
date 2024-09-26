@@ -62,6 +62,16 @@ public class VisitorController {
         return ResponseDTO.success(PageUtil.convert2PageResult(resultDto));
     }
 
+    @ApiOperation(value = "获取用户详情")
+    @GetMapping("/queryByCaseId")
+    public ResponseDTO<Visitor> queryByCaseId(Long caseId) {
+        Case talkCase = caseService.getOne(new QueryWrapper<Case>().eq("id", caseId));
+        if(talkCase == null || talkCase.getId() == null) {
+            return ResponseDTO.error("案例信息中无法获取访客信息");
+        }
+        return ResponseDTO.success(service.getById(talkCase.getVisitorId()));
+    }
+
     @ApiOperation(value = "添加用户")
     @PostMapping
     public ResponseDTO<Boolean> add(@RequestBody @Validated Visitor body, Long curUserId) {

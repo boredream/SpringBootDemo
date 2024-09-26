@@ -22,7 +22,7 @@ import java.lang.reflect.Field;
 public class VisitorServiceImpl extends ServiceImpl<VisitorMapper, Visitor> implements IVisitorService {
 
     @Override
-    public boolean updateIfEmptyField(Visitor visitor, String json) {
+    public boolean updateField(Visitor visitor, String json, boolean overwrite) {
         // json里面有值，且原字段不存在的才进行更新
         // {'family':'暂无','personality':'暂无','relationship':'来访者认为母亲会在其学习时打扰，令其反感。来访者认为父亲未提及。','parent':'父母关系答案暂无','events':'重大生活事件答案暂无','trauma':'既往创伤答案暂无','self-rated':'自我评价为自控能力不强，需要督促。','peer':'同伴关系答案暂无','intimat':'亲密关系答案暂无','symptoms':'紧张、担心，两年半','present':'对学习失去兴趣，伴随督促需求与反感，持续至大学。','past':'既往病史答案暂无','addiction':'上瘾史答案暂无'}
         StringBuilder sb = new StringBuilder();
@@ -42,10 +42,17 @@ public class VisitorServiceImpl extends ServiceImpl<VisitorMapper, Visitor> impl
                 Field field = visitor.getClass().getDeclaredField(key);
                 field.setAccessible(true); // 允许访问私有字段
 
-                Object fieldValue = field.get(visitor);
-                if (fieldValue == null || (fieldValue instanceof String && ((String) fieldValue).isEmpty())) {
-                    field.set(visitor, value); // 更新字段值
-                    sb.append(", old value is empty UPDATE !");
+                if(overwrite) {
+                    // 如果是覆盖操作，直接更新
+                    field.set(visitor, value);
+                    sb.append(", OVERWRITE UPDATE !");
+                } else {
+                    // 非覆盖操作，只有原有字段为空时才更新
+                    Object fieldValue = field.get(visitor);
+                    if (fieldValue == null || (fieldValue instanceof String && ((String) fieldValue).isEmpty())) {
+                        field.set(visitor, value); // 更新字段值
+                        sb.append(", old value is empty UPDATE !");
+                    }
                 }
             } catch (NoSuchFieldException | IllegalAccessException e) {
                 // 处理反射异常，比如字段不存在，跳过

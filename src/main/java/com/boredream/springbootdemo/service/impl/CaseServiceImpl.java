@@ -1,15 +1,18 @@
 package com.boredream.springbootdemo.service.impl;
 
+import com.alibaba.druid.util.StringUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.boredream.springbootdemo.entity.Case;
 import com.boredream.springbootdemo.entity.CaseAiResultResponse;
 import com.boredream.springbootdemo.entity.TalkCaseDetail;
+import com.boredream.springbootdemo.entity.Visitor;
 import com.boredream.springbootdemo.exception.ApiException;
 import com.boredream.springbootdemo.mapper.CaseMapper;
 import com.boredream.springbootdemo.service.ICaseService;
 import com.boredream.springbootdemo.service.ITalkCaseDetailService;
 import com.boredream.springbootdemo.service.IVisitorService;
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -59,11 +62,31 @@ public class CaseServiceImpl extends ServiceImpl<CaseMapper, Case> implements IC
             caseDetailService.save(detail);
 
             // 更新访客数据
-            if(talkCase.getType() != null && talkCase.getType() == 1 && "result_4".equals(entry.getKey())) {
-                // 评估的result_4是个人信息
-                visitorService.updateIfEmptyField(talkCase.getVisitor(), entry.getValue());
-            } else if(talkCase.getType() != null && talkCase.getType() == 2 && "result_4".equals(entry.getKey())) {
-                // TODO 咨询
+            if (talkCase.getType() != null && talkCase.getType() == 1) {
+                // 评估
+                if ("result_4".equals(entry.getKey())) {
+                    // result_4是个人信息
+                    visitorService.updateField(talkCase.getVisitor(), entry.getValue(), false);
+                }
+            } else if (talkCase.getType() != null && talkCase.getType() == 2) {
+                // 咨询 TODO
+                if ("result_3".equals(entry.getKey())) {
+                    // result_4是个案评估数据，只要有值就覆盖操作
+                    Visitor visitor = talkCase.getVisitor();
+                    String json = entry.getValue().replace("'", "\"");
+                    JsonObject jo = new Gson().fromJson(json, JsonObject.class);
+                    if (jo.has("suicide")) {
+                        String suicide = jo.get("suicide").getAsString();
+                        if (!StringUtils.isEmpty(suicide)) {
+                            visitor.setSuicide(suicide);
+                        }
+                    }
+                    if (jo.has("risk")) {
+                        int risk = jo.get("risk").getAsInt();
+                        visitor.setRisk(risk);
+                    }
+                    visitorService.updateById(visitor);
+                }
             }
         }
 

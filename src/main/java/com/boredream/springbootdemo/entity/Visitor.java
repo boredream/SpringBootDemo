@@ -102,6 +102,12 @@ public class Visitor extends BaseEntity {
     @ApiModelProperty("上瘾史")
     private String addiction;
 
+    @ApiModelProperty("自杀概率")
+    private String suicide;
+
+    @ApiModelProperty("风险程度")
+    private Integer risk;
+
     @TableField(exist = false)
     @ApiModelProperty("案例")
     private List<Case> caseList;

@@ -94,12 +94,11 @@ public class CaseController {
             QueryWrapper<Case> wrapper = new QueryWrapper<>();
             wrapper.eq("visitor_id", visitorId)
                     .eq("type", type)
-                    .orderByDesc("case_index");
-            List<Case> list = service.list();
-            int maxIndex = 0;
-            if(!CollectionUtil.isEmpty(list)) {
-                maxIndex = list.get(0).getCaseIndex();
-            }
+                    .orderByDesc("case_index")
+                    .last("LIMIT 1"); // 只查询一条
+
+            Case maxCase = service.getOne(wrapper);
+            int maxIndex = (maxCase != null) ? maxCase.getCaseIndex() : 0;
 
             Case caseDto = body.getCaseDto();
             caseDto.setCaseIndex(maxIndex + 1);

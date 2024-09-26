@@ -94,11 +94,11 @@ public class CaseController {
             QueryWrapper<Case> wrapper = new QueryWrapper<>();
             wrapper.eq("visitor_id", visitorId)
                     .eq("type", type)
-                    .select("COALESCE(MAX(case_index), 0) as case_index");
-            Case maxIndexCase = service.getOne(wrapper);
+                    .orderByDesc("case_index");
+            List<Case> list = service.list();
             int maxIndex = 0;
-            if (maxIndexCase != null) {
-                maxIndex = maxIndexCase.getCaseIndex();
+            if(!CollectionUtil.isEmpty(list)) {
+                maxIndex = list.get(0).getCaseIndex();
             }
 
             Case caseDto = body.getCaseDto();
@@ -108,6 +108,7 @@ public class CaseController {
             caseDto.setVisitorId(visitorDto.getId());
 
             service.save(caseDto);
+            caseDto.setVisitor(visitorDto);
 
             // 异步调用 AI 解析
             aiService.parseAIContent(caseDto);

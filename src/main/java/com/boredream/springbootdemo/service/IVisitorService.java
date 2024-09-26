@@ -13,4 +13,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IVisitorService extends IService<Visitor> {
 
+    boolean updateIfEmptyField(Visitor visitor, String json);
 }

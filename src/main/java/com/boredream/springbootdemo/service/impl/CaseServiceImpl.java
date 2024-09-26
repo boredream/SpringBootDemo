@@ -1,13 +1,14 @@
 package com.boredream.springbootdemo.service.impl;
 
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.boredream.springbootdemo.entity.Case;
 import com.boredream.springbootdemo.entity.CaseAiResultResponse;
 import com.boredream.springbootdemo.entity.TalkCaseDetail;
 import com.boredream.springbootdemo.exception.ApiException;
 import com.boredream.springbootdemo.mapper.CaseMapper;
 import com.boredream.springbootdemo.service.ICaseService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.boredream.springbootdemo.service.ITalkCaseDetailService;
+import com.boredream.springbootdemo.service.IVisitorService;
 import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,7 +33,10 @@ public class CaseServiceImpl extends ServiceImpl<CaseMapper, Case> implements IC
     // TODO 这种写法不好？
 
     @Autowired
-    private ITalkCaseDetailService caseDtailService;
+    private ITalkCaseDetailService caseDetailService;
+
+    @Autowired
+    private IVisitorService visitorService;
 
     @Transactional
     @Override
@@ -52,7 +56,15 @@ public class CaseServiceImpl extends ServiceImpl<CaseMapper, Case> implements IC
             detail.setCaseId(talkCase.getId());
             detail.setResultType(entry.getKey());
             detail.setAiResult(entry.getValue());
-            caseDtailService.save(detail);
+            caseDetailService.save(detail);
+
+            // 更新访客数据
+            if(talkCase.getType() != null && talkCase.getType() == 1 && "result_4".equals(entry.getKey())) {
+                // 评估的result_4是个人信息
+                visitorService.updateIfEmptyField(talkCase.getVisitor(), entry.getValue());
+            } else if(talkCase.getType() != null && talkCase.getType() == 2 && "result_4".equals(entry.getKey())) {
+                // TODO 咨询
+            }
         }
 
         // 最后更新 case 的 AI解析状态

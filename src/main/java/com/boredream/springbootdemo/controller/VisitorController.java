@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 /**
  * <p>
- * 用户 前端控制器
+ * 访客 前端控制器
  * </p>
  *
  * @author boredream
@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @RestController
 @RequestMapping("/visitor")
-@Api(tags = {"用户"})
+@Api(tags = {"访客"})
 public class VisitorController {
 
     @Autowired
@@ -36,7 +36,7 @@ public class VisitorController {
     @Autowired
     private ICaseService caseService;
 
-    @ApiOperation(value = "分页查询用户")
+    @ApiOperation(value = "分页查询访客")
     @GetMapping("/page")
     public ResponseDTO<PageResultDTO<Visitor>> queryByPage(VisitorQueryDTO dto, Long curUserId) {
         QueryWrapper<Visitor> wrapper = new QueryWrapper<Visitor>().eq("user_id", curUserId);
@@ -46,7 +46,7 @@ public class VisitorController {
     }
 
 
-    @ApiOperation(value = "分页查询用户")
+    @ApiOperation(value = "分页查询访客")
     @GetMapping("/queryWithCase")
     public ResponseDTO<PageResultDTO<Visitor>> queryWithCase(VisitorQueryDTO dto, Long curUserId) {
         QueryWrapper<Visitor> wrapper = new QueryWrapper<Visitor>().eq("user_id", curUserId);
@@ -62,7 +62,7 @@ public class VisitorController {
         return ResponseDTO.success(PageUtil.convert2PageResult(resultDto));
     }
 
-    @ApiOperation(value = "获取用户详情")
+    @ApiOperation(value = "获取访客详情")
     @GetMapping("/queryByCaseId")
     public ResponseDTO<Visitor> queryByCaseId(Long caseId) {
         Case talkCase = caseService.getOne(new QueryWrapper<Case>().eq("id", caseId));
@@ -72,21 +72,22 @@ public class VisitorController {
         return ResponseDTO.success(service.getById(talkCase.getVisitorId()));
     }
 
-    @ApiOperation(value = "添加用户")
+    @ApiOperation(value = "添加访客")
     @PostMapping
     public ResponseDTO<Boolean> add(@RequestBody @Validated Visitor body, Long curUserId) {
         body.setUserId(curUserId);
         return ResponseDTO.success(service.save(body));
     }
 
-    @ApiOperation(value = "修改用户")
+    @ApiOperation(value = "修改访客")
     @PutMapping("/{id}")
-    public ResponseDTO<Boolean> update(@PathVariable("id") Long id, @RequestBody @Validated Visitor body) {
+    public ResponseDTO<Visitor> update(@PathVariable("id") Long id, @RequestBody @Validated Visitor body) {
         body.setId(id);
-        return ResponseDTO.success(service.updateById(body));
+        service.updateById(body);
+        return ResponseDTO.success(body);
     }
 
-    @ApiOperation(value = "删除用户")
+    @ApiOperation(value = "删除访客")
     @DeleteMapping("/{id}")
     public ResponseDTO<Boolean> delete(@PathVariable("id") Long id) {
         return ResponseDTO.success(service.removeById(id));

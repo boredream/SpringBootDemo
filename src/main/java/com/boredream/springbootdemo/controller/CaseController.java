@@ -86,22 +86,23 @@ public class CaseController {
                 visitorService.save(visitorDto);
             }
 
-            // 设置案例索引
+            // 设置案例索引，规则是 访客+日期+咨询 当日按createDate排123次
             Long visitorId = visitorDto.getId();
             int type = body.getCaseDto().getType();
 
-            // 查询同一visitor_id和type的最大case_index
-            QueryWrapper<Case> wrapper = new QueryWrapper<>();
-            wrapper.eq("visitor_id", visitorId)
-                    .eq("type", type)
-                    .orderByDesc("case_index")
-                    .last("LIMIT 1"); // 只查询一条
-
-            Case maxCase = service.getOne(wrapper);
-            int maxIndex = (maxCase != null) ? maxCase.getCaseIndex() : 0;
+            int caseIndex = 1;
+            if(type == Case.TYPE_CONSULT) {
+                QueryWrapper<Case> wrapper = new QueryWrapper<>();
+                wrapper.eq("visitor_id", visitorId)
+                        .eq("type", type)
+                        .eq("delete_flag", 0)
+                        .eq("user_id", curUserId)
+                        .eq("contact_time", body.getCaseDto().getContactTime());
+                caseIndex = (int) (service.count() + 1);
+            }
 
             Case caseDto = body.getCaseDto();
-            caseDto.setCaseIndex(maxIndex + 1);
+            caseDto.setCaseIndex(caseIndex);
             caseDto.setAiParseStatus(Case.AI_PARSE_STATUS_PARSING);
             caseDto.setUserId(curUserId);
             caseDto.setVisitorId(visitorDto.getId());
@@ -133,6 +134,7 @@ public class CaseController {
     @GetMapping("/getParsingCase")
     public ResponseDTO<Case> queryParsingCase(Long curUserId) {
         QueryWrapper<Case> wrapper = new QueryWrapper<Case>()
+                .eq("delete_flag", 0)
                 .eq("user_id", curUserId)
                 .eq("ai_parse_status", Case.AI_PARSE_STATUS_PARSING);
 
@@ -142,11 +144,15 @@ public class CaseController {
 
     @ApiOperation(value = "分页查询案例")
     @GetMapping("/page")
-    public ResponseDTO<PageResultDTO<Case>> queryByPage(CaseQueryDTO dto, Long curUserId) {
+    public ResponseDTO<PageResultDTO<Case>> queryByPage(CaseQueryDTO dto, Long curUserId, Long visitorId) {
         QueryWrapper<Case> wrapper = new QueryWrapper<Case>()
                 .eq("delete_flag", 0)
                 .eq("user_id", curUserId)
                 .orderByDesc("create_time");
+
+        if(visitorId != null) {
+            wrapper = wrapper.eq("visitor_id", visitorId);
+        }
 
         Page<Case> page = PageUtil.convert2QueryPage(dto);
         Page<Case> resultDto = service.page(page, wrapper);

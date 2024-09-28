@@ -39,7 +39,8 @@ public class VisitorController {
     @ApiOperation(value = "分页查询访客")
     @GetMapping("/page")
     public ResponseDTO<PageResultDTO<Visitor>> queryByPage(VisitorQueryDTO dto, Long curUserId) {
-        QueryWrapper<Visitor> wrapper = new QueryWrapper<Visitor>().eq("user_id", curUserId);
+        QueryWrapper<Visitor> wrapper = new QueryWrapper<Visitor>()
+                .eq("user_id", curUserId);
         Page<Visitor> page = PageUtil.convert2QueryPage(dto);
         Page<Visitor> resultDto = service.page(page, wrapper);
         return ResponseDTO.success(PageUtil.convert2PageResult(resultDto));
@@ -49,12 +50,15 @@ public class VisitorController {
     @ApiOperation(value = "分页查询访客")
     @GetMapping("/queryWithCase")
     public ResponseDTO<PageResultDTO<Visitor>> queryWithCase(VisitorQueryDTO dto, Long curUserId) {
-        QueryWrapper<Visitor> wrapper = new QueryWrapper<Visitor>().eq("user_id", curUserId);
+        QueryWrapper<Visitor> wrapper = new QueryWrapper<Visitor>()
+                .eq("user_id", curUserId);
         Page<Visitor> page = PageUtil.convert2QueryPage(dto);
         Page<Visitor> resultDto = service.page(page, wrapper);
         if (resultDto.getRecords() != null) {
             resultDto.getRecords().forEach(item -> {
                 QueryWrapper<Case> caseWrapper = new QueryWrapper<Case>()
+                        .eq("delete_flag", 0)
+                        .eq("user_id", curUserId)
                         .eq("visitor_id", item.getId());
                 item.setCaseList(caseService.list(caseWrapper));
             });

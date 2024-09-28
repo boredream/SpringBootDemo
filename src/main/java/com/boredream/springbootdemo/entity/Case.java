@@ -22,6 +22,16 @@ import lombok.Setter;
 public class Case extends BaseEntity {
 
     /**
+     * 类型 评估
+     */
+    public static final int TYPE_ASSESSMENT = 1;
+
+    /**
+     * 类型 咨询
+     */
+    public static final int TYPE_CONSULT = 2;
+
+    /**
      * AI解析状态 闲置
      */
     public static final int AI_PARSE_STATUS_IDLE = 0;
@@ -56,6 +66,9 @@ public class Case extends BaseEntity {
 
     @ApiModelProperty("文件地址")
     private String fileUrl;
+
+    @ApiModelProperty("主题")
+    private String topic;
 
     @ApiModelProperty("AI解析状态 0-闲置 1-解析中 2-解析成功 3-解析失败")
     private Integer aiParseStatus;

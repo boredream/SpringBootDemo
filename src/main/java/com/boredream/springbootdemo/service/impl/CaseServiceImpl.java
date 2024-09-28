@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -61,18 +62,28 @@ public class CaseServiceImpl extends ServiceImpl<CaseMapper, Case> implements IC
             detail.setAiResult(entry.getValue());
             caseDetailService.save(detail);
 
+            Visitor visitor = talkCase.getVisitor();
+
             // 更新访客数据
             if (talkCase.getType() != null && talkCase.getType() == 1) {
                 // 评估
-                if ("result_4".equals(entry.getKey())) {
-                    // result_4是个人信息
-                    visitorService.updateField(talkCase.getVisitor(), entry.getValue(), false);
+                if (Arrays.asList("result_3", "result_4").contains(entry.getKey())) {
+                    // result_3+4是个人信息
+                    visitorService.updateField(visitor, entry.getValue(), false);
                 }
             } else if (talkCase.getType() != null && talkCase.getType() == 2) {
-                // 咨询 TODO
-                if ("result_3".equals(entry.getKey())) {
+                // 咨询
+                if("result_2".equals(entry.getKey())) {
+                    // result_2是会谈概况，需要抽取主题内容保存在案例信息上
+                    JsonObject jo = new Gson().fromJson(entry.getValue(), JsonObject.class);
+                    if(jo.has("topic")) {
+                        String topic = jo.get("topic").getAsString();
+                        if(!StringUtils.isEmpty(topic)) {
+                            talkCase.setTopic(topic);
+                        }
+                    }
+                } else if ("result_3".equals(entry.getKey())) {
                     // result_4是个案评估数据，只要有值就覆盖操作
-                    Visitor visitor = talkCase.getVisitor();
                     String json = entry.getValue().replace("'", "\"");
                     JsonObject jo = new Gson().fromJson(json, JsonObject.class);
                     if (jo.has("suicide")) {
@@ -86,6 +97,9 @@ public class CaseServiceImpl extends ServiceImpl<CaseMapper, Case> implements IC
                         visitor.setRisk(risk);
                     }
                     visitorService.updateById(visitor);
+                } else if (Arrays.asList("result_6", "result_7").contains(entry.getKey())) {
+                    // result_6+7是个人信息
+                    visitorService.updateField(visitor, entry.getValue(), false);
                 }
             }
         }

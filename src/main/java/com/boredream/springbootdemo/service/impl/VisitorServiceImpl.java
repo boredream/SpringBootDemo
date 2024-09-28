@@ -29,32 +29,39 @@ public class VisitorServiceImpl extends ServiceImpl<VisitorMapper, Visitor> impl
         sb.append("updateIfEmptyField ==>");
         JsonObject jo = new Gson().fromJson(json, JsonObject.class);
         jo.entrySet().forEach(entry -> {
-            String key = entry.getKey();
-            if("self-rated".equals(key)) {
-                key = "selfRated";
-            }
-            String value = entry.getValue().getAsString();
-
-            sb.append("\n").append("ai result : key = ").append(key)
-                    .append(", value = ").append(value);
-
             try {
-                Field field = visitor.getClass().getDeclaredField(key);
-                field.setAccessible(true); // 允许访问私有字段
-
-                if(overwrite) {
-                    // 如果是覆盖操作，直接更新
-                    field.set(visitor, value);
-                    sb.append(", OVERWRITE UPDATE !");
+                String key = entry.getKey();
+                if ("self-rated".equals(key)) {
+                    key = "selfRated";
+                }
+                Object value;
+                if ("age".equals(key)) {
+                    value = entry.getValue().getAsInt();
                 } else {
-                    // 非覆盖操作，只有原有字段为空时才更新
-                    Object fieldValue = field.get(visitor);
-                    if (fieldValue == null || (fieldValue instanceof String && ((String) fieldValue).isEmpty())) {
-                        field.set(visitor, value); // 更新字段值
-                        sb.append(", old value is empty UPDATE !");
+                    value = entry.getValue().getAsString();
+                }
+
+                sb.append("\n").append("ai result : key = ").append(key)
+                        .append(", value = ").append(value);
+
+                if(value != null && !"null".equals(value)) {
+                    Field field = visitor.getClass().getDeclaredField(key);
+                    field.setAccessible(true); // 允许访问私有字段
+
+                    if (overwrite) {
+                        // 如果是覆盖操作，直接更新
+                        field.set(visitor, value);
+                        sb.append(", OVERWRITE UPDATE !");
+                    } else {
+                        // 非覆盖操作，只有原有字段为空时才更新
+                        Object fieldValue = field.get(visitor);
+                        if (fieldValue == null || (fieldValue instanceof String && ((String) fieldValue).isEmpty())) {
+                            field.set(visitor, value); // 更新字段值
+                            sb.append(", old value is empty UPDATE !");
+                        }
                     }
                 }
-            } catch (NoSuchFieldException | IllegalAccessException e) {
+            } catch (Exception e) {
                 // 处理反射异常，比如字段不存在，跳过
                 sb.append(", SKIP ERROR FIELD ! error info = ").append(e.getMessage());
             }

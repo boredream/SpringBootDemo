@@ -60,6 +60,7 @@ public class CaseController {
         // 如果有正在解析中的案例，也暂时不让上传
         QueryWrapper<Case> caseWrapper = new QueryWrapper<Case>()
                 .eq("user_id", curUserId)
+                .eq("delete_flag", 0)
                 .eq("ai_parse_status", Case.AI_PARSE_STATUS_PARSING);
         if (service.count(caseWrapper) > 0) {
             return ResponseDTO.error("有正在解析中的案例，请稍后再试");
@@ -98,7 +99,7 @@ public class CaseController {
                         .eq("delete_flag", 0)
                         .eq("user_id", curUserId)
                         .eq("contact_time", body.getCaseDto().getContactTime());
-                caseIndex = (int) (service.count() + 1);
+                caseIndex = (int) (service.count(wrapper) + 1);
             }
 
             Case caseDto = body.getCaseDto();

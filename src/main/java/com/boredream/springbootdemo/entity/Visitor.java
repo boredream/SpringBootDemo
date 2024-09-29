@@ -52,7 +52,7 @@ public class Visitor extends BaseEntity {
     private String currentOccupation;
 
     @ApiModelProperty("宗教信仰")
-    private String religion;
+    private String religious;
 
     @ApiModelProperty("婚姻状况")
     private String marriage;

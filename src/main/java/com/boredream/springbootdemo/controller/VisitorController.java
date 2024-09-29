@@ -67,13 +67,9 @@ public class VisitorController {
     }
 
     @ApiOperation(value = "获取访客详情")
-    @GetMapping("/queryByCaseId")
-    public ResponseDTO<Visitor> queryByCaseId(Long caseId) {
-        Case talkCase = caseService.getOne(new QueryWrapper<Case>().eq("id", caseId));
-        if(talkCase == null || talkCase.getId() == null) {
-            return ResponseDTO.error("案例信息中无法获取访客信息");
-        }
-        return ResponseDTO.success(service.getById(talkCase.getVisitorId()));
+    @GetMapping("/queryById")
+    public ResponseDTO<Visitor> queryById(Long visitorId, Long curUserId) {
+        return ResponseDTO.success(service.getById(visitorId));
     }
 
     @ApiOperation(value = "添加访客")
@@ -88,7 +84,9 @@ public class VisitorController {
     public ResponseDTO<Visitor> update(@PathVariable("id") Long id, @RequestBody @Validated Visitor body) {
         body.setId(id);
         service.updateById(body);
-        return ResponseDTO.success(body);
+        // 修改成功后，查询完整visitor返回
+        Visitor newestBody = service.getById(id);
+        return ResponseDTO.success(newestBody);
     }
 
     @ApiOperation(value = "删除访客")

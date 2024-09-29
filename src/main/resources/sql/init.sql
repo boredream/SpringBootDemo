@@ -40,7 +40,7 @@ CREATE TABLE IF NOT EXISTS `visitor`
     address            varchar(50)                           null comment '现居地',
     education_level    varchar(50)                           null comment '受教育程度',
     current_occupation varchar(50)                           null comment '现职业/专业',
-    religion           varchar(50)                           null comment '宗教信仰',
+    religions           varchar(50)                           null comment '宗教信仰',
     marriage           varchar(50)                           null comment '婚姻状况',
     number             varchar(50)                           null comment '联系方式',
     # 历史信息

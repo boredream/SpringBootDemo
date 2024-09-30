@@ -99,6 +99,12 @@ public class Visitor extends BaseEntity {
     @ApiModelProperty("既往病史")
     private String past;
 
+    @ApiModelProperty("家族病史")
+    private String fam;
+
+    @ApiModelProperty("药物史")
+    private String medicine;
+
     @ApiModelProperty("上瘾史")
     private String addiction;
 

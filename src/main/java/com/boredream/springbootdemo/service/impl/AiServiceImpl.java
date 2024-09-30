@@ -14,7 +14,6 @@ import org.springframework.web.client.RestTemplate;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -81,21 +80,12 @@ public class AiServiceImpl implements IAiService {
         // 实现对 AI 服务器的请求
         System.out.println("发送请求至AI服务器：case[" + talkCase.getId() + "] sendRequestToAiServer");
 
-        // 文本格式：.txt、.doc .docx、.pdf、.rtf、.md
-        // 音频格式：.mp3、.wav .aac、.flac、.ogg、.wma、.m4a
-        int file_type = 0;
-        String fileUrl = talkCase.getFileUrl();
-        if (Arrays.asList(".mp3", ".wav", ".aac", ".flac", ".ogg", ".wma", ".m4a")
-                .contains(fileUrl.substring(fileUrl.lastIndexOf('.')))) {
-            file_type = 1;
-        }
-
         // TODO 异常没有更新案例错误状态
         // TODO 假如超时、轮询机制检查案例ai解析状态
 
         Map<String, Object> params = new HashMap<>();
-        params.put("file_type", file_type);  // 0为文档，1为音频
-        params.put("doc_url", fileUrl); // 文档链接
+        params.put("file_type", talkCase.getFileType() != null ? talkCase.getFileType() : 0);  // 0为文档，1为音频
+        params.put("doc_url", talkCase.getFileUrl()); // 文档链接
         params.put("counsel", talkCase.getType() == 2 ? 1 : 0);  // 0不是咨询稿件(评估)，1为咨询稿件
 
         long startTime = System.currentTimeMillis();

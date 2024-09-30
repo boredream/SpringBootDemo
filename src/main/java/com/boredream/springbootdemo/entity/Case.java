@@ -22,6 +22,16 @@ import lombok.Setter;
 public class Case extends BaseEntity {
 
     /**
+     * 文件类型 文档
+     */
+    public static final int FILE_TYPE_DOCUMENT = 0;
+
+    /**
+     * 文件类型 音频
+     */
+    public static final int FILE_TYPE_AUDIO = 1;
+
+    /**
      * 类型 评估
      */
     public static final int TYPE_ASSESSMENT = 1;
@@ -66,6 +76,9 @@ public class Case extends BaseEntity {
 
     @ApiModelProperty("文件地址")
     private String fileUrl;
+
+    @ApiModelProperty("文件类型")
+    private Integer fileType;
 
     @ApiModelProperty("主题")
     private String topic;

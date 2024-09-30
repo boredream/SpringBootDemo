@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -47,14 +48,22 @@ public class CaseController {
 
     @ApiOperation(value = "新增案例预检")
     @GetMapping("/checkCreate")
-    public ResponseDTO<Boolean> check(Long curUserId) {
+    public ResponseDTO<Boolean> check(Long curUserId, int currentFileType) {
         // 校验最大数量，和正在解析中文件情况，防止重复上传文件浪费资源
         QueryWrapper<Case> wrapper = new QueryWrapper<Case>()
                 .eq("delete_flag", 0)
                 .eq("user_id", curUserId);
-        long count = service.count(wrapper);
-        if (count >= 5) {
+        if (service.count(wrapper) >= 5) {
             return ResponseDTO.error("案例数量已达上限5条，请联系管理员删除后再试");
+        }
+
+        // 语音类型最多一条
+        QueryWrapper<Case> audioWrapper = new QueryWrapper<Case>()
+                .eq("delete_flag", 0)
+                .eq("user_id", curUserId)
+                .eq("file_type", Case.FILE_TYPE_AUDIO);
+        if (service.count(audioWrapper) >= 1 && currentFileType == Case.FILE_TYPE_AUDIO) {
+            return ResponseDTO.error("语音类型最多一条，请联系管理员删除后再试");
         }
 
         // 如果有正在解析中的案例，也暂时不让上传
@@ -107,6 +116,16 @@ public class CaseController {
             caseDto.setAiParseStatus(Case.AI_PARSE_STATUS_PARSING);
             caseDto.setUserId(curUserId);
             caseDto.setVisitorId(visitorDto.getId());
+
+            // 文本格式：.txt、.doc .docx、.pdf、.rtf、.md
+            // 音频格式：.mp3、.wav .aac、.flac、.ogg、.wma、.m4a
+            int fileType = 0;
+            String fileUrl = caseDto.getFileUrl();
+            if (Arrays.asList(".mp3", ".wav", ".aac", ".flac", ".ogg", ".wma", ".m4a")
+                    .contains(fileUrl.substring(fileUrl.lastIndexOf('.')))) {
+                fileType = 1;
+            }
+            caseDto.setFileType(fileType);
 
             service.save(caseDto);
             caseDto.setVisitor(visitorDto);

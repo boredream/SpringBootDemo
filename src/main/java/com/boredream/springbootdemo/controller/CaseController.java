@@ -121,7 +121,7 @@ public class CaseController {
             // 音频格式：.mp3、.wav .aac、.flac、.ogg、.wma、.m4a
             int fileType = 0;
             String fileUrl = caseDto.getFileUrl();
-            if (Arrays.asList(".mp3", ".wav", ".aac", ".flac", ".ogg", ".wma", ".m4a")
+            if (Arrays.asList(".mp3", ".wav", ".mp4", ".aac", ".flac", ".ogg", ".wma", ".m4a", ".amr")
                     .contains(fileUrl.substring(fileUrl.lastIndexOf('.')))) {
                 fileType = 1;
             }

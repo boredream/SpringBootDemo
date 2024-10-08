@@ -5,10 +5,12 @@ import com.boredream.springbootdemo.entity.Visitor;
 import com.boredream.springbootdemo.mapper.VisitorMapper;
 import com.boredream.springbootdemo.service.IVisitorService;
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Field;
+import java.util.Map;
 
 /**
  * <p>
@@ -28,9 +30,14 @@ public class VisitorServiceImpl extends ServiceImpl<VisitorMapper, Visitor> impl
         StringBuilder sb = new StringBuilder();
         sb.append("updateIfEmptyField ==>");
         JsonObject jo = new Gson().fromJson(json, JsonObject.class);
-        jo.entrySet().forEach(entry -> {
+        for (Map.Entry<String, JsonElement> entry : jo.entrySet()) {
             try {
                 String key = entry.getKey();
+                if ("name".equals(key)) {
+                    // AI结果不覆盖姓名
+                    continue;
+                }
+
                 if ("self-rated".equals(key)) {
                     key = "selfRated";
                 }
@@ -44,7 +51,7 @@ public class VisitorServiceImpl extends ServiceImpl<VisitorMapper, Visitor> impl
                 sb.append("\n").append("ai result : key = ").append(key)
                         .append(", value = ").append(value);
 
-                if(value != null && !"null".equals(value)) {
+                if (value != null && !"null".equals(value)) {
                     Field field = visitor.getClass().getDeclaredField(key);
                     field.setAccessible(true); // 允许访问私有字段
 
@@ -63,9 +70,12 @@ public class VisitorServiceImpl extends ServiceImpl<VisitorMapper, Visitor> impl
                 }
             } catch (Exception e) {
                 // 处理反射异常，比如字段不存在，跳过
-                sb.append(", SKIP ERROR FIELD ! error info = ").append(e.getMessage());
+                sb.append("\n SKIP ERROR FIELD ")
+                        .append(entry.getKey())
+                        .append("! error info = ")
+                        .append(e.getMessage());
             }
-        });
+        }
         System.out.println(sb);
         return updateById(visitor);
     }

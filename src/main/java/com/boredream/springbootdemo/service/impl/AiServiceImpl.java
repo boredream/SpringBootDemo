@@ -84,8 +84,13 @@ public class AiServiceImpl implements IAiService {
         // TODO 假如超时、轮询机制检查案例ai解析状态
 
         Map<String, Object> params = new HashMap<>();
-        params.put("file_type", talkCase.getFileType() != null ? talkCase.getFileType() : 0);  // 0为文档，1为音频
-        params.put("doc_url", talkCase.getFileUrl()); // 文档链接
+        int fileType = talkCase.getFileType() != null ? talkCase.getFileType() : 0;
+        params.put("file_type", fileType);  // 0为文档，1为音频
+        if(fileType == 1) {
+            params.put("mp3_url", talkCase.getFileUrl()); // 音频链接
+        } else {
+            params.put("doc_url", talkCase.getFileUrl()); // 文档链接
+        }
         params.put("counsel", talkCase.getType() == 2 ? 1 : 0);  // 0不是咨询稿件(评估)，1为咨询稿件
 
         long startTime = System.currentTimeMillis();

@@ -29,6 +29,6 @@ mybatis-plus:
 qiniu:
   accessKey: wdoVNp9qXmswTakEjVcfFEqdi0JebQi8tNLDxMJg
   secretKey: Jmool8zj8njyMlVOX_zduoZgb_2ssqBO9V3sy-XH
-  bucket: sep-talk
+  bucket: sep-talk2
   uploadHost: https://upload.qiniup.com/
-  downloadHost: http://sjn69vzve.hd-bkt.clouddn.com/
+  downloadHost: http://sl6hzvqmv.hd-bkt.clouddn.com/

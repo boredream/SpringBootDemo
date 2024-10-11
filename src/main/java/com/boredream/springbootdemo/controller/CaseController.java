@@ -76,10 +76,10 @@ public class CaseController {
         }
 
         // 先预检AI服务器接口
-        boolean available = aiService.isAvailable();
-        if(!available) {
-            return ResponseDTO.error("AI 服务器不可用，请稍后再试");
-        }
+//        boolean available = aiService.isAvailable();
+//        if(!available) {
+//            return ResponseDTO.error("AI 服务器不可用，请稍后再试");
+//        }
 
         return ResponseDTO.success(true);
     }

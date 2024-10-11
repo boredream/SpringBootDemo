@@ -11,7 +11,6 @@ public class BaseController {
     UserMapper userMapper;
 
     protected <T> QueryWrapper<T> genUserQuery(long curUserId) {
-        // TODO: chunyang 2021/11/25 是否影响性能？
         return genUserQuery(null, curUserId);
     }
 

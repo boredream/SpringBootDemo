@@ -51,30 +51,50 @@ public class SpeechWebSocket {
     }
 
     @OnMessage
+    public void onMessage(String message, Session session) {
+        log.info("收到WebSocket文本消息: {}", message);
+        try {
+            // 发送确认消息
+            String confirmMsg = message + "「已收到」";
+            session.getBasicRemote().sendText(confirmMsg);
+        } catch (IOException e) {
+            log.error("Failed to send confirmation message", e);
+        }
+    }
+
+    @OnMessage
     public void onMessage(byte[] message, Session session) {
         if (subscription != null && !subscription.isDisposed()) {
             subscription.dispose();
         }
 
-        Flowable<ByteBuffer> audioSource = Flowable.just(ByteBuffer.wrap(message));
-        subscription = speechService.processAudioStream(audioSource)
-                .subscribe(
-                        result -> {
-                            try {
-                                session.getBasicRemote().sendText(result);
-                            } catch (IOException e) {
-                                log.error("Failed to send message to client", e);
+        // 打印接收到的消息
+        log.info("收到WebSocket二进制消息: length={}", message.length);
+
+        try {
+            // 处理语音识别
+            Flowable<ByteBuffer> audioSource = Flowable.just(ByteBuffer.wrap(message));
+            subscription = speechService.processAudioStream(audioSource)
+                    .subscribe(
+                            result -> {
+                                try {
+                                    session.getBasicRemote().sendText(result);
+                                } catch (IOException e) {
+                                    log.error("Failed to send message to client", e);
+                                }
+                            },
+                            error -> {
+                                log.error("Error processing audio stream", error);
+                                try {
+                                    session.getBasicRemote().sendText("处理错误: " + error.getMessage());
+                                } catch (IOException e) {
+                                    log.error("Failed to send error message to client", e);
+                                }
                             }
-                        },
-                        error -> {
-                            log.error("Error processing audio stream", error);
-                            try {
-                                session.getBasicRemote().sendText("处理错误: " + error.getMessage());
-                            } catch (IOException e) {
-                                log.error("Failed to send error message to client", e);
-                            }
-                        }
-                );
+                    );
+        } catch (Exception e) {
+            log.error("Failed to process audio message", e);
+        }
     }
 
     @OnError

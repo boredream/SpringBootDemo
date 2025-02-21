@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>WebSocket 测试</title>
+    <style>
+        body {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 0 20px;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+        .connected {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .disconnected {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .input-group {
+            display: flex;
+            gap: 10px;
+        }
+        input[type="text"] {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            padding: 8px 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:disabled {
+            background-color: #ccc;
+        }
+        .messages {
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 4px;
+            height: 300px;
+            overflow-y: auto;
+        }
+        .message {
+            margin: 5px 0;
+            padding: 5px;
+            border-bottom: 1px solid #eee;
+        }
+        .sent {
+            color: #004085;
+        }
+        .received {
+            color: #155724;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>WebSocket 测试页面</h2>
+        
+        <div id="status" class="status disconnected">
+            未连接
+        </div>
+
+        <div class="input-group">
+            <input type="text" id="messageInput" placeholder="输入要发送的消息" disabled>
+            <button id="sendBtn" disabled>发送</button>
+            <button id="connectBtn">连接</button>
+        </div>
+
+        <div class="messages" id="messages"></div>
+    </div>
+
+    <script>
+        let ws = null;
+        const statusDiv = document.getElementById('status');
+        const messageInput = document.getElementById('messageInput');
+        const sendBtn = document.getElementById('sendBtn');
+        const connectBtn = document.getElementById('connectBtn');
+        const messagesDiv = document.getElementById('messages');
+
+        function addMessage(message, type) {
+            const messageElement = document.createElement('div');
+            messageElement.className = `message ${type}`;
+            messageElement.textContent = `${new Date().toLocaleTimeString()} - ${message}`;
+            messagesDiv.insertBefore(messageElement, messagesDiv.firstChild);
+        }
+
+        function connect() {
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                ws.close();
+                return;
+            }
+
+            ws = new WebSocket('ws://localhost:8080/api/ws/speech');
+
+            ws.onopen = () => {
+                statusDiv.className = 'status connected';
+                statusDiv.textContent = '已连接';
+                messageInput.disabled = false;
+                sendBtn.disabled = false;
+                connectBtn.textContent = '断开';
+                addMessage('WebSocket 连接已建立', 'system');
+            };
+
+            ws.onclose = () => {
+                statusDiv.className = 'status disconnected';
+                statusDiv.textContent = '未连接';
+                messageInput.disabled = true;
+                sendBtn.disabled = true;
+                connectBtn.textContent = '连接';
+                addMessage('WebSocket 连接已关闭', 'system');
+                ws = null;
+            };
+
+            ws.onerror = (error) => {
+                addMessage(`错误: ${error.message}`, 'error');
+            };
+
+            ws.onmessage = (event) => {
+                addMessage(`收到: ${event.data}`, 'received');
+            };
+        }
+
+        connectBtn.onclick = connect;
+
+        sendBtn.onclick = () => {
+            if (!ws || ws.readyState !== WebSocket.OPEN) {
+                addMessage('WebSocket 未连接', 'error');
+                return;
+            }
+
+            const message = messageInput.value.trim();
+            if (!message) {
+                return;
+            }
+
+            try {
+                // 直接发送文本消息
+                ws.send(message);
+                addMessage(`发送: ${message}`, 'sent');
+                messageInput.value = '';
+            } catch (error) {
+                addMessage(`发送失败: ${error.message}`, 'error');
+            }
+        };
+
+        messageInput.onkeypress = (event) => {
+            if (event.key === 'Enter') {
+                sendBtn.click();
+            }
+        };
+    </script>
+</body>
+</html> 

@@ -84,7 +84,8 @@ public class TranslateSpeechFromMicrophone {
     // 创建TranslationRecognizerParam，audioFrames参数中传入上面创建的Flowable<ByteBuffer>
     TranslationRecognizerParam param =
         TranslationRecognizerParam.builder()
-            .model("paraformer-realtime-v2")
+//            .model("paraformer-realtime-v2")
+            .model("gummy-realtime-v1")
             .format("pcm") // 'pcm'、'wav'、'opus'、'speex'、'aac'、'amr', you
             // can check the supported formats in the document
             .sampleRate(16000) // supported 8000、16000

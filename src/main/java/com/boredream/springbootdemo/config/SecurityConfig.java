@@ -88,6 +88,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/user/wxlogin",
                         "/user/sendVerifyCode",
                         "/user/loginWithVerifyCode",
+                        "/websocket/status",
+                        "/ws/speech",
                         "/swagger-ui/*", "/v2/**", "/swagger-resources/**", "/swagger-ui.html", "/webjars/**")
                 .permitAll()
 

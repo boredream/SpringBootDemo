@@ -10,7 +10,6 @@ import com.alibaba.dashscope.audio.asr.translation.TranslationRecognizerRealtime
 import com.alibaba.dashscope.audio.asr.translation.results.Translation;
 import com.alibaba.dashscope.exception.ApiException;
 import com.alibaba.dashscope.exception.NoApiKeyException;
-import com.alibaba.dashscope.utils.ApiKey;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 
@@ -185,18 +184,19 @@ public class TranslateSpeechFromMicrophone {
    * automatically get the api_key from the environment variable
    */
   private static String getDashScopeApiKey() throws NoApiKeyException {
-    String dashScopeApiKey = null;
-    try {
-      ApiKey apiKey = new ApiKey();
-      dashScopeApiKey = apiKey.getApiKey(null); // Retrieve from environment variable.
-    } catch (NoApiKeyException e) {
-      System.out.println("No API key found in environment.");
-    }
-    if (dashScopeApiKey == null) {
-      // If you cannot set api_key in your environment variable,
-      // you can set it here by code
-      dashScopeApiKey = "your-dashscope-api-key";
-    }
-    return dashScopeApiKey;
+//    String dashScopeApiKey = null;
+//    try {
+//      ApiKey apiKey = new ApiKey();
+//      dashScopeApiKey = apiKey.getApiKey(null); // Retrieve from environment variable.
+//    } catch (NoApiKeyException e) {
+//      System.out.println("No API key found in environment.");
+//    }
+//    if (dashScopeApiKey == null) {
+//      // If you cannot set api_key in your environment variable,
+//      // you can set it here by code
+//      dashScopeApiKey = "your-dashscope-api-key";
+//    }
+//    return dashScopeApiKey;
+    return "sk-75b80f758bf1455b9e57b9a56b7c4cdd";
   }
 }

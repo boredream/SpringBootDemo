@@ -2,6 +2,9 @@ package com.boredream.springbootdemo.websocket;
 
 import com.alibaba.dashscope.audio.asr.translation.TranslationRecognizerParam;
 import com.alibaba.dashscope.audio.asr.translation.TranslationRecognizerRealtime;
+import com.alibaba.dashscope.audio.asr.translation.results.Translation;
+import com.alibaba.dashscope.audio.asr.translation.results.TranslationRecognizerResult;
+import com.alibaba.dashscope.audio.asr.translation.results.TranslationResult;
 import com.alibaba.fastjson.JSON;
 import com.boredream.springbootdemo.service.SpeechService;
 import com.boredream.springbootdemo.websocket.constant.WsAction;
@@ -16,6 +19,7 @@ import javax.websocket.*;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
@@ -80,12 +84,12 @@ public class SpeechWebSocket {
             return;
         }
 
-        log.info("收到音频数据: {} bytes", message.length);
+//        log.info("收到音频数据: {} bytes", message.length);
         try {
             // 将音频数据发送到处理器
             ByteBuffer buffer = ByteBuffer.wrap(message);
             audioProcessor.onNext(buffer);
-            log.debug("音频数据已发送到处理器，数据大小: {} bytes, position: {}, limit: {}", 
+            log.debug("音频数据已发送到处理器，数据大小: {} bytes, position: {}, limit: {}",
                     buffer.capacity(), buffer.position(), buffer.limit());
         } catch (Exception e) {
             log.error("处理音频数据失败: {}, 堆栈信息: ", e.getMessage(), e);
@@ -118,15 +122,15 @@ public class SpeechWebSocket {
             // 初始化音频处理器
             audioProcessor = PublishProcessor.create();
             log.info("音频处理器初始化成功");
-            
+
             // 创建Recognizer
             translator = new TranslationRecognizerRealtime();
             log.info("TranslationRecognizerRealtime 创建成功");
-            
+
             // 创建识别参数
             String apiKey = getDashScopeApiKey();
             log.info("获取到API Key: {}", apiKey.substring(0, 4) + "****");
-            
+
             TranslationRecognizerParam param = TranslationRecognizerParam.builder()
                     .model("gummy-realtime-v1")
                     .format("pcm")
@@ -136,7 +140,7 @@ public class SpeechWebSocket {
                     .translationEnabled(true)
                     .translationLanguages(new String[]{TARGET_LANGUAGE})
                     .build();
-            log.info("语音识别参数配置完成: model={}, format={}, sampleRate={}", 
+            log.info("语音识别参数配置完成: model={}, format={}, sampleRate={}",
                     param.getModel(), param.getFormat(), param.getSampleRate());
 
             // 开始流式识别
@@ -153,24 +157,7 @@ public class SpeechWebSocket {
                     .doOnComplete(() -> {
                         log.info("音频流处理完成，关闭处理器");
                     })
-                    .subscribe(
-                            result -> {
-                                try {
-                                    log.info("收到阿里云识别结果: {}", JSON.toJSONString(result));
-                                    if (result.getTranscriptionResult() != null) {
-                                        String text = result.isSentenceEnd()
-                                                ? result.getTranscriptionResult().getText()
-                                                : result.getTranscriptionResult().getText() + "(临时结果)";
-                                        log.info("转写结果: {}", text);
-                                        WsMessage response = WsMessage.success(WsAction.TRANSCRIPT, text);
-                                        sendMessage(response);
-                                    } else {
-                                        log.warn("收到的识别结果中没有转写内容");
-                                    }
-                                } catch (Exception e) {
-                                    log.error("处理识别结果时发生错误: ", e);
-                                }
-                            },
+                    .subscribe(result -> sendAsrResultToClient(result),
                             error -> {
                                 log.error("处理音频流错误: {}, 堆栈信息: ", error.getMessage(), error);
                                 sendError("处理音频流错误: " + error.getMessage());
@@ -190,6 +177,37 @@ public class SpeechWebSocket {
             log.error("启动转写失败: {}, 堆栈信息: ", e.getMessage(), e);
             sendError("启动转写失败: " + e.getMessage());
             stopTranscription();
+        }
+    }
+
+    private void sendAsrResultToClient(TranslationRecognizerResult result) {
+        try {
+//            log.info("收到阿里云识别结果: {}", JSON.toJSONString(result));
+            if (result.getTranscriptionResult() != null) {
+//                String text = result.isSentenceEnd()
+//                        ? result.getTranscriptionResult().getText()
+//                        : result.getTranscriptionResult().getText() + "(临时结果)";
+//                log.info("转写结果: {}", text);
+                // TODO 暂时把数据原封不动返回
+                result.getTranscriptionResult().setWords(null);
+                TranslationResult translationResult = result.getTranslationResult();
+                if(translationResult != null) {
+                    List<String> languageList = translationResult.getLanguageList();
+                    if(languageList != null && languageList.size() > 0) {
+                        Translation translation = translationResult.getTranslations().get(languageList.get(0));
+                        if(translation != null) {
+                            translation.setWords(null);
+                        }
+                    }
+                }
+
+                WsMessage response = WsMessage.success(WsAction.TRANSCRIPT, result);
+                sendMessage(response);
+            } else {
+                log.warn("收到的识别结果中没有转写内容");
+            }
+        } catch (Exception e) {
+            log.error("处理识别结果时发生错误: ", e);
         }
     }
 
